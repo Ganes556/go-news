@@ -1,0 +1,33 @@
+package view_toast
+
+import "fmt"
+
+script toastTimer(second int) {
+	window.addEventListener('DOMContentLoaded', function() {
+		// Get the toast container
+		var toastContainer = document.querySelector('.toast-container');
+		// Loop through each toast and show it
+		var toasts = toastContainer.querySelectorAll('.toast');
+		toasts.forEach(function(toast) {
+			var bootstrapToast = new bootstrap.Toast(toast);
+			bootstrapToast.show();
+			setTimeout(function() {
+				bootstrapToast.hide();
+			}, second); // 1000 milliseconds = 1 second
+		});
+	});
+}
+
+templ ToastErr(param ParamToastErr) {
+	<div class="toast-container position-fixed top-0 end-0 pt-2" style="z-index: 11">
+		for _, v := range param.ErrMessages {
+			<div class="toast align-items-center p-3 border-0 bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="d-flex">
+					<div class="toast-body">Error { fmt.Sprintf("%d", v.Code) }: { v.Message }</div>
+					<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+				</div>
+			</div>
+		}
+	</div>
+	@toastTimer(param.Timer)
+}

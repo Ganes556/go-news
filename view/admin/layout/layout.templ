@@ -1,0 +1,24 @@
+package view_admin_layout
+
+import "github.com/news/view/component/navbar"
+import "github.com/news/view/admin/content/dashboard"
+import "github.com/news/view/admin/content/news"
+
+templ AdminLayout(param ParamAdminLayout) {
+	<div id="content" class="container-fluid">
+		<div class="row flex-nowrap">
+			@view_navbar.Slidebar(view_navbar.ParamNavbar{
+				Username: param.Username,
+				Name:     param.Name,
+			})
+			<div class="col py-3">
+				switch param.Content {
+					case "news":
+						@view_admin_content_news.News()
+					default:
+						@view_admin_content_dashboard.Dashboard(param.Username, param.Name)
+				}
+			</div>
+		</div>
+	</div>
+}
