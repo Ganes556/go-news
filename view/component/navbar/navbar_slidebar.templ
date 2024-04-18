@@ -1,37 +1,49 @@
 package view_navbar
 
+script checkUrl(id string, page string) {
+	window.addEventListener("load", (e)=>{
+		const currentUrl = window.location.href;
+		// Create a URL object (this automatically parses the URL)
+		const url = new URL(currentUrl);
+
+		// Get access to the search parameters
+		const params = new URLSearchParams(url.search);
+		const pageParam = params.get('page');
+		if(pageParam === page) {
+			htmx.trigger(id, 'htmx:abort')
+		}
+	})
+}
+
 templ Slidebar(param ParamNavbar) {
-	<div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-primary">
-		<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-			<a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-				<span class="fs-5 d-none d-sm-inline">Menu</span>
+	<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white h-100">
+		<a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+			<span class="fs-5 d-none d-sm-inline">Menu</span>
+		</a>
+		<ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+			<li>
+				<div id="page-dashboard" hx-trigger="click" hx-on:click={ checkUrl("#page-dashboard", "dashboard") } style="cursor: pointer;" hx-get="?page=dashboard&partial=1" hx-replace-url="?page=dashboard" hx-swap="outerHTML" hx-target="#content" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+					<i class="fs-4 bi bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
+				</div>
+			</li>
+			<li>
+				<div id="page-news" style="cursor: pointer;" hx-trigger="click" hx-on:click={ checkUrl("#page-news", "news") } hx-get="?page=news&partial=1" hx-replace-url="?page=news" hx-swap="outerHTML" hx-target="#content" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+					<i class="fs-sm-5 fs-4 bi bi-newspaper"></i> <span class="ms-1 d-none d-sm-inline">News</span>
+				</div>
+			</li>
+		</ul>
+		<div class="dropdown pb-4" style="margin-top: auto;">
+			<a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+				<i class="fs-4 bi bi-person-circle"></i>
+				<span class="d-none d-sm-inline mx-2">{ param.Name }</span>
 			</a>
-			<ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+			<ul class="dropdown-menu dropdown-menu-primary text-small shadow">
+				<li><a class="dropdown-item" href="#">Profile</a></li>
 				<li>
-					<div style="cursor: pointer;" hx-get="?page=dashboard" hx-swap="outerHTML" hx-target="#content" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-						<i class="fs-4 bi bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
-					</div>
+					<hr class="dropdown-divider"/>
 				</li>
-				<li>
-					<div style="cursor: pointer;" hx-get="?page=news" hx-swap="outerHTML" hx-target="#content" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-						<i class="fs-sm-5 fs-4 bi bi-newspaper"></i> <span class="ms-1 d-none d-sm-inline">News</span>
-					</div>
-				</li>
+				<li><a class="dropdown-item" href="#">Sign out</a></li>
 			</ul>
-			<hr/>
-			<div class="dropdown pb-4">
-				<a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-					<i class="fs-4 bi bi-person-circle"></i>
-					<span class="d-none d-sm-inline mx-2">{ param.Name }</span>
-				</a>
-				<ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-					<li><a class="dropdown-item" href="#">Profile</a></li>
-					<li>
-						<hr class="dropdown-divider"/>
-					</li>
-					<li><a class="dropdown-item" href="#">Sign out</a></li>
-				</ul>
-			</div>
 		</div>
 	</div>
 }

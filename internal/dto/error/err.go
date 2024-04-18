@@ -26,3 +26,9 @@ func (e *ErrResponse) ErrAuth500() error {
 	e.Message = "internal server error"
 	return e
 }
+
+func (e *ErrResponse) ErrNews404() error {
+	e.Code = 404
+	e.Message = "berita tidak ditemukan"
+	return e
+}

@@ -1,0 +1,24 @@
+package view_component_CKEeditor
+
+script showEditor(oldContents string) {
+    // let editor
+    ckeditor
+        .create( document.querySelector( '#editor' ))
+        .then(newEditor => {
+            window.editor = newEditor;
+            editor.setData(oldContents)
+        })
+        .catch( error => {
+            console.error( error );
+        } );
+}
+
+templ CKEeditor(oldContents string) {
+	<style>
+        .ck-editor__editable_inline {
+            min-height: 300px;
+        }
+    </style>
+	<div id="editor"></div>
+	@showEditor(oldContents)
+}

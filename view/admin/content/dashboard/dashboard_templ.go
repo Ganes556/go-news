@@ -23,7 +23,7 @@ func Dashboard(username string, name string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container px-4 pt-4\"><div class=\"row row-cols-2 gx-5 justify-content-center\"><div class=\"col\"><div class=\"card\"><div class=\"card-body\"><h5 class=\"card-title\">Total News Post</h5><p class=\"card-text\">This is some text within a card body.</p></div></div></div><div class=\"col\"><div class=\"card\"><div class=\"card-body\"><h5 class=\"card-title\">Total Reader</h5><p class=\"card-text\">This is some text within a card body.</p></div></div></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"row row-cols-2 gx-5 justify-content-center\"><div class=\"col\"><div class=\"card\"><div class=\"card-body\"><h5 class=\"card-title\">Total News Post</h5><p class=\"card-text\">This is some text within a card body.</p></div></div></div><div class=\"col\"><div class=\"card\"><div class=\"card-body\"><h5 class=\"card-title\">Total Reader</h5><p class=\"card-text\">This is some text within a card body.</p></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

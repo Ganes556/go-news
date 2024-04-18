@@ -71,11 +71,12 @@ func main() {
 	authMid := middleware.NewAuthMiddleware(session)
 
 	userUc := uc_user.NewUcUser(DB, encryptor)
-	userGroup := app.Group("/user",timeoutMid.Timeout(nil),authMid.Authorized)
+	userGroup := app.Group("/user",timeoutMid.Timeout(nil), authMid.Authorized)
 	userHandler := handler_user.NewHandlerUser(userUc, validator, session)
 	{
 		userGroup.Get("/login", userHandler.GetLogin)
 		userGroup.Post("/login", userHandler.PostLogin)
+		userGroup.Post("/news", userHandler.PostNews)
 		userGroup.Get("", userHandler.GetDashboard)
 	}
 	

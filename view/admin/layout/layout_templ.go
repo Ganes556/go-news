@@ -10,9 +10,7 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/news/view/component/navbar"
-import "github.com/news/view/admin/content/dashboard"
-import "github.com/news/view/admin/content/news"
+import "github.com/news/view/component/toast"
 
 func AdminLayout(param ParamAdminLayout) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -27,32 +25,30 @@ func AdminLayout(param ParamAdminLayout) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" class=\"container-fluid\"><div class=\"row flex-nowrap\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = view_navbar.Slidebar(view_navbar.ParamNavbar{
-			Username: param.Username,
-			Name:     param.Name,
-		}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"col py-3\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		switch param.Content {
-		case "news":
-			templ_7745c5c3_Err = view_admin_content_news.News().Render(ctx, templ_7745c5c3_Buffer)
+		if len(param.ErrRes) > 0 {
+			templ_7745c5c3_Err = view_toast.ToastErr(view_toast.ParamToastErr{
+				ErrMessages: param.ErrRes,
+				Timer:       1500,
+			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		default:
-			templ_7745c5c3_Err = view_admin_content_dashboard.Dashboard(param.Username, param.Name).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" class=\"container-fluid d-flex flex-column\"><div class=\"row vh-100\"><div class=\"col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-primary\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = param.SlideBar.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"col container px-4 pt-4\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = param.Content.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div>")
 		if templ_7745c5c3_Err != nil {

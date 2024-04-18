@@ -12,6 +12,8 @@ import (
 
 type UcUser interface {
 	Login(ctx context.Context, req req_dto_user.Login) (user *entity.User, err error)
+	GetNews(ctx context.Context) (news []entity.News, err error)
+	GetNewsById(ctx context.Context, id string) (news entity.News, err error)
 }
 
 type ucUser struct {
@@ -34,7 +36,21 @@ func (u *ucUser) Login(ctx context.Context, req req_dto_user.Login) (user *entit
 			err = new(dto_error.ErrResponse).ErrAuth400()
 			return
 		}		
-		return	
+	}
+	return
+}
+func (u *ucUser) GetNews(ctx context.Context) (news []entity.News, err error) {
+	news = []entity.News{}
+	err = u.db.WithContext(ctx).Order("id ASC").Find(&news).Error
+	return
+}
+func (u *ucUser) GetNewsById(ctx context.Context, id string) (news entity.News, err error) {
+	news = entity.News{}
+	err = u.db.WithContext(ctx).First(&news, "id = ?", id ).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = new(dto_error.ErrResponse).ErrNews404()
+		}
 	}
 	return
 }

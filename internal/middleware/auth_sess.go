@@ -18,16 +18,16 @@ func NewAuthMiddleware(session *session.Store) AuthMidleware {
 }
 
 func (a *authMidleware) Authorized(c *fiber.Ctx) error {
-	sess, err := a.session.Get(c)
-	
-	if err != nil {
-		return c.Status(fiber.StatusSeeOther).Redirect("/user/login")
+	sess, _ := a.session.Get(c)
+
+	if c.Path() != "/news" {
+		if sess.Get("username") == nil && c.Path() != "/user/login" {
+			return c.Status(fiber.StatusSeeOther).Redirect("/user/login")
+		}
+		if c.Path() == "/user/login" && sess.Get("username") != nil {
+			return c.Status(fiber.StatusSeeOther).Redirect("/user")
+		}
 	}
-	if sess.Get("username") == nil {
-		return c.Status(fiber.StatusSeeOther).Redirect("/user/login")
-	}
-	if c.Path() == "/user/login" {
-		return c.Status(fiber.StatusSeeOther).Redirect("/user/dashboard")
-	}
+
 	return c.Next()
 }
