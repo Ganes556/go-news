@@ -55,7 +55,7 @@
     "webpack-cli": "^4.10.0"
   },
   "scripts": {
-    "build": "webpack --mode production",
+    "webpack-watch": "webpack --mode production --watch",
     "go-start": "air .",
     "go-templ": "templ generate --watch"
   }

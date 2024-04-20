@@ -23,7 +23,6 @@ import (
 type HandlerUser interface {
 	GetLogin(c *fiber.Ctx) error
 	PostLogin(c *fiber.Ctx) error
-	PostNews(c *fiber.Ctx) error
 	GetDashboard(c *fiber.Ctx) error
 }
 
@@ -96,12 +95,6 @@ func (h *handlerUser) PostLogin(c *fiber.Ctx) error {
 	sess.Save()
 
 	return c.Status(fiber.StatusSeeOther).Redirect("/user")
-}
-
-func (h *handlerUser) PostNews(c *fiber.Ctx) error {
-	req := new(req_dto_user.CreateNews)
-	c.BodyParser(req)
-	return c.Status(fiber.StatusOK).JSON(req)
 }
 
 func (h *handlerUser) GetDashboard(c *fiber.Ctx) error {

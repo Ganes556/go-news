@@ -29,12 +29,12 @@ templ ModifiedNews(oldNews entity.News, method string, url string) {
 		<h1 class="mb-3">Tambah Berita</h1>
 		<form method={ method } action={ templ.URL(url) } class="mb-3">
 			<div class="mb-3">
-				<label for="judul" class="form-label">Judul</label>
-				<input type="text" class="form-control" id="judul" name="judul"/>
+				<label for="title" class="form-label">Title</label>
+				<input type="text" class="form-control" id="title" name="title"/>
 			</div>
 			<div class="mb-3">
-				<label for="kategori" class="form-label">Kategori</label>
-				<input type="text" class="form-control" id="kategori" name="kategori"/>
+				<label for="category" class="form-label">Category</label>
+				<input type="text" class="form-control" id="category" name="category"/>
 			</div>
 			<div class="mb-3">
 				<label for="cover" class="form-label">Cover</label>

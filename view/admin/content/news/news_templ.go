@@ -84,7 +84,7 @@ func ModifiedNews(oldNews entity.News, method string, url string) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"mb-3\"><div class=\"mb-3\"><label for=\"judul\" class=\"form-label\">Judul</label> <input type=\"text\" class=\"form-control\" id=\"judul\" name=\"judul\"></div><div class=\"mb-3\"><label for=\"kategori\" class=\"form-label\">Kategori</label> <input type=\"text\" class=\"form-control\" id=\"kategori\" name=\"kategori\"></div><div class=\"mb-3\"><label for=\"cover\" class=\"form-label\">Cover</label> <input class=\"form-control\" name=\"cover\" type=\"file\" id=\"cover\"></div><input id=\"res-content\" name=\"contents\" class=\"invisible\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"mb-3\"><div class=\"mb-3\"><label for=\"title\" class=\"form-label\">Title</label> <input type=\"text\" class=\"form-control\" id=\"title\" name=\"title\"></div><div class=\"mb-3\"><label for=\"category\" class=\"form-label\">Category</label> <input type=\"text\" class=\"form-control\" id=\"category\" name=\"category\"></div><div class=\"mb-3\"><label for=\"cover\" class=\"form-label\">Cover</label> <input class=\"form-control\" name=\"cover\" type=\"file\" id=\"cover\"></div><input id=\"res-content\" name=\"contents\" class=\"invisible\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

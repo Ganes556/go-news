@@ -76,9 +76,10 @@ func main() {
 	{
 		userGroup.Get("/login", userHandler.GetLogin)
 		userGroup.Post("/login", userHandler.PostLogin)
-		userGroup.Post("/news", userHandler.PostNews)
 		userGroup.Get("", userHandler.GetDashboard)
 	}
+
+	// newsUc := 
 	
 	app.Listen(fmt.Sprintf("%s:%s",os.Getenv("HOST"),os.Getenv("PORT")))
 
