@@ -1,20 +1,27 @@
 package view_admin_content_dashboard
 
-templ Dashboard(username string, name string) {
-	<div class="row row-cols-2 gx-5 justify-content-center">
-		<div class="col">
-			<div class="card">
-				<div class="card-body">
-					<h5 class="card-title">Total News Post</h5>
-					<p class="card-text">This is some text within a card body.</p>
+templ Dashboard(username, name string) {
+	<div>
+		<div class="row mb-3">
+			<h1>
+				Hai {name}
+			</h1>
+		</div>
+		<div class="row row-cols-2 gx-5 justify-content-center">
+			<div class="col">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Total News Post</h5>
+						<p class="card-text">This is some text within a card body.</p>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="col">
-			<div class="card">
-				<div class="card-body">
-					<h5 class="card-title">Total Reader</h5>
-					<p class="card-text">This is some text within a card body.</p>
+			<div class="col">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Total Reader</h5>
+						<p class="card-text">This is some text within a card body.</p>
+					</div>
 				</div>
 			</div>
 		</div>

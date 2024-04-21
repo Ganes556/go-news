@@ -15,18 +15,19 @@ import "github.com/news/internal/entity"
 
 func setDataToContentDiv() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_setDataToContentDiv_58ac`,
-		Function: `function __templ_setDataToContentDiv_58ac(){Swal.fire({title: 'Confirm', text:'Do you want to continue?'}).then(function(result){
-		if(result.isConfirmed){
-			// htmx.trigger(this, 'confirmed')
-			let d = htmx.find("#res-content")
-			d.value = editor.getData()
-		} 
-	})
+		Name: `__templ_setDataToContentDiv_1c20`,
+		Function: `function __templ_setDataToContentDiv_1c20(){// Swal.fire({title: 'Confirm', text:'Do you want to continue?'}).then(function(result){
+	// 	if(result.isConfirmed){
+	// 		// htmx.trigger(this, 'confirmed')
+	// 		// dd.innerHTML = editor.getData()
+	// 	} 
+	// })
+	let d = htmx.find("#res-content")
+	d.value = editor.getData()
     
 }`,
-		Call:       templ.SafeScript(`__templ_setDataToContentDiv_58ac`),
-		CallInline: templ.SafeScriptInline(`__templ_setDataToContentDiv_58ac`),
+		Call:       templ.SafeScript(`__templ_setDataToContentDiv_1c20`),
+		CallInline: templ.SafeScriptInline(`__templ_setDataToContentDiv_1c20`),
 	}
 }
 
@@ -67,7 +68,7 @@ func ModifiedNews(oldNews entity.News, method string, url string) templ.Componen
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container\"><h1 class=\"mb-3\">Tambah Berita</h1><form method=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container\"><h1 class=\"mb-3\">Add News</h1><form method=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -12,18 +12,21 @@ import { BlockQuote } from '@ckeditor/ckeditor5-block-quote';
 import { CKBox } from '@ckeditor/ckeditor5-ckbox';
 import { CloudServices } from '@ckeditor/ckeditor5-cloud-services';
 import type { EditorConfig } from '@ckeditor/ckeditor5-core';
-import { Essentials } from '@ckeditor/ckeditor5-essentials';
 import { Heading } from '@ckeditor/ckeditor5-heading';
 import {
-	Image,
-	ImageCaption,
-	ImageStyle,
-	ImageToolbar,
-	ImageUpload,
-	PictureEditing
+  Image,
+  ImageCaption,
+  ImageStyle,
+  ImageToolbar,
+  ImageResize,
+  ImageUpload,
+  PictureEditing,
+  ImageInsert,
+  ImageInsertViaUrl,
+  ImageBlock,
 } from '@ckeditor/ckeditor5-image';
 import { Indent } from '@ckeditor/ckeditor5-indent';
-import { Link } from '@ckeditor/ckeditor5-link';
+import { LinkImage } from '@ckeditor/ckeditor5-link';
 import { List } from '@ckeditor/ckeditor5-list';
 import { MediaEmbed } from '@ckeditor/ckeditor5-media-embed';
 import { Paragraph } from '@ckeditor/ckeditor5-paragraph';
@@ -36,74 +39,96 @@ import { Undo } from '@ckeditor/ckeditor5-undo';
 // See https://ckeditor.com/docs/ckeditor5/latest/installation/plugins/installing-plugins.html for details.
 
 class Editor extends ClassicEditor {
-	public static override builtinPlugins = [
-		Alignment,
-		Autoformat,
-		BlockQuote,
-		Bold,
-		CKBox,
-		CloudServices,
-		Essentials,
-		Heading,
-		Image,
-		ImageCaption,
-		ImageStyle,
-		ImageToolbar,
-		ImageUpload,
-		Indent,
-		Italic,
-		Link,
-		List,
-		MediaEmbed,
-		Paragraph,
-		PasteFromOffice,
-		PictureEditing,
-		Table,
-		TableToolbar,
-		TextTransformation,
-		Undo
-	];
+  public static override builtinPlugins = [
+    Alignment,
+    Heading,
+    Autoformat,
+    BlockQuote,
+    Bold,
+    Image,
+    ImageCaption,
+    ImageStyle,
+    ImageToolbar,
+    ImageResize,
+    ImageUpload,
+    ImageInsert,
+    ImageBlock,
+    ImageInsertViaUrl,
+    CKBox,
+    CloudServices,
+    LinkImage,
+    Indent,
+    Italic,
+    List,
+    MediaEmbed,
+    Paragraph,
+    PasteFromOffice,
+    PictureEditing,
+    Table,
+    TableToolbar,
+    TextTransformation,
+    Undo,
+  ];
 
-	public static override defaultConfig: EditorConfig = {
-		toolbar: {
-			items: [
-				'heading',
-				'|',
-				'bold',
-				'italic',
-				'link',
-				'bulletedList',
-				'numberedList',
-				'|',
-				'outdent',
-				'indent',
-				'|', 'alignment',
-				'|',
-				'blockQuote',
-				'insertTable',
-				'mediaEmbed',
-				'undo',
-				'redo'
-			]
-		},
-		language: 'id',
-		image: {
-			toolbar: [
-				'imageTextAlternative',
-				'toggleImageCaption',
-				'imageStyle:inline',
-				'imageStyle:block',
-				'imageStyle:side'
-			]
-		},
-		table: {
-			contentToolbar: [
-				'tableColumn',
-				'tableRow',
-				'mergeTableCells'
-			]
-		}
-	};
+  //@ts-ignore
+  public static override defaultConfig: EditorConfig = {
+    toolbar: {
+      items: [
+        'heading',
+        '|',
+        'bold',
+        'italic',
+        'bulletedList',
+        'numberedList',
+        '|',
+        'linkImage',
+        '|',
+        'outdent',
+        'indent',
+        '|',
+        'alignment',
+        '|',
+        'blockQuote',
+        'insertImage',
+        'insertTable',
+        'mediaEmbed',
+        'undo',
+        'redo',
+      ],
+    },
+    language: 'id',
+    image: {
+      toolbar: [
+        {
+          title: 'Image Style',
+          name: 'imageStyle:customDropdown',
+          items: [
+            'imageStyle:alignLeft',
+            'imageStyle:alignRight',
+            'imageStyle:alignCenter',
+            'imageStyle:alignBlockRight',
+            'imageStyle:alignBlockLeft',
+          ],
+          defaultItem: 'imageStyle:alignLeft',
+        },
+        '|',
+        'toggleImageCaption',
+        'imageTextAlternative',
+        'ImageResize',
+        '|',
+        'linkImage',
+      ],
+      insert: {
+        // If this setting is omitted, the editor defaults to 'block'.
+        // See explanation below.
+        integrations: ['url'],
+        type: 'auto',
+      },
+    },
+    table: {
+      contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
+    },
+  };
 }
 
 export default Editor;

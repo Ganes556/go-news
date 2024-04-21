@@ -2,7 +2,10 @@ package handler_news
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	req_dto_news "github.com/news/internal/dto/request/news"
+	uc_news "github.com/news/internal/usecase/news"
+	"github.com/news/pkg"
 )
 
 type NewsHandler interface {
@@ -10,11 +13,13 @@ type NewsHandler interface {
 }
 
 type newsHandler struct {
+	uc        uc_news.NewsUc
+	validator pkg.Validator
+	session   *session.Store
 }
 
-
-func NewNewsHandler() NewsHandler {
-	return &newsHandler{}
+func NewNewsHandler(uc uc_news.NewsUc, validator pkg.Validator, session *session.Store) NewsHandler {
+	return &newsHandler{uc, validator, session}
 }
 
 func (h *newsHandler) PostNews(c *fiber.Ctx) error {
@@ -25,5 +30,20 @@ func (h *newsHandler) PostNews(c *fiber.Ctx) error {
 		return c.SendStatus(500)
 	}
 	req.Cover = file
-	return c.Status(fiber.StatusOK).JSON(req)
+	ctx := c.UserContext()
+	sess, _ := h.session.Get(c)
+	userid := sess.Get("id")
+	err = h.uc.Create(uc_news.ParamCreate{
+		Ctx: ctx,
+		Req: *req,
+		UserID: uint(userid.(float64)),
+	})
+
+	if err != nil {
+		return c.SendStatus(500)
+	}
+	
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "successfully add news",
+	})
 }

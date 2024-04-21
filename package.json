@@ -17,7 +17,7 @@
     "@ckeditor/ckeditor5-editor-classic": "^41.3.1",
     "@ckeditor/ckeditor5-essentials": "^41.3.1",
     "@ckeditor/ckeditor5-heading": "^41.3.1",
-    "@ckeditor/ckeditor5-image": "41.3.1",
+    "@ckeditor/ckeditor5-image": "^41.3.1",
     "@ckeditor/ckeditor5-indent": "41.3.1",
     "@ckeditor/ckeditor5-link": "^41.3.1",
     "@ckeditor/ckeditor5-list": "^41.3.1",
@@ -55,7 +55,7 @@
     "webpack-cli": "^4.10.0"
   },
   "scripts": {
-    "webpack-watch": "webpack --mode production --watch",
+    "go-webpack": "webpack --mode production",
     "go-start": "air .",
     "go-templ": "templ generate --watch"
   }

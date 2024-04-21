@@ -11,6 +11,7 @@ import (
 )
 
 type NewsUc interface {
+	Create(param ParamCreate) error
 }
 
 type newsUc struct {

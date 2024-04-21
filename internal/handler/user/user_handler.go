@@ -89,6 +89,7 @@ func (h *handlerUser) PostLogin(c *fiber.Ctx) error {
 	}
 
 	sess, _ := h.session.Get(c)
+	sess.Set("id", user.ID)
 	sess.Set("name", user.Name)
 	sess.Set("username", user.Username)
 	sess.SetExpiry(time.Hour * 24 * 7)

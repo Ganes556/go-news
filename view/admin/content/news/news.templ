@@ -4,13 +4,14 @@ import "github.com/news/view/component/CKEeditor"
 import "github.com/news/internal/entity"
 
 script setDataToContentDiv() {
-	Swal.fire({title: 'Confirm', text:'Do you want to continue?'}).then(function(result){
-		if(result.isConfirmed){
-			// htmx.trigger(this, 'confirmed')
-			let d = htmx.find("#res-content")
-			d.value = editor.getData()
-		} 
-	})
+	// Swal.fire({title: 'Confirm', text:'Do you want to continue?'}).then(function(result){
+	// 	if(result.isConfirmed){
+	// 		// htmx.trigger(this, 'confirmed')
+	// 		// dd.innerHTML = editor.getData()
+	// 	} 
+	// })
+	let d = htmx.find("#res-content")
+	d.value = editor.getData()
     
 }
 
@@ -26,7 +27,7 @@ templ GetNews(news []entity.News) {
 
 templ ModifiedNews(oldNews entity.News, method string, url string) {
 	<div class="container">
-		<h1 class="mb-3">Tambah Berita</h1>
+		<h1 class="mb-3">Add News</h1>
 		<form method={ method } action={ templ.URL(url) } class="mb-3">
 			<div class="mb-3">
 				<label for="title" class="form-label">Title</label>
@@ -40,6 +41,7 @@ templ ModifiedNews(oldNews entity.News, method string, url string) {
 				<label for="cover" class="form-label">Cover</label>
 				<input class="form-control" name="cover" type="file" id="cover"/>
 			</div>
+			// <div id="res-output" class="ck ck-content"></div>
 			<input id="res-content" name="contents" class="invisible"/>
 			@view_component_CKEeditor.CKEeditor(oldNews.Content)
 			<button type="button" hx-on:click={ setDataToContentDiv() } class="mt-3 btn btn-primary">Post News</button>

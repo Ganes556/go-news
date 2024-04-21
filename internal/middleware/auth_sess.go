@@ -21,10 +21,10 @@ func (a *authMidleware) Authorized(c *fiber.Ctx) error {
 	sess, _ := a.session.Get(c)
 
 	if c.Path() != "/news" {
-		if sess.Get("username") == nil && c.Path() != "/user/login" {
+		if sess.Get("id") == nil && c.Path() != "/user/login" {
 			return c.Status(fiber.StatusSeeOther).Redirect("/user/login")
 		}
-		if c.Path() == "/user/login" && sess.Get("username") != nil {
+		if c.Path() == "/user/login" && sess.Get("id") != nil {
 			return c.Status(fiber.StatusSeeOther).Redirect("/user")
 		}
 	}
