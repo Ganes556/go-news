@@ -15,8 +15,10 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/news/helper"
 	conf_internal "github.com/news/internal/conf"
+	handler_news "github.com/news/internal/handler/news"
 	handler_user "github.com/news/internal/handler/user"
 	"github.com/news/internal/middleware"
+	uc_news "github.com/news/internal/usecase/news"
 	uc_user "github.com/news/internal/usecase/user"
 	"github.com/news/pkg"
 )
@@ -37,6 +39,7 @@ func main() {
 	encryptor := helper.NewEncryptor()
 	// pkg
 	validator := pkg.NewValidator()
+	gcp := pkg.NewGcloud(nil, os.Getenv("GC_BUCKET"))
 
 	// middleware
 	session := session.New(session.Config{
@@ -71,15 +74,22 @@ func main() {
 	authMid := middleware.NewAuthMiddleware(session)
 
 	userUc := uc_user.NewUcUser(DB, encryptor)
+	newsUc := uc_news.NewNewsUc(gcp, DB)
+
 	userGroup := app.Group("/user",timeoutMid.Timeout(nil), authMid.Authorized)
-	userHandler := handler_user.NewHandlerUser(userUc, validator, session)
+	userHandler := handler_user.NewHandlerUser(userUc, newsUc, validator, session)
 	{
 		userGroup.Get("/login", userHandler.GetLogin)
 		userGroup.Post("/login", userHandler.PostLogin)
 		userGroup.Get("", userHandler.GetDashboard)
 	}
 
-	// newsUc := 
+	
+	newsGroup := app.Group("/news", timeoutMid.Timeout(nil), authMid.Authorized)
+	newsHandler := handler_news.NewNewsHandler(newsUc, validator, session)
+	{
+		newsGroup.Post("/", newsHandler.PostNews)
+	}
 	
 	app.Listen(fmt.Sprintf("%s:%s",os.Getenv("HOST"),os.Getenv("PORT")))
 

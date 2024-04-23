@@ -1,5 +1,6 @@
 .ait.toml
 .env
+.bin
 tmp
 node_modules
 package-lock.json

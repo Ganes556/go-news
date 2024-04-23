@@ -25,7 +25,7 @@ import {
   ImageInsertViaUrl,
   ImageBlock,
 } from '@ckeditor/ckeditor5-image';
-import { Indent } from '@ckeditor/ckeditor5-indent';
+import { Indent, IndentBlock } from '@ckeditor/ckeditor5-indent';
 import { LinkImage } from '@ckeditor/ckeditor5-link';
 import { List } from '@ckeditor/ckeditor5-list';
 import { MediaEmbed } from '@ckeditor/ckeditor5-media-embed';
@@ -58,6 +58,7 @@ class Editor extends ClassicEditor {
     CloudServices,
     LinkImage,
     Indent,
+    IndentBlock,
     Italic,
     List,
     MediaEmbed,
@@ -92,11 +93,15 @@ class Editor extends ClassicEditor {
         'insertImage',
         'insertTable',
         'mediaEmbed',
+        '|',
         'undo',
         'redo',
       ],
     },
-    language: 'id',
+    indentBlock: {
+      offset: 1,
+      unit: 'em',
+    },
     image: {
       toolbar: [
         {

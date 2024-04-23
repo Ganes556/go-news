@@ -6,3 +6,8 @@ type ParamToastErr struct {
 	ErrMessages []dto_error.ErrResponse
 	Timer  int
 }
+
+type ParamToastSucc struct {
+	Message string
+	Timer  int
+}

@@ -29,5 +29,8 @@ func (a *authMidleware) Authorized(c *fiber.Ctx) error {
 		}
 	}
 
+	c.Set("user_name", sess.Get("name").(string))
+	c.Set("user_username", sess.Get("username").(string))
+
 	return c.Next()
 }

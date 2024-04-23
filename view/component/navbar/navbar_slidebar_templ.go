@@ -12,22 +12,22 @@ import "bytes"
 
 func checkUrl(id string, page string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_checkUrl_3e75`,
-		Function: `function __templ_checkUrl_3e75(id, page){window.addEventListener("load", (e)=>{
-		const currentUrl = window.location.href;
-		// Create a URL object (this automatically parses the URL)
-		const url = new URL(currentUrl);
+		Name: `__templ_checkUrl_9777`,
+		Function: `function __templ_checkUrl_9777(id, page){const currentUrl = window.location.href;
+	// Create a URL object (this automatically parses the URL)
+	const url = new URL(currentUrl);
 
-		// Get access to the search parameters
-		const params = new URLSearchParams(url.search);
-		const pageParam = params.get('page');
-		if(pageParam === page) {
-			htmx.trigger(id, 'htmx:abort')
-		}
-	})
+	// Get access to the search parameters
+	const params = new URLSearchParams(url.search);
+	const pageParam = params.get('page');
+	if(pageParam === page) {
+		htmx.trigger(id, 'htmx:abort')
+	}else {
+		document.title = page[0].toUpperCase() + page.slice(1);
+	}
 }`,
-		Call:       templ.SafeScript(`__templ_checkUrl_3e75`, id, page),
-		CallInline: templ.SafeScriptInline(`__templ_checkUrl_3e75`, id, page),
+		Call:       templ.SafeScript(`__templ_checkUrl_9777`, id, page),
+		CallInline: templ.SafeScriptInline(`__templ_checkUrl_9777`, id, page),
 	}
 }
 

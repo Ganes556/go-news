@@ -3,9 +3,11 @@ package handler_news
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/news/helper"
 	req_dto_news "github.com/news/internal/dto/request/news"
 	uc_news "github.com/news/internal/usecase/news"
 	"github.com/news/pkg"
+	"github.com/sujit-baniya/flash"
 )
 
 type NewsHandler interface {
@@ -13,12 +15,12 @@ type NewsHandler interface {
 }
 
 type newsHandler struct {
-	uc        uc_news.NewsUc
+	uc        uc_news.UcNews
 	validator pkg.Validator
 	session   *session.Store
 }
 
-func NewNewsHandler(uc uc_news.NewsUc, validator pkg.Validator, session *session.Store) NewsHandler {
+func NewNewsHandler(uc uc_news.UcNews, validator pkg.Validator, session *session.Store) NewsHandler {
 	return &newsHandler{uc, validator, session}
 }
 
@@ -26,24 +28,38 @@ func (h *newsHandler) PostNews(c *fiber.Ctx) error {
 	req := new(req_dto_news.CreateNews)
 	c.BodyParser(req)
 	file, err := c.FormFile("cover")
+	var mp fiber.Map
 	if err != nil {
-		return c.SendStatus(500)
+		helper.LogsError(err)
+		mp = fiber.Map{
+			"error": true,
+			"code": 500,
+			"message": "Something wrong!",
+		}
+		return flash.WithError(c, mp).Redirect("/user?page=create-news")
 	}
 	req.Cover = file
 	ctx := c.UserContext()
 	sess, _ := h.session.Get(c)
 	userid := sess.Get("id")
 	err = h.uc.Create(uc_news.ParamCreate{
-		Ctx: ctx,
-		Req: *req,
-		UserID: uint(userid.(float64)),
+		Ctx:    ctx,
+		Req:    *req,
+		UserID: userid.(uint),
 	})
-
-	if err != nil {
-		return c.SendStatus(500)
-	}
 	
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "successfully add news",
-	})
+	if err != nil {
+		mp = fiber.Map{
+			"error": true,
+			"code": 400,
+			"message": "bad request!",
+		}
+		return flash.WithError(c, mp).Redirect("/user?page=create-news")
+	}
+
+	mp = fiber.Map{
+		"success": true,
+		"message": "successfully add article",
+	}
+	return flash.WithSuccess(c, mp).Redirect("/user?page=create-news")
 }

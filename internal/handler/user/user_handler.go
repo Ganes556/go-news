@@ -1,6 +1,7 @@
 package handler_user
 
 import (
+	"strings"
 	"time"
 
 	"github.com/a-h/templ"
@@ -10,6 +11,7 @@ import (
 	req_dto_user "github.com/news/internal/dto/request/user"
 	"github.com/news/internal/entity"
 	helper_handler "github.com/news/internal/handler"
+	uc_news "github.com/news/internal/usecase/news"
 	uc_user "github.com/news/internal/usecase/user"
 	"github.com/news/pkg"
 	view_admin_content_dashboard "github.com/news/view/admin/content/dashboard"
@@ -28,12 +30,13 @@ type HandlerUser interface {
 
 type handlerUser struct {
 	uc        uc_user.UcUser
+	ucNews    uc_news.UcNews
 	validator pkg.Validator
 	session   *session.Store
 }
 
-func NewHandlerUser(uc uc_user.UcUser, validator pkg.Validator, session *session.Store) HandlerUser {
-	return &handlerUser{uc, validator, session}
+func NewHandlerUser(uc uc_user.UcUser, ucNews uc_news.UcNews, validator pkg.Validator, session *session.Store) HandlerUser {
+	return &handlerUser{uc, ucNews, validator, session}
 }
 
 func (h *handlerUser) GetLogin(c *fiber.Ctx) error {
@@ -98,22 +101,24 @@ func (h *handlerUser) PostLogin(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusSeeOther).Redirect("/user")
 }
 
-func (h *handlerUser) GetDashboard(c *fiber.Ctx) error {
+func (h *handlerUser) GetNews(c *fiber.Ctx) error {
 	q := c.Queries()
 	sess, _ := h.session.Get(c)
 	username := sess.Get("username").(string)
 	name := sess.Get("name").(string)
 
 	ctx := c.UserContext()
-	var title string = "Dashboard"
+	var title string = "News"
 	var contentComponent templ.Component
 	var errRes = []dto_error.ErrResponse{}
-	if q["page"] != "" {
-		title = "News"
-	}
+
+	csrfToken := c.Locals("csrfToken").(string)
+
 	switch q["page"] {
 	case "news":
-		news, err := h.uc.GetNews(ctx)
+		news, err := h.ucNews.GetNews(uc_news.ParamGetNews{
+			Ctx: ctx,
+		})
 		if err != nil {
 			errRes = append(errRes, dto_error.ErrResponse{
 				Message: fiber.ErrInternalServerError.Message,
@@ -122,7 +127,7 @@ func (h *handlerUser) GetDashboard(c *fiber.Ctx) error {
 		}
 		contentComponent = view_admin_content_news.GetNews(news)
 	case "create-news":
-		contentComponent = view_admin_content_news.ModifiedNews(entity.News{}, "POST", "/news")
+		contentComponent = view_admin_content_news.ModifiedNews(c,entity.News{}, csrfToken, "POST", "/news")
 	case "edit-news":
 		if q["id"] == "" {
 			errRes = append(errRes, dto_error.ErrResponse{
@@ -131,18 +136,96 @@ func (h *handlerUser) GetDashboard(c *fiber.Ctx) error {
 			})
 		} else {
 			id := q["id"]
-			news, err := h.uc.GetNewsById(ctx, id)
+			news, err := h.ucNews.GetNewsById(ctx, id)
 			if err != nil {
 				if errRe, ok := err.(*dto_error.ErrResponse); ok {
 					errRes = append(errRes, *errRe)
 				}
 			}
-			contentComponent = view_admin_content_news.ModifiedNews(news, "PUT", "/news")
+			contentComponent = view_admin_content_news.ModifiedNews(c,news, "PUT", csrfToken, "/news")
 		}
 	default:
 		contentComponent = view_admin_content_dashboard.Dashboard(username, name)
 	}
+
+	if q["partial"] == "1" {
+		return helper_handler.Render(c, view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
+			Content: contentComponent,
+			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
+				Username: username,
+				Name:     name,
+			}),
+			ErrRes: errRes,
+		}))
+	}
+
+	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+		Title: title,
+		Contents: view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
+			Content: contentComponent,
+			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
+				Username: username,
+				Name:     name,
+			}),
+			ErrRes: errRes,
+		}),
+	}))
+
+}
+
+func (h *handlerUser) GetDashboard(c *fiber.Ctx) error {
+	q := c.Queries()
+	sess, _ := h.session.Get(c)
+	username := sess.Get("username").(string)
+	name := sess.Get("name").(string)
+
+	ctx := c.UserContext()
 	
+	var contentComponent templ.Component
+	var errRes = []dto_error.ErrResponse{}
+	var title string
+	if q["page"] != "" && strings.Contains(q["page"], "news") {
+		title = "News"
+	}else {
+		title = "Dashboard"
+	}
+
+	csrfToken := c.Locals("csrfToken").(string)
+	
+	switch q["page"] {
+	case "news":
+		news, err := h.ucNews.GetNews(uc_news.ParamGetNews{
+			Ctx: ctx,
+		})
+		if err != nil {
+			errRes = append(errRes, dto_error.ErrResponse{
+				Message: fiber.ErrInternalServerError.Message,
+				Code:    fiber.ErrInternalServerError.Code,
+			})
+		}
+		contentComponent = view_admin_content_news.GetNews(news)
+	case "create-news":
+		contentComponent = view_admin_content_news.ModifiedNews(c,entity.News{}, csrfToken, "POST", "/news")
+	case "edit-news":
+		if q["id"] == "" {
+			errRes = append(errRes, dto_error.ErrResponse{
+				Message: "id news wajib diisi",
+				Code:    400,
+			})
+		} else {
+			id := q["id"]
+			news, err := h.ucNews.GetNewsById(ctx, id)
+			if err != nil {
+				if errRe, ok := err.(*dto_error.ErrResponse); ok {
+					errRes = append(errRes, *errRe)
+				}
+			}
+			contentComponent = view_admin_content_news.ModifiedNews(c,news, csrfToken,"PUT", "/news")
+		}
+	default:
+		contentComponent = view_admin_content_dashboard.Dashboard(username, name)
+	}
+
 	if q["partial"] == "1" {
 		return helper_handler.Render(c, view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
 			Content: contentComponent,

@@ -12,7 +12,7 @@ import { CloudServices } from '@ckeditor/ckeditor5-cloud-services';
 import type { EditorConfig } from '@ckeditor/ckeditor5-core';
 import { Heading } from '@ckeditor/ckeditor5-heading';
 import { Image, ImageCaption, ImageStyle, ImageToolbar, ImageResize, ImageUpload, PictureEditing, ImageInsert, ImageInsertViaUrl, ImageBlock } from '@ckeditor/ckeditor5-image';
-import { Indent } from '@ckeditor/ckeditor5-indent';
+import { Indent, IndentBlock } from '@ckeditor/ckeditor5-indent';
 import { LinkImage } from '@ckeditor/ckeditor5-link';
 import { List } from '@ckeditor/ckeditor5-list';
 import { MediaEmbed } from '@ckeditor/ckeditor5-media-embed';
@@ -21,8 +21,9 @@ import { PasteFromOffice } from '@ckeditor/ckeditor5-paste-from-office';
 import { Table, TableToolbar } from '@ckeditor/ckeditor5-table';
 import { TextTransformation } from '@ckeditor/ckeditor5-typing';
 import { Undo } from '@ckeditor/ckeditor5-undo';
+import { TextPartLanguage } from '@ckeditor/ckeditor5-language';
 declare class Editor extends ClassicEditor {
-    static builtinPlugins: (typeof Alignment | typeof Heading | typeof Autoformat | typeof BlockQuote | typeof Bold | typeof Image | typeof ImageCaption | typeof ImageStyle | typeof ImageToolbar | typeof ImageResize | typeof ImageUpload | typeof ImageInsert | typeof ImageBlock | typeof ImageInsertViaUrl | typeof CKBox | typeof CloudServices | typeof LinkImage | typeof Indent | typeof Italic | typeof List | typeof MediaEmbed | typeof Paragraph | typeof PasteFromOffice | typeof PictureEditing | typeof Table | typeof TableToolbar | typeof TextTransformation | typeof Undo)[];
+    static builtinPlugins: (typeof Alignment | typeof Heading | typeof Autoformat | typeof BlockQuote | typeof Bold | typeof TextPartLanguage | typeof Image | typeof ImageCaption | typeof ImageStyle | typeof ImageToolbar | typeof ImageResize | typeof ImageUpload | typeof ImageInsert | typeof ImageBlock | typeof ImageInsertViaUrl | typeof CKBox | typeof CloudServices | typeof LinkImage | typeof Indent | typeof IndentBlock | typeof Italic | typeof List | typeof MediaEmbed | typeof Paragraph | typeof PasteFromOffice | typeof PictureEditing | typeof Table | typeof TableToolbar | typeof TextTransformation | typeof Undo)[];
     static defaultConfig: EditorConfig;
 }
 export default Editor;
