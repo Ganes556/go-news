@@ -1,2 +1,10 @@
 @import "~bootstrap/scss/bootstrap";
 @import 'bootstrap-icons/font/bootstrap-icons.css';
+
+.table-responsive {
+    max-height:50rem;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

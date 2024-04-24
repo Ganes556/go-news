@@ -65,7 +65,7 @@ type ParamGetNews struct {
 func (u *ucNews) GetNews(param ParamGetNews) (news []entity.News, err error) {
 	news = []entity.News{}
 	if param.Limit <= 0 {
-		param.Limit = 10
+		param.Limit = 15
 	}
 	tx := u.db.WithContext(param.Ctx).Order("id ASC").Preload("User")
 

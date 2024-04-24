@@ -17,41 +17,45 @@ script setDataToContentDiv() {
 
 templ GetNews(news []entity.News) {
 	<div>
-		<h1>News</h1>
-		<div class="btn btn-primary" hx-get="?page=create-news&partial=1" hx-replace-url="?page=create-news" hx-swap="outerHTML" hx-target="#content">
-			Tambah News
+		<div class="container">
+			<h1>News</h1>
+			<div class="btn btn-primary" hx-get="?page=create-news&partial=1" hx-replace-url="?page=create-news" hx-swap="outerHTML" hx-target="#content">
+				Tambah News
+			</div>
+			<div class="table-responsive mt-5" style="overflow: scroll;overflow-x: hidden">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Title</th>
+							<th scope="col">Category</th>
+							<th scope="col">Date</th>
+							<th scope="col">Author</th>
+							<th scope="col">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						for i, v := range news {
+							<tr class="align-middle">
+								<th scope="row">{ fmt.Sprintf("%d",i+1) }</th>
+								<td>{ v.Title }</td>
+								<td>{ v.Category }</td>
+								<td>{ time.Unix(v.CreatedAt, 0).Format(time.DateTime) }</td>
+								<td>{ v.User.Name }</td>
+								<td class="row gx-1 justify-content-center">
+									<div class="col">
+										<i class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
+									</div>
+									<div class="col">
+										<i class="bi bi-trash-fill text-danger h-4 cursor-pointer"></i>
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
 		</div>
-		<table class="container mt-5 table table-striped h-25 overflow-auto">
-			<thead>
-				<tr>
-					<th scope="col">#</th>
-					<th scope="col">Title</th>
-					<th scope="col">Category</th>
-					<th scope="col">Date</th>
-					<th scope="col">Author</th>
-					<th scope="col">Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				for i, v := range news {
-					<tr class="align-middle">
-						<th scope="row">{ fmt.Sprintf("%d",i+1) }</th>
-						<td>{ v.Title }</td>
-						<td>{ v.Category }</td>
-						<td>{ time.Unix(v.CreatedAt, 0).Format(time.DateTime) }</td>
-						<td>{ v.User.Name }</td>
-						<td class="row gx-3">
-							<div class="col">
-								<button class="btn btn-success w-100">Edit</button>
-							</div>
-							<div class="col">
-								<button class="btn btn-danger w-100">Delete</button>
-							</div>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
 	</div>
 }
 
