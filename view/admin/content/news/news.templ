@@ -9,6 +9,7 @@ import "github.com/sujit-baniya/flash"
 import "github.com/news/view/component/toast"
 import "github.com/news/internal/dto/error"
 import "strconv"
+import "encoding/json"
 
 script setDataToContentDiv() {
 	let d = htmx.find("#res-content")
@@ -16,45 +17,43 @@ script setDataToContentDiv() {
 }
 
 templ GetNews(news []entity.News) {
-	<div>
-		<div class="container">
-			<h1>News</h1>
-			<div class="btn btn-primary" hx-get="?page=create-news&partial=1" hx-replace-url="?page=create-news" hx-swap="outerHTML" hx-target="#content">
-				Tambah News
-			</div>
-			<div class="table-responsive-lg mt-5">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th scope="col">#</th>
-							<th scope="col">Title</th>
-							<th scope="col">Category</th>
-							<th scope="col">Date</th>
-							<th scope="col">Author</th>
-							<th scope="col">Actions</th>
+	<div class="container py-3">
+		<h1>News</h1>
+		<div class="btn btn-primary" hx-get="?page=create-news&partial=1" hx-replace-url="?page=create-news" hx-swap="outerHTML" hx-target="#content">
+			Tambah News
+		</div>
+		<div class="table-responsive-lg mt-5">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Title</th>
+						<th scope="col">Category</th>
+						<th scope="col">Date</th>
+						<th scope="col">Author</th>
+						<th scope="col">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					for i, v := range news {
+						<tr class="align-middle">
+							<th scope="row">{ fmt.Sprintf("%d",i+1) }</th>
+							<td>{ v.Title }</td>
+							<td>{ v.Category }</td>
+							<td>{ time.Unix(v.CreatedAt, 0).Format(time.DateTime) }</td>
+							<td>{ v.User.Name }</td>
+							<td class="row gx-1 justify-content-center">
+								<div class="col">
+									<i class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
+								</div>
+								<div class="col">
+									<i class="bi bi-trash-fill text-danger h-4 cursor-pointer"></i>
+								</div>
+							</td>
 						</tr>
-					</thead>
-					<tbody>
-						for i, v := range news {
-							<tr class="align-middle">
-								<th scope="row">{ fmt.Sprintf("%d",i+1) }</th>
-								<td>{ v.Title }</td>
-								<td>{ v.Category }</td>
-								<td>{ time.Unix(v.CreatedAt, 0).Format(time.DateTime) }</td>
-								<td>{ v.User.Name }</td>
-								<td class="row gx-1 justify-content-center">
-									<div class="col">
-										<i class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
-									</div>
-									<div class="col">
-										<i class="bi bi-trash-fill text-danger h-4 cursor-pointer"></i>
-									</div>
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			</div>
+					}
+				</tbody>
+			</table>
 		</div>
 	</div>
 }
@@ -65,20 +64,31 @@ templ ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, 
 			Message: flash.Get(c)["message"].(string),
 			Timer:   1500,
 		})
-	}
-	if dat, ok := flash.Get(c)["error"].(string); ok && dat == "true" {
-		@view_toast.ToastErr(view_toast.ParamToastErr{
-			ErrMessages: []dto_error.ErrResponse{
-				{
-					Message: flash.Get(c)["message"].(string),
-					Code: func() int {
-						dat, _ := strconv.Atoi(flash.Get(c)["code"].(string))
-						return dat
-					}(),
+	} else if dat, ok := flash.Get(c)["error"].(string); ok && dat == "true" {
+		if msg, ok := flash.Get(c)["message"]; ok {
+			@view_toast.ToastErr(view_toast.ParamToastErr{
+				ErrMessages: []dto_error.ErrResponse{
+					{
+						Message: msg.(string),
+						Code: func() int {
+							dat, _ := strconv.Atoi(flash.Get(c)["code"].(string))
+							return dat
+						}(),
+					},
 				},
-			},
-			Timer: 1500,
-		})
+				Timer: 1500,
+			})
+		} else if msgs, ok := flash.Get(c)["messages"]; ok {
+			@view_toast.ToastErr(view_toast.ParamToastErr{
+				ErrMessages: func()[]dto_error.ErrResponse{
+					msg := msgs.(string)
+					var res []dto_error.ErrResponse
+					json.Unmarshal([]byte(msg), &res)
+					return res
+				}(),
+				Timer: 1500,
+			})
+		}
 	}
 	<div class="container">
 		<h1 class="mb-3">Add News</h1>

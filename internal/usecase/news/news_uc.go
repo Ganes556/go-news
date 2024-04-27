@@ -2,6 +2,7 @@ package uc_news
 
 import (
 	"context"
+	"mime/multipart"
 
 	"github.com/news/helper"
 	dto_error "github.com/news/internal/dto/error"
@@ -13,6 +14,7 @@ import (
 
 type UcNews interface {
 	Create(param ParamCreate) (err error)
+	Delete(param ParamDelete) (err error)
 	GetNews(param ParamGetNews) (news []entity.News, err error)
 	GetNewsById(ctx context.Context, id string) (news entity.News, err error)
 }
@@ -26,6 +28,27 @@ func NewNewsUc(Gc pkg.Gcloud, DB *gorm.DB) UcNews {
 	return &ucNews{Gc, DB}
 }
 
+type ParamDelete struct {
+	Ctx context.Context
+	Req req_dto_news.DeleteNews	
+}
+
+func (u *ucNews) Delete(param ParamDelete) (err error) {
+	err = u.db.WithContext(param.Ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.First(&entity.News{}, "id = ?", param.Req.ID).Error; err != nil {
+			return err
+		}
+		if err := tx.Delete(&entity.News{}, "id = ?", param.Req.ID).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		helper.LogsError(err)		
+	}
+	return
+}
+
 type ParamCreate struct {
 	Ctx    context.Context
 	Req    req_dto_news.CreateNews
@@ -33,17 +56,17 @@ type ParamCreate struct {
 }
 
 func (u *ucNews) Create(param ParamCreate) (err error) {
-	// url, err := u.Gc.Upload2Storge(param.Ctx, "cover", []*multipart.FileHeader{param.Req.Cover})
+	url, err := u.Gc.Upload2Storge(param.Ctx, "cover", []*multipart.FileHeader{param.Req.Cover})
 
-	// if err != nil {
-	// 	helper.LogsError(err)
-	// 	return err
-	// }
+	if err != nil {
+		helper.LogsError(err)
+		return err
+	}
 
 	err = u.db.WithContext(param.Ctx).Create(&entity.News{
 		UserID:   param.UserID,
 		Title:    param.Req.Title,
-		Cover:    "",
+		Cover:    url[0],
 		Category: param.Req.Category,
 		Content:  param.Req.Contents,
 	}).Error
@@ -65,7 +88,7 @@ type ParamGetNews struct {
 func (u *ucNews) GetNews(param ParamGetNews) (news []entity.News, err error) {
 	news = []entity.News{}
 	if param.Limit <= 0 {
-		param.Limit = 15
+		param.Limit = 10
 	}
 	tx := u.db.WithContext(param.Ctx).Order("id ASC").Preload("User")
 

@@ -1,6 +1,8 @@
 package handler_news
 
 import (
+	"encoding/json"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/news/helper"
@@ -12,6 +14,7 @@ import (
 
 type NewsHandler interface {
 	PostNews(c *fiber.Ctx) error
+	// DelNews(c *fiber.Ctx) error
 }
 
 type newsHandler struct {
@@ -28,10 +31,18 @@ func (h *newsHandler) PostNews(c *fiber.Ctx) error {
 	req := new(req_dto_news.CreateNews)
 	c.BodyParser(req)
 	file, err := c.FormFile("cover")
-	var mp fiber.Map
+	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
+		errs, _ := json.Marshal(err.Errs)
+		mp := fiber.Map{
+			"error": true,
+			"code": 400,
+			"messages": string(errs),
+		}
+		return flash.WithError(c, mp).Redirect("/user?page=create-news")
+	}
 	if err != nil {
 		helper.LogsError(err)
-		mp = fiber.Map{
+		mp := fiber.Map{
 			"error": true,
 			"code": 500,
 			"message": "Something wrong!",
@@ -49,7 +60,7 @@ func (h *newsHandler) PostNews(c *fiber.Ctx) error {
 	})
 	
 	if err != nil {
-		mp = fiber.Map{
+		mp := fiber.Map{
 			"error": true,
 			"code": 400,
 			"message": "bad request!",
@@ -57,9 +68,13 @@ func (h *newsHandler) PostNews(c *fiber.Ctx) error {
 		return flash.WithError(c, mp).Redirect("/user?page=create-news")
 	}
 
-	mp = fiber.Map{
+	mp := fiber.Map{
 		"success": true,
 		"message": "successfully add article",
 	}
 	return flash.WithSuccess(c, mp).Redirect("/user?page=create-news")
 }
+
+// func (h *newsHandler) DelNews(c *fiber.Ctx) error {
+
+// }

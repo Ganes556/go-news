@@ -42,7 +42,7 @@ func AdminLayout(param ParamAdminLayout) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"col-11 col-md-9 col-xl-10 px-4 pt-4\"><!-- Main content --><div class=\"vh-100 overflow-auto\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"col-11 col-md-9 col-xl-10 px-4\"><!-- Main content --><div class=\"vh-100 overflow-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
