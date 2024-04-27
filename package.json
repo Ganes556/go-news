@@ -57,7 +57,6 @@
   },
   "scripts": {
     "go-webpack": "webpack --mode production",
-    "go-start": "air .",
-    "go-templ": "templ generate --watch"
+    "start": "air ."
   }
 }

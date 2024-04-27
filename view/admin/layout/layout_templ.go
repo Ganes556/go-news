@@ -34,7 +34,7 @@ func AdminLayout(param ParamAdminLayout) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" class=\"container-fluid d-flex flex-column\"><div class=\"row vh-100\"><div class=\"col-1 col-md-3 col-xl-2 px-sm-2 px-0 bg-primary\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" class=\"container-fluid d-flex flex-column\"><div class=\"row vh-100 overflow-hidden\"><div class=\"col-1 col-md-3 col-xl-2 px-sm-2 px-0 bg-primary\"><!-- Sidebar content --><div class=\"vh-100 overflow-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -42,7 +42,7 @@ func AdminLayout(param ParamAdminLayout) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"col-11 col-md-9 col-xl-10 px-4 pt-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"col-11 col-md-9 col-xl-10 px-4 pt-4\"><!-- Main content --><div class=\"vh-100 overflow-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +50,7 @@ func AdminLayout(param ParamAdminLayout) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

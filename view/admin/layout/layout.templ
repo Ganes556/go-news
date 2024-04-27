@@ -10,12 +10,18 @@ templ AdminLayout(param ParamAdminLayout) {
 		})
 	}
 	<div id="content" class="container-fluid d-flex flex-column">
-		<div class="row vh-100">
+		<div class="row vh-100 overflow-hidden">
 			<div class="col-1 col-md-3 col-xl-2 px-sm-2 px-0 bg-primary">
-				@param.SlideBar
+				<!-- Sidebar content -->
+				<div class="vh-100 overflow-auto">
+					@param.SlideBar
+				</div>
 			</div>
 			<div class="col-11 col-md-9 col-xl-10 px-4 pt-4">
-				@param.Content
+				<!-- Main content -->
+				<div class="vh-100 overflow-auto">
+					@param.Content
+				</div>
 			</div>
 		</div>
 	</div>

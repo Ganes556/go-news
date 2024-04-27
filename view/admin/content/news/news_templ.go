@@ -44,7 +44,7 @@ func GetNews(news []entity.News) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><div class=\"container\"><h1>News</h1><div class=\"btn btn-primary\" hx-get=\"?page=create-news&amp;partial=1\" hx-replace-url=\"?page=create-news\" hx-swap=\"outerHTML\" hx-target=\"#content\">Tambah News\r</div><div class=\"table-responsive mt-5\" style=\"overflow: scroll;overflow-x: hidden\"><table class=\"table table-striped\"><thead><tr><th scope=\"col\">#</th><th scope=\"col\">Title</th><th scope=\"col\">Category</th><th scope=\"col\">Date</th><th scope=\"col\">Author</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><div class=\"container\"><h1>News</h1><div class=\"btn btn-primary\" hx-get=\"?page=create-news&amp;partial=1\" hx-replace-url=\"?page=create-news\" hx-swap=\"outerHTML\" hx-target=\"#content\">Tambah News\r</div><div class=\"table-responsive-lg mt-5\"><table class=\"table table-striped\"><thead><tr><th scope=\"col\">#</th><th scope=\"col\">Title</th><th scope=\"col\">Category</th><th scope=\"col\">Date</th><th scope=\"col\">Author</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

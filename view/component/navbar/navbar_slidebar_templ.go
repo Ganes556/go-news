@@ -44,7 +44,7 @@ func Slidebar(param ParamNavbar) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white h-100\"><a href=\"/\" class=\"d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none\"><span class=\"fs-5 d-none d-sm-inline\">Menu</span></a><ul class=\"nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start\" id=\"menu\"><li>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white vh-100\"><a href=\"/\" class=\"d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none\"><span class=\"fs-5 d-none d-sm-inline\">Menu</span></a><ul class=\"nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start\" id=\"menu\"><li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -78,14 +78,14 @@ func Slidebar(param ParamNavbar) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-get=\"?page=news&amp;partial=1\" hx-replace-url=\"?page=news\" hx-swap=\"outerHTML\" hx-target=\"#content\" data-bs-toggle=\"collapse\" class=\"nav-link px-0 align-middle text-white\"><i class=\"fs-sm-5 fs-4 bi bi-newspaper\"></i> <span class=\"ms-1 d-none d-sm-inline\">News</span></div></li></ul><div class=\"dropdown pb-4\" style=\"margin-top: auto;\"><a href=\"#\" class=\"d-flex align-items-center text-white text-decoration-none dropdown-toggle\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"><i class=\"fs-4 bi bi-person-circle\"></i> <span class=\"d-none d-sm-inline mx-2\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-get=\"?page=news&amp;partial=1\" hx-replace-url=\"?page=news\" hx-swap=\"outerHTML\" hx-target=\"#content\" data-bs-toggle=\"collapse\" class=\"nav-link px-0 align-middle text-white\"><i class=\"fs-sm-5 fs-4 bi bi-newspaper\"></i> <span class=\"ms-1 d-none d-sm-inline\">News</span></div></li></ul><div class=\"dropdown pb-4\"><a href=\"#\" class=\"d-flex align-items-center text-white text-decoration-none dropdown-toggle\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"><i class=\"fs-4 bi bi-person-circle\"></i> <span class=\"d-none d-sm-inline mx-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(param.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\component\navbar\navbar_slidebar.templ`, Line: 37, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\component\navbar\navbar_slidebar.templ`, Line: 38, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

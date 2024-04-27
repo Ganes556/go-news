@@ -16,7 +16,7 @@ script checkUrl(id string, page string) {
 }
 
 templ Slidebar(param ParamNavbar) {
-	<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white h-100">
+	<div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white vh-100">
 		<a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
 			<span class="fs-5 d-none d-sm-inline">Menu</span>
 		</a>
@@ -31,8 +31,9 @@ templ Slidebar(param ParamNavbar) {
 					<i class="fs-sm-5 fs-4 bi bi-newspaper"></i> <span class="ms-1 d-none d-sm-inline">News</span>
 				</div>
 			</li>
+			
 		</ul>
-		<div class="dropdown pb-4" style="margin-top: auto;">
+		<div class="dropdown pb-4">
 			<a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 				<i class="fs-4 bi bi-person-circle"></i>
 				<span class="d-none d-sm-inline mx-2">{ param.Name }</span>
