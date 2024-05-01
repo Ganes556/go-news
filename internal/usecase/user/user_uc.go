@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/news/helper"
-	dto_error "github.com/news/internal/dto/error"
 	req_dto_user "github.com/news/internal/dto/request/user"
+	dto_response "github.com/news/internal/dto/response"
 	"github.com/news/internal/entity"
 	"gorm.io/gorm"
 )
@@ -31,7 +31,7 @@ func (u *ucUser) Login(ctx context.Context, req req_dto_user.Login) (user *entit
 	err = u.db.WithContext(ctx).First(user,"username = ?", req.Username).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = new(dto_error.ErrResponse).ErrAuth400()
+			err = new(dto_response.Response).ErrAuth400()
 			return
 		}		
 	}

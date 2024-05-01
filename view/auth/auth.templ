@@ -1,15 +1,7 @@
 package view_auth
 
-import view_toast "github.com/news/view/component/toast"
-
 templ Login(param ParamAuth) {
 	<section class="vh-100 d-flex flex-column">
-		if len(param.ErrMessages) > 0 {
-			@view_toast.ToastErr(view_toast.ParamToastErr{
-				ErrMessages: param.ErrMessages,
-				Timer:       1500,
-			})
-		}
 		<form method={param.Method} action={templ.URL(param.Action)} class="d-flex flex-column shadow p-5 m-auto bg-body rounded" style="width: 40vw;max-width:500px">
 			<div class="mb-4">
 				<p class="text-center fw-bold fs-3 text-capitalize">Login As Admin</p>

@@ -1,15 +1,13 @@
 package view_error
 
-import "github.com/news/internal/dto/error"
 import "fmt"
 
-templ Error(err dto_error.ErrResponse) {
+templ Error(message string, code int) {
 	<section class="container-fluid">
 		<div class="d-flex align-items-center justify-content-center vh-100">
 			<div class="text-center">
-				<h1 class="display-1 fw-bold">{ fmt.Sprintf("%d",err.Code) }</h1>
-				<p class="fs-3"><span class="text-danger">Opps!</span> { err.Message }</p>
-				<a href="index.html" class="btn btn-primary">Go Home</a>
+				<h1 class="display-1 fw-bold">{ fmt.Sprintf("%d",code) }</h1>
+				<p class="fs-3"><span class="text-danger">Opps!</span> { message }</p>
 			</div>
 		</div>
 	</section>

@@ -5,8 +5,8 @@ import (
 	"mime/multipart"
 
 	"github.com/news/helper"
-	dto_error "github.com/news/internal/dto/error"
 	req_dto_news "github.com/news/internal/dto/request/news"
+	dto_response "github.com/news/internal/dto/response"
 	"github.com/news/internal/entity"
 	"github.com/news/pkg"
 	"gorm.io/gorm"
@@ -56,7 +56,7 @@ type ParamCreate struct {
 }
 
 func (u *ucNews) Create(param ParamCreate) (err error) {
-	url, err := u.Gc.Upload2Storge(param.Ctx, "cover", []*multipart.FileHeader{param.Req.Cover})
+	url, err := u.Gc.Upload2Storage(param.Ctx, "cover", []*multipart.FileHeader{param.Req.Cover})
 
 	if err != nil {
 		helper.LogsError(err)
@@ -106,7 +106,7 @@ func (u *ucNews) GetNewsById(ctx context.Context, id string) (news entity.News, 
 	err = u.db.WithContext(ctx).First(&news, "id = ?", id).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = new(dto_error.ErrResponse).ErrNews404()
+			err = new(dto_response.Response).ErrNews404()
 		}
 	}
 	return

@@ -18,28 +18,18 @@ script toastTimer(second int) {
 	});
 }
 
-templ ToastErr(param ParamToastErr) {
+templ Toast(param ParamToast) {
 	<div class="toast-container position-fixed top-0 end-0 pt-2" style="z-index: 11">
-		for _, v := range param.ErrMessages {
-			<div class="toast align-items-center p-3 border-0 bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true">
+		for _, v := range param.getResponse() {
+			<div
+				class={"toast align-items-center p-3 border-0 text-white bg-" + param.Mode}
+				role="alert" aria-live="assertive" aria-atomic="true">
 				<div class="d-flex">
-					<div class="toast-body">Error { fmt.Sprintf("%d", v.Code) }: { v.Message }</div>
+					<div class="toast-body">{ fmt.Sprintf("%d", v.Code) }: { v.Message }</div>
 					<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
 				</div>
 			</div>
 		}
-	</div>
-	@toastTimer(param.Timer)
-}
-
-templ ToastSucc(param ParamToastSucc) {
-	<div class="toast-container position-fixed top-0 end-0 pt-2" style="z-index: 11">
-		<div class="toast align-items-center p-3 border-0 bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true">
-			<div class="d-flex">
-				<div class="toast-body">Success: { param.Message }</div>
-				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-			</div>
-		</div>
 	</div>
 	@toastTimer(param.Timer)
 }

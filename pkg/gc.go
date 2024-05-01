@@ -27,8 +27,8 @@ var (
 )
 
 type Gcloud interface {
-	Upload2Storge(ctx context.Context, folderName string, fileHs []*multipart.FileHeader) ([]string, error)
-	Upload2StorgeWithouCompress(ctx context.Context, folderName, fileName string, file io.Reader) (string, error)
+	Upload2Storage(ctx context.Context, folderName string, fileHs []*multipart.FileHeader) ([]string, error)
+	Upload2StorageWithouCompress(ctx context.Context, folderName, fileName string, file io.Reader) (string, error)
 	DeleteInStorage(ctx context.Context, objNames []string) error
 	Update2Storage(ctx context.Context, folderName string, newFileH []*multipart.FileHeader, oldObjNames []string) ([]string, error)
 	GetQ(q *storage.Query) []string
@@ -79,7 +79,7 @@ func GenerateUniqueObjectName(baseName, fileName string) string {
 	return fmt.Sprintf("%s/%s_%d_%s", baseName, fileName, time.Now().UnixNano(), randomString)
 }
 
-func (g *gcloud) Upload2Storge(ctx context.Context, folderName string, fileHs []*multipart.FileHeader) ([]string, error) {
+func (g *gcloud) Upload2Storage(ctx context.Context, folderName string, fileHs []*multipart.FileHeader) ([]string, error) {
 	if len(fileHs) == 0 {
 		return nil, nil
 	}
@@ -103,7 +103,7 @@ func (g *gcloud) Upload2Storge(ctx context.Context, folderName string, fileHs []
 				}
 				return err
 			}
-			objName, err := g.Upload2StorgeWithouCompress(ctx, folderName, fileH.Filename, fReader)
+			objName, err := g.Upload2StorageWithouCompress(ctx, folderName, fileH.Filename, fReader)
 			if err != nil {
 				return err
 			}
@@ -119,7 +119,7 @@ func (g *gcloud) Upload2Storge(ctx context.Context, folderName string, fileHs []
 	return objNames, nil
 }
 
-func (g *gcloud) Upload2StorgeWithouCompress(ctx context.Context, folderName, fileName string, file io.Reader) (string, error) {
+func (g *gcloud) Upload2StorageWithouCompress(ctx context.Context, folderName, fileName string, file io.Reader) (string, error) {
 	objName := GenerateUniqueObjectName(folderName, fileName) + ".webp"
 	obj := g.bucket.Object(objName)
 	w := obj.NewWriter(ctx)
@@ -180,7 +180,7 @@ func (g *gcloud) Update2Storage(ctx context.Context, folderName string, newFileH
 	var newObjNames []string
 	gr.Go(func() error {
 		var err error
-		newObjNames, err = g.Upload2Storge(ctx, folderName, newFileH)
+		newObjNames, err = g.Upload2Storage(ctx, folderName, newFileH)
 		if err != nil {
 			helper.LogsError(err)
 			return err

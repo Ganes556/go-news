@@ -10,8 +10,6 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/news/view/component/toast"
-
 func AdminLayout(param ParamAdminLayout) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -25,15 +23,6 @@ func AdminLayout(param ParamAdminLayout) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if len(param.ErrRes) > 0 {
-			templ_7745c5c3_Err = view_toast.ToastErr(view_toast.ParamToastErr{
-				ErrMessages: param.ErrRes,
-				Timer:       1500,
-			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" class=\"container-fluid d-flex flex-column\"><div class=\"row vh-100 overflow-hidden\"><div class=\"col-1 col-md-3 col-xl-2 px-sm-2 px-0 bg-primary\"><!-- Sidebar content --><div class=\"vh-100 overflow-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -10,6 +10,9 @@ import "context"
 import "io"
 import "bytes"
 
+import "github.com/sujit-baniya/flash"
+import "github.com/news/view/component/toast"
+
 func Layout(param ParamLayout) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -30,7 +33,7 @@ func Layout(param ParamLayout) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(param.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\layout\layout.templ`, Line: 11, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\layout\layout.templ`, Line: 13, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -39,6 +42,25 @@ func Layout(param ParamLayout) templ.Component {
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
+		}
+		if dat, ok := flash.Get(param.C)["success"].(string); ok && dat == "true" {
+			templ_7745c5c3_Err = view_toast.Toast(view_toast.ParamToast{
+				Messages: flash.Get(param.C)["messages"].(string),
+				Mode:     "success",
+				Timer:    1500,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else if dat, ok := flash.Get(param.C)["error"].(string); ok && dat == "true" {
+			templ_7745c5c3_Err = view_toast.Toast(view_toast.ParamToast{
+				Messages: flash.Get(param.C)["messages"].(string),
+				Mode:     "danger",
+				Timer:    1500,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		templ_7745c5c3_Err = param.Contents.Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

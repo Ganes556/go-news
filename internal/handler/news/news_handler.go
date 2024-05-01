@@ -1,19 +1,22 @@
 package handler_news
 
 import (
-	"encoding/json"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/news/helper"
 	req_dto_news "github.com/news/internal/dto/request/news"
+	dto_response "github.com/news/internal/dto/response"
+	helper_handler "github.com/news/internal/handler"
 	uc_news "github.com/news/internal/usecase/news"
 	"github.com/news/pkg"
+	view_layout "github.com/news/view/layout"
+	view_user_news "github.com/news/view/user"
 	"github.com/sujit-baniya/flash"
 )
 
 type NewsHandler interface {
 	PostNews(c *fiber.Ctx) error
+	GetNewsUser(c *fiber.Ctx) error
 	// DelNews(c *fiber.Ctx) error
 }
 
@@ -31,25 +34,26 @@ func (h *newsHandler) PostNews(c *fiber.Ctx) error {
 	req := new(req_dto_news.CreateNews)
 	c.BodyParser(req)
 	file, err := c.FormFile("cover")
+	if err == nil {
+		req.Cover = file
+	}
 	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
-		errs, _ := json.Marshal(err.Errs)
 		mp := fiber.Map{
-			"error": true,
-			"code": 400,
-			"messages": string(errs),
+			"error":    true,
+			"messages": helper.JSONStringify(err.Errs),
 		}
 		return flash.WithError(c, mp).Redirect("/user?page=create-news")
 	}
 	if err != nil {
 		helper.LogsError(err)
-		mp := fiber.Map{
+		return flash.WithError(c, fiber.Map{
 			"error": true,
-			"code": 500,
-			"message": "Something wrong!",
-		}
-		return flash.WithError(c, mp).Redirect("/user?page=create-news")
+			"messages": helper.JSONStringify(dto_response.Response{
+				Message: fiber.ErrInternalServerError.Message,
+				Code:    500,
+			}),
+		}).Redirect("/user?page=create-news")
 	}
-	req.Cover = file
 	ctx := c.UserContext()
 	sess, _ := h.session.Get(c)
 	userid := sess.Get("id")
@@ -58,23 +62,45 @@ func (h *newsHandler) PostNews(c *fiber.Ctx) error {
 		Req:    *req,
 		UserID: userid.(uint),
 	})
-	
+
 	if err != nil {
-		mp := fiber.Map{
-			"error": true,
-			"code": 400,
-			"message": "bad request!",
+		helper.LogsError(err)
+		if errRes,ok := err.(*dto_response.Response); ok {
+			return flash.WithError(c, fiber.Map{
+				"error": true,
+				"messages": helper.JSONStringify(errRes),
+			}).Redirect("/user?page=create-news")
 		}
-		return flash.WithError(c, mp).Redirect("/user?page=create-news")
+		return flash.WithError(c, fiber.Map{
+			"error": true,
+			"messages": helper.JSONStringify(dto_response.Response{
+				Message: fiber.ErrInternalServerError.Message,
+				Code:    500,
+			}),
+		}).Redirect("/user?page=create-news")
 	}
 
-	mp := fiber.Map{
+	return flash.WithSuccess(c, fiber.Map{
 		"success": true,
-		"message": "successfully add article",
-	}
-	return flash.WithSuccess(c, mp).Redirect("/user?page=create-news")
+		"messages": helper.JSONStringify(dto_response.Response{
+			Message: "successfully add article",
+			Code:    200,
+		}),
+	}).Redirect("/user?page=create-news")
 }
 
-// func (h *newsHandler) DelNews(c *fiber.Ctx) error {
+func (h *newsHandler) GetNewsUser(c *fiber.Ctx) error{
+	ctx := c.UserContext()
+	news, err := h.uc.GetNews(uc_news.ParamGetNews{
+		Ctx: ctx,
+	})
+	if err != nil {
 
-// }
+	}
+	
+	return helper_handler.Render(c,view_layout.Layout(view_layout.ParamLayout{
+		Title: "News",
+		Contents: view_user_news.News(news),
+		C: c,
+	}))
+}

@@ -1,17 +1,32 @@
 package view_layout
 
+import "github.com/sujit-baniya/flash"
+import "github.com/news/view/component/toast"
+
 templ Layout(param ParamLayout) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"/>
 			<link rel="stylesheet" href="/vendor/build/main.css"/>
 			<script src="/vendor/build/main.bundle.js"></script>
 			<title>{ param.Title }</title>
 		</head>
 		<body>
+			if dat, ok := flash.Get(param.C)["success"].(string); ok && dat == "true" {
+				@view_toast.Toast(view_toast.ParamToast{
+					Messages: flash.Get(param.C)["messages"].(string),
+					Mode:    "success",
+					Timer:   1500,
+				})
+			} else if dat, ok := flash.Get(param.C)["error"].(string); ok && dat == "true" {
+				@view_toast.Toast(view_toast.ParamToast{
+					Messages: flash.Get(param.C)["messages"].(string),
+					Mode:    "danger",
+					Timer:   1500,
+				})
+			}
 			@param.Contents
 		</body>
 	</html>

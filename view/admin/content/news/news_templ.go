@@ -15,11 +15,6 @@ import "github.com/news/internal/entity"
 import "fmt"
 import "time"
 import "github.com/gofiber/fiber/v2"
-import "github.com/sujit-baniya/flash"
-import "github.com/news/view/component/toast"
-import "github.com/news/internal/dto/error"
-import "strconv"
-import "encoding/json"
 
 func setDataToContentDiv() templ.ComponentScript {
 	return templ.ComponentScript{
@@ -57,7 +52,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", i+1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 39, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 34, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -70,7 +65,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(v.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 40, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 35, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -83,7 +78,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(v.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 41, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 36, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -96,7 +91,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(time.Unix(v.CreatedAt, 0).Format(time.DateTime))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 42, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 37, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -109,18 +104,66 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(v.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 43, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 38, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"row gx-1 justify-content-center\"><div class=\"col\"><i class=\"bi bi-pencil-fill text-success h-4 cursor-pointer\"></i></div><div class=\"col\"><i class=\"bi bi-trash-fill text-danger h-4 cursor-pointer\"></i></div></td></tr>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"row gx-1 justify-content-center\"><div class=\"col\"><i hx-get=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("?page=edit-news&partial=1&id=%d", v.ID)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\" hx-replace-url=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("?page=edit-news&id=%d", v.ID)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#content\" class=\"bi bi-pencil-fill text-success h-4 cursor-pointer\"></i></div><div class=\"col\"><i class=\"bi bi-trash-fill text-danger h-4 cursor-pointer\"></i></div></td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func ImagePreview(urlImg string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"button\" class=\"btn btn-primary mb-3\" data-bs-toggle=\"modal\" data-bs-target=\"#imagePreview\">Show Old Cover\r</button><div class=\"modal\" tabindex=\"-1\" id=\"imagePreview\"><div class=\"modal-dialog modal-lg\"><div class=\"modal-content\"><div class=\"modal-header\"><h5 class=\"modal-title\">Old Cover</h5><button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button></div><div class=\"modal-body\"><img class=\"img-fluid\" src=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(urlImg))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"cover\" srcset=\"\"></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -139,51 +182,11 @@ func ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, u
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if dat, ok := flash.Get(c)["success"].(string); ok && dat == "true" {
-			templ_7745c5c3_Err = view_toast.ToastSucc(view_toast.ParamToastSucc{
-				Message: flash.Get(c)["message"].(string),
-				Timer:   1500,
-			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else if dat, ok := flash.Get(c)["error"].(string); ok && dat == "true" {
-			if msg, ok := flash.Get(c)["message"]; ok {
-				templ_7745c5c3_Err = view_toast.ToastErr(view_toast.ParamToastErr{
-					ErrMessages: []dto_error.ErrResponse{
-						{
-							Message: msg.(string),
-							Code: func() int {
-								dat, _ := strconv.Atoi(flash.Get(c)["code"].(string))
-								return dat
-							}(),
-						},
-					},
-					Timer: 1500,
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else if msgs, ok := flash.Get(c)["messages"]; ok {
-				templ_7745c5c3_Err = view_toast.ToastErr(view_toast.ParamToastErr{
-					ErrMessages: func() []dto_error.ErrResponse {
-						msg := msgs.(string)
-						var res []dto_error.ErrResponse
-						json.Unmarshal([]byte(msg), &res)
-						return res
-					}(),
-					Timer: 1500,
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container\"><h1 class=\"mb-3\">Add News</h1><div id=\"res-output\"></div><form method=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -196,8 +199,8 @@ func ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, u
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 templ.SafeURL = templ.URL(url)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var8)))
+		var templ_7745c5c3_Var9 templ.SafeURL = templ.URL(url)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var9)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -209,7 +212,51 @@ func ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, u
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"invisible\"><div class=\"mb-3\"><label for=\"title\" class=\"form-label\">Title</label> <input type=\"text\" class=\"form-control\" id=\"title\" name=\"title\"></div><div class=\"mb-3\"><label for=\"category\" class=\"form-label\">Category</label> <input type=\"text\" class=\"form-control\" id=\"category\" name=\"category\"></div><div class=\"mb-3\"><label for=\"cover\" class=\"form-label\">Cover</label> <input class=\"form-control\" name=\"cover\" type=\"file\" id=\"cover\"></div><input id=\"res-content\" name=\"contents\" class=\"invisible\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"invisible\"> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if method == "PUT" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input name=\"id\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("%d", oldNews.ID)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"invisible\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mb-3\"><label for=\"title\" class=\"form-label\">Title</label> <input type=\"text\" class=\"form-control\" id=\"title\" name=\"title\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(oldNews.Title))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div><div class=\"mb-3\"><label for=\"category\" class=\"form-label\">Category</label> <input type=\"text\" class=\"form-control\" id=\"category\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(oldNews.Category))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"category\"></div><div class=\"mb-1\"><label for=\"cover\" class=\"form-label\">Cover</label> <input class=\"form-control\" name=\"cover\" type=\"file\" id=\"cover\"></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if method == "PUT" {
+			templ_7745c5c3_Err = ImagePreview("https://storage.googleapis.com/go-news-bucket/"+oldNews.Cover).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input id=\"res-content\" name=\"contents\" class=\"invisible\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -225,8 +272,8 @@ func ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, u
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 templ.ComponentScript = setDataToContentDiv()
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9.Call)
+		var templ_7745c5c3_Var10 templ.ComponentScript = setDataToContentDiv()
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10.Call)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

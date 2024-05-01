@@ -1,14 +1,6 @@
 package view_admin_layout
 
-import "github.com/news/view/component/toast"
-
 templ AdminLayout(param ParamAdminLayout) {
-	if len(param.ErrRes) > 0 {
-		@view_toast.ToastErr(view_toast.ParamToastErr{
-			ErrMessages: param.ErrRes,
-			Timer:       1500,
-		})
-	}
 	<div id="content" class="container-fluid d-flex flex-column">
 		<div class="row vh-100 overflow-hidden">
 			<div class="col-1 col-md-3 col-xl-2 px-sm-2 px-0 bg-primary">

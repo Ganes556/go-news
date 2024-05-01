@@ -15,6 +15,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/news/helper"
 	conf_internal "github.com/news/internal/conf"
+	handler_error "github.com/news/internal/handler/error"
 	handler_news "github.com/news/internal/handler/news"
 	handler_user "github.com/news/internal/handler/user"
 	"github.com/news/internal/middleware"
@@ -28,13 +29,13 @@ func main() {
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
 		Database: os.Getenv("DB_DATABASE"),
-		Port: os.Getenv("DB_PORT"),
-		Host: os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		Host:     os.Getenv("DB_HOST"),
 	}
 	DB := conf_internal.NewGorm(db_param)
 	app := fiber.New()
 	app.Use(recover.New())
-	
+
 	// helper
 	encryptor := helper.NewEncryptor()
 	// pkg
@@ -44,7 +45,7 @@ func main() {
 	// middleware
 	session := session.New(session.Config{
 		Storage: mysql.New(mysql.Config{
-			Host:     db_param.Host,
+			Host: db_param.Host,
 			Port: func() int {
 				port, _ := strconv.Atoi(db_param.Port) // Handle error appropriately
 				return port
@@ -59,7 +60,7 @@ func main() {
 	})
 
 	app.Static("/", "./public")
-	
+
 	app.Use(csrf.New(csrf.Config{
 		KeyLookup:         "form:csrfToken",
 		ContextKey:        "csrfToken",
@@ -72,26 +73,31 @@ func main() {
 
 	timeoutMid := middleware.NewTimeoutMiddleware()
 	authMid := middleware.NewAuthMiddleware(session)
+	commonMid := middleware.NewCommonMid(session)
 
 	userUc := uc_user.NewUcUser(DB, encryptor)
 	newsUc := uc_news.NewNewsUc(gcp, DB)
 
-	userGroup := app.Group("/user",timeoutMid.Timeout(nil), authMid.Authorized)
+	userGroup := app.Group("/user", timeoutMid.Timeout(nil), authMid.Authorized)
 	userHandler := handler_user.NewHandlerUser(userUc, newsUc, validator, session)
+	newsHandler := handler_news.NewNewsHandler(newsUc, validator, session)
 	{
 		userGroup.Get("/login", userHandler.GetLogin)
 		userGroup.Post("/login", userHandler.PostLogin)
+		userGroup.Get("/logout", userHandler.GetLogout)
 		userGroup.Get("", userHandler.GetDashboard)
+		userGroup.Post("/news", newsHandler.PostNews)
 	}
 
-	
-	newsGroup := app.Group("/news", timeoutMid.Timeout(nil), authMid.Authorized)
-	newsHandler := handler_news.NewNewsHandler(newsUc, validator, session)
+	newsGroup := app.Group("/news", timeoutMid.Timeout(nil))
 	{
-		newsGroup.Post("/", newsHandler.PostNews)
+		newsGroup.Get("/news", newsHandler.GetNewsUser)
 	}
-	
-	app.Listen(fmt.Sprintf("%s:%s",os.Getenv("HOST"),os.Getenv("PORT")))
 
-	
+
+	errHandler := handler_error.NewErrorHandler()
+	app.Use(commonMid.IsAdmin, errHandler.NotFound)
+
+	app.Listen(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
+
 }

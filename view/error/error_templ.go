@@ -10,10 +10,9 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/news/internal/dto/error"
 import "fmt"
 
-func Error(err dto_error.ErrResponse) templ.Component {
+func Error(message string, code int) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -31,9 +30,9 @@ func Error(err dto_error.ErrResponse) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", err.Code))
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", code))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\error\error.templ`, Line: 9, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\error\error.templ`, Line: 8, Col: 58}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -44,15 +43,15 @@ func Error(err dto_error.ErrResponse) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(err.Message)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\error\error.templ`, Line: 10, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\error\error.templ`, Line: 9, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><a href=\"index.html\" class=\"btn btn-primary\">Go Home</a></div></div></section>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

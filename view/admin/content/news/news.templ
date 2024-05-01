@@ -5,11 +5,6 @@ import "github.com/news/internal/entity"
 import "fmt"
 import "time"
 import "github.com/gofiber/fiber/v2"
-import "github.com/sujit-baniya/flash"
-import "github.com/news/view/component/toast"
-import "github.com/news/internal/dto/error"
-import "strconv"
-import "encoding/json"
 
 script setDataToContentDiv() {
 	let d = htmx.find("#res-content")
@@ -44,7 +39,7 @@ templ GetNews(news []entity.News) {
 							<td>{ v.User.Name }</td>
 							<td class="row gx-1 justify-content-center">
 								<div class="col">
-									<i class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
+									<i hx-get={ fmt.Sprintf("?page=edit-news&partial=1&id=%d", v.ID) } hx-swap="outerHTML" hx-replace-url={ fmt.Sprintf("?page=edit-news&id=%d", v.ID) } hx-target="#content" class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
 								</div>
 								<div class="col">
 									<i class="bi bi-trash-fill text-danger h-4 cursor-pointer"></i>
@@ -58,38 +53,29 @@ templ GetNews(news []entity.News) {
 	</div>
 }
 
+templ ImagePreview(urlImg string) {
+	<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#imagePreview">
+		Show Old Cover
+	</button>
+	<div class="modal" tabindex="-1" id="imagePreview">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Old Cover</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<img class="img-fluid" src={ urlImg } alt="cover" srcset=""/>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
 templ ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, url string) {
-	if dat, ok := flash.Get(c)["success"].(string); ok && dat == "true" {
-		@view_toast.ToastSucc(view_toast.ParamToastSucc{
-			Message: flash.Get(c)["message"].(string),
-			Timer:   1500,
-		})
-	} else if dat, ok := flash.Get(c)["error"].(string); ok && dat == "true" {
-		if msg, ok := flash.Get(c)["message"]; ok {
-			@view_toast.ToastErr(view_toast.ParamToastErr{
-				ErrMessages: []dto_error.ErrResponse{
-					{
-						Message: msg.(string),
-						Code: func() int {
-							dat, _ := strconv.Atoi(flash.Get(c)["code"].(string))
-							return dat
-						}(),
-					},
-				},
-				Timer: 1500,
-			})
-		} else if msgs, ok := flash.Get(c)["messages"]; ok {
-			@view_toast.ToastErr(view_toast.ParamToastErr{
-				ErrMessages: func()[]dto_error.ErrResponse{
-					msg := msgs.(string)
-					var res []dto_error.ErrResponse
-					json.Unmarshal([]byte(msg), &res)
-					return res
-				}(),
-				Timer: 1500,
-			})
-		}
-	}
 	<div class="container">
 		<h1 class="mb-3">Add News</h1>
 		<div id="res-output"></div>
@@ -100,18 +86,24 @@ templ ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, 
 			class="mb-3"
 		>
 			<input name="csrfToken" value={ csrfToken } class="invisible"/>
+			if method == "PUT" {
+				<input name="id" value={ fmt.Sprintf("%d", oldNews.ID) } class="invisible"/>
+			}
 			<div class="mb-3">
 				<label for="title" class="form-label">Title</label>
-				<input type="text" class="form-control" id="title" name="title"/>
+				<input type="text" class="form-control" id="title" name="title" value={ oldNews.Title }/>
 			</div>
 			<div class="mb-3">
 				<label for="category" class="form-label">Category</label>
-				<input type="text" class="form-control" id="category" name="category"/>
+				<input type="text" class="form-control" id="category" value={ oldNews.Category } name="category"/>
 			</div>
-			<div class="mb-3">
+			<div class="mb-1">
 				<label for="cover" class="form-label">Cover</label>
 				<input class="form-control" name="cover" type="file" id="cover"/>
 			</div>
+			if method == "PUT" {
+				@ImagePreview("https://storage.googleapis.com/go-news-bucket/" + oldNews.Cover)
+			}
 			// <div id="res-output" class="ck ck-content"></div>
 			<input id="res-content" name="contents" class="invisible"/>
 			@view_component_CKEeditor.CKEeditor(oldNews.Content)

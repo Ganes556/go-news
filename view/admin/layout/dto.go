@@ -2,11 +2,11 @@ package view_admin_layout
 
 import (
 	"github.com/a-h/templ"
-	dto_error "github.com/news/internal/dto/error"
+	"github.com/gofiber/fiber/v2"
 )
 
 type ParamAdminLayout struct {
-	ErrRes []dto_error.ErrResponse
+	C *fiber.Ctx
 	SlideBar templ.Component
 	Content  templ.Component
 }

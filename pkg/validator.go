@@ -9,11 +9,11 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	en_trans "github.com/go-playground/validator/v10/translations/en"
-	dto_error "github.com/news/internal/dto/error"
+	dto_response "github.com/news/internal/dto/response"
 )
 
 type ValidatorRes struct {
-	Errs []dto_error.ErrResponse
+	Errs []dto_response.Response
 }
 type Validator interface {
 	Validate(data any) *ValidatorRes
@@ -69,7 +69,7 @@ func (x *xValidator) Validate(data any) *ValidatorRes {
 	errs := x.validator.Struct(data)
 
 	if errs != nil {
-		errosMsg := make([]dto_error.ErrResponse, len(errs.(validator.ValidationErrors)))
+		errosMsg := make([]dto_response.Response, len(errs.(validator.ValidationErrors)))
 		for i, err := range errs.(validator.ValidationErrors) {
 			errosMsg[i].Message = strings.ReplaceAll(err.Translate(x.trans), err.Field(), convToReadAble(err.Field()))
 			errosMsg[i].Code = 400

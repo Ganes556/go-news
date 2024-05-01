@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"encoding/json"
 	"math/rand"
 	"time"
 )
@@ -13,4 +14,10 @@ func RandomString(length int) string {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}
 	return string(b)
+}
+
+
+func JSONStringify(d any) string {
+	dd, _ := json.Marshal(d)
+	return string(dd)
 }

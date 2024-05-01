@@ -44,7 +44,7 @@ func Slidebar(param ParamNavbar) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white vh-100\"><a href=\"/\" class=\"d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none\"><span class=\"fs-5 d-none d-sm-inline\">Menu</span></a><ul class=\"nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start\" id=\"menu\"><li>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white vh-100\"><a href=\"/user\" class=\"d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none\"><span class=\"fs-5 d-none d-sm-inline\">Menu</span></a><ul class=\"nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start\" id=\"menu\"><li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -91,7 +91,7 @@ func Slidebar(param ParamNavbar) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a><ul class=\"dropdown-menu dropdown-menu-primary text-small shadow\"><li><a class=\"dropdown-item\" href=\"#\">Profile</a></li><li><hr class=\"dropdown-divider\"></li><li><a class=\"dropdown-item\" href=\"#\">Sign out</a></li></ul></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a><ul class=\"dropdown-menu dropdown-menu-primary text-small shadow\"><li><a class=\"dropdown-item\" href=\"#\">Profile</a></li><li><hr class=\"dropdown-divider\"></li><li><a class=\"dropdown-item\" href=\"/user/logout\">Logout</a></li></ul></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

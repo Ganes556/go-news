@@ -1,33 +1,33 @@
-package dto_error
+package dto_response
 
-type ErrResponse struct {
+type Response struct {
 	Message string `json:"message"`
 	Code    int    `json:"code"`
 }
 
-func (e *ErrResponse) Error() string {
+func (e *Response) Error() string {
 	return e.Message
 }
 
-func (e *ErrResponse) ErrAuth400() error {
+func (e *Response) ErrAuth400() error {
 	e.Code = 400
 	e.Message = "username atau password tidak valid"
 	return e
 }
 
-func (e *ErrResponse) ErrAuth403() error {
+func (e *Response) ErrAuth403() error {
 	e.Code = 401
 	e.Message = "forbidden"
 	return e
 }
 
-func (e *ErrResponse) ErrAuth500() error {
+func (e *Response) ErrAuth500() error {
 	e.Code = 500
 	e.Message = "internal server error"
 	return e
 }
 
-func (e *ErrResponse) ErrNews404() error {
+func (e *Response) ErrNews404() error {
 	e.Code = 404
 	e.Message = "berita tidak ditemukan"
 	return e
