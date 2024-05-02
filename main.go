@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -44,6 +45,7 @@ func main() {
 
 	// middleware
 	session := session.New(session.Config{
+		CookieHTTPOnly: true,
 		Storage: mysql.New(mysql.Config{
 			Host: db_param.Host,
 			Port: func() int {
@@ -62,13 +64,28 @@ func main() {
 	app.Static("/", "./public")
 
 	app.Use(csrf.New(csrf.Config{
-		KeyLookup:         "form:csrfToken",
+		CookieHTTPOnly:    true,
 		ContextKey:        "csrfToken",
 		CookieSessionOnly: true,
 		SingleUseToken:    true,
 		Expiration:        1 * time.Hour,
-		KeyGenerator:      utils.UUIDv4,
-		Session:           session,
+		Extractor: func(c *fiber.Ctx) (string, error) {
+			tokenFromQuery := c.Query("csrfToken")			
+			if tokenFromQuery != "" {
+				return tokenFromQuery, nil
+			}
+
+			// If not found in the query parameters, attempt to extract from form data
+			tokenFromForm := c.FormValue("csrfToken")
+			if tokenFromForm != "" {
+				return tokenFromForm, nil
+			}
+
+			// If not found in either query parameters or form data, return an error
+			return "", errors.New("csrf token not found")
+		},
+		KeyGenerator: utils.UUIDv4,
+		Session:      session,
 	}))
 
 	timeoutMid := middleware.NewTimeoutMiddleware()
@@ -87,13 +104,13 @@ func main() {
 		userGroup.Get("/logout", userHandler.GetLogout)
 		userGroup.Get("", userHandler.GetDashboard)
 		userGroup.Post("/news", newsHandler.PostNews)
+		userGroup.Delete("/news/:id", newsHandler.DelNews)
 	}
 
 	newsGroup := app.Group("/news", timeoutMid.Timeout(nil))
 	{
-		newsGroup.Get("/news", newsHandler.GetNewsUser)
+		newsGroup.Get("/", newsHandler.GetNewsUser)
 	}
-
 
 	errHandler := handler_error.NewErrorHandler()
 	app.Use(commonMid.IsAdmin, errHandler.NotFound)

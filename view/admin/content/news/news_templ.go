@@ -27,7 +27,33 @@ func setDataToContentDiv() templ.ComponentScript {
 	}
 }
 
-func GetNews(news []entity.News) templ.Component {
+func alertDelete(href string) templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_alertDelete_f630`,
+		Function: `function __templ_alertDelete_f630(href){Swal.fire({
+		title: 'Are you sure?',
+		text: ` + "`" + `You won't be able to revert this!` + "`" + `,
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		confirmButtonText: 'Yes, delete it!'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			fetch(href, {
+                method: 'DELETE'
+            }).then(e => {
+				window.location.href = "/user?page=news"
+			})
+		}
+	});
+}`,
+		Call:       templ.SafeScript(`__templ_alertDelete_f630`, href),
+		CallInline: templ.SafeScriptInline(`__templ_alertDelete_f630`, href),
+	}
+}
+
+func GetNews(news []entity.News, csrfToken string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -52,7 +78,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", i+1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 34, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 54, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -65,7 +91,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(v.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 35, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 55, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -78,7 +104,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(v.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 36, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 56, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -91,7 +117,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(time.Unix(v.CreatedAt, 0).Format(time.DateTime))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 37, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 57, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -104,7 +130,7 @@ func GetNews(news []entity.News) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(v.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 38, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\news\news.templ`, Line: 58, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -126,7 +152,24 @@ func GetNews(news []entity.News) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#content\" class=\"bi bi-pencil-fill text-success h-4 cursor-pointer\"></i></div><div class=\"col\"><i class=\"bi bi-trash-fill text-danger h-4 cursor-pointer\"></i></div></td></tr>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#content\" class=\"bi bi-pencil-fill text-success h-4 cursor-pointer\"></i></div><div class=\"col\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, alertDelete(fmt.Sprintf("/user/news/%d?csrfToken=%s", v.ID, csrfToken)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i onClick=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 templ.ComponentScript = alertDelete(fmt.Sprintf("/user/news/%d?csrfToken=%s", v.ID, csrfToken))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7.Call)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"bi bi-trash-fill text-danger h-4 cursor-pointer\"></i></div></td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -150,9 +193,9 @@ func ImagePreview(urlImg string) templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"button\" class=\"btn btn-primary mb-3\" data-bs-toggle=\"modal\" data-bs-target=\"#imagePreview\">Show Old Cover\r</button><div class=\"modal\" tabindex=\"-1\" id=\"imagePreview\"><div class=\"modal-dialog modal-lg\"><div class=\"modal-content\"><div class=\"modal-header\"><h5 class=\"modal-title\">Old Cover</h5><button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button></div><div class=\"modal-body\"><img class=\"img-fluid\" src=\"")
@@ -182,9 +225,9 @@ func ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, u
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container\"><h1 class=\"mb-3\">Add News</h1><div id=\"res-output\"></div><form method=\"")
@@ -199,8 +242,8 @@ func ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, u
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 templ.SafeURL = templ.URL(url)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var9)))
+		var templ_7745c5c3_Var10 templ.SafeURL = templ.URL(url)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var10)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -272,8 +315,8 @@ func ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, u
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 templ.ComponentScript = setDataToContentDiv()
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10.Call)
+		var templ_7745c5c3_Var11 templ.ComponentScript = setDataToContentDiv()
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11.Call)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

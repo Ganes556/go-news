@@ -3,7 +3,7 @@ package req_dto_news
 import "mime/multipart"
 
 type DeleteNews struct {
-	ID string `params:"id"`
+	ID int `params:"id" validate:"required,gt=0"`
 }
 type CreateNews struct {
 	Title    string                `form:"title" validate:"required"`

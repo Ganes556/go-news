@@ -1,6 +1,8 @@
 package handler_news
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/news/helper"
@@ -17,7 +19,7 @@ import (
 type NewsHandler interface {
 	PostNews(c *fiber.Ctx) error
 	GetNewsUser(c *fiber.Ctx) error
-	// DelNews(c *fiber.Ctx) error
+	DelNews(c *fiber.Ctx) error
 }
 
 type newsHandler struct {
@@ -103,4 +105,40 @@ func (h *newsHandler) GetNewsUser(c *fiber.Ctx) error{
 		Contents: view_user_news.News(news),
 		C: c,
 	}))
+}
+
+func (h *newsHandler) DelNews(c *fiber.Ctx) error {
+
+	req := new(req_dto_news.DeleteNews)
+
+	c.ParamsParser(req)
+
+	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
+		return flash.WithError(c, fiber.Map{
+			"error": true,
+			"messages": helper.JSONStringify(err.Errs),
+		}).Redirect("/user?page=news")
+	}
+
+	ctx := c.UserContext()
+	
+	if err := h.uc.Delete(uc_news.ParamDelete{
+		Ctx: ctx,
+		Req: *req,
+	}); err != nil {
+		return flash.WithError(c, fiber.Map{
+			"error": true,
+			"messages": helper.JSONStringify(dto_response.Response{
+				Code: 500,
+				Message: fiber.ErrInternalServerError.Message,
+			}),
+		}).Redirect("/user?page=news")
+	}
+	return flash.WithSuccess(c, fiber.Map{
+		"success": true,
+		"messages": helper.JSONStringify(dto_response.Response{
+			Code: 200,
+			Message: fmt.Sprintf("successfully delete news with id %d", req.ID),
+		}),
+	}).Redirect("/user?page=news")
 }

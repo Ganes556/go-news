@@ -134,7 +134,7 @@ func (h *handlerUser) GetNews(c *fiber.Ctx) error {
 				Code:    fiber.ErrInternalServerError.Code,
 			})
 		}
-		contentComponent = view_admin_content_news.GetNews(news)
+		contentComponent = view_admin_content_news.GetNews(news, csrfToken)
 	case "create-news":
 		contentComponent = view_admin_content_news.ModifiedNews(c, entity.News{}, csrfToken, "POST", "/news")
 	case "edit-news":
@@ -211,7 +211,7 @@ func (h *handlerUser) GetDashboard(c *fiber.Ctx) error {
 				Code:    fiber.ErrInternalServerError.Code,
 			})
 		}
-		contentComponent = view_admin_content_news.GetNews(news)
+		contentComponent = view_admin_content_news.GetNews(news, csrfToken)
 	case "create-news":
 		contentComponent = view_admin_content_news.ModifiedNews(c, entity.News{}, csrfToken, "POST", "/user/news")
 	case "edit-news":

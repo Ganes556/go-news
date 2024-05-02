@@ -35,10 +35,16 @@ type ParamDelete struct {
 
 func (u *ucNews) Delete(param ParamDelete) (err error) {
 	err = u.db.WithContext(param.Ctx).Transaction(func(tx *gorm.DB) error {
-		if err := tx.First(&entity.News{}, "id = ?", param.Req.ID).Error; err != nil {
+		oldNews := new(entity.News)
+		if oldNews.Cover != "" {
+			if err := u.Gc.DeleteInStorage(param.Ctx, []string{oldNews.Cover});  err != nil {
+				return err
+			}
+		}
+		if err := tx.First(oldNews, "id = ?", param.Req.ID).Error; err != nil {
 			return err
 		}
-		if err := tx.Delete(&entity.News{}, "id = ?", param.Req.ID).Error; err != nil {
+		if err := tx.Delete(oldNews, "id = ?", param.Req.ID).Error; err != nil {
 			return err
 		}
 		return nil
