@@ -4,7 +4,6 @@ import "github.com/news/view/component/CKEeditor"
 import "github.com/news/internal/entity"
 import "fmt"
 import "time"
-import "github.com/gofiber/fiber/v2"
 
 script setDataToContentDiv() {
 	let d = htmx.find("#res-content")
@@ -34,7 +33,13 @@ script alertDelete(href string) {
 templ GetNews(news []entity.News, csrfToken string) {
 	<div class="container py-3">
 		<h1>News</h1>
-		<div class="btn btn-primary" hx-get="?page=create-news&partial=1" hx-replace-url="?page=create-news" hx-swap="outerHTML" hx-target="#content">
+		<div
+			class="btn btn-primary me-3"
+			hx-get="?page=create&partial=1"
+			hx-replace-url="?page=create"
+			hx-swap="outerHTML"
+			hx-target="#content"
+		>
 			Tambah News
 		</div>
 		<div class="table-responsive-lg mt-5">
@@ -54,12 +59,12 @@ templ GetNews(news []entity.News, csrfToken string) {
 						<tr class="align-middle">
 							<th scope="row">{ fmt.Sprintf("%d",i+1) }</th>
 							<td>{ v.Title }</td>
-							<td>{ v.Category }</td>
+							<td>{ v.Category.Name }</td>
 							<td>{ time.Unix(v.CreatedAt, 0).Format(time.DateTime) }</td>
 							<td>{ v.User.Name }</td>
 							<td class="row gx-1 justify-content-center">
 								<div class="col">
-									<i hx-get={ fmt.Sprintf("?page=edit-news&partial=1&id=%d", v.ID) } hx-swap="outerHTML" hx-replace-url={ fmt.Sprintf("?page=edit-news&id=%d", v.ID) } hx-target="#content" class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
+									<i hx-get={ fmt.Sprintf("?page=update&partial=1&id=%d", v.ID) } hx-swap="outerHTML" hx-replace-url={ fmt.Sprintf("?page=edit-news&id=%d", v.ID) } hx-target="#content" class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
 								</div>
 								<div class="col">
 									<i
@@ -98,38 +103,45 @@ templ ImagePreview(urlImg string) {
 	</div>
 }
 
-templ ModifiedNews(c *fiber.Ctx, oldNews entity.News, csrfToken, method string, url string) {
+templ ModifiedNews(param DtoModifiedNews) {
 	<div class="container">
 		<h1 class="mb-3">Add News</h1>
 		<div id="res-output"></div>
 		<form
-			method={ method }
-			action={ templ.URL(url) }
+			method={ param.Method }
+			action={ templ.URL(param.Url) }
 			enctype="multipart/form-data"
 			class="mb-3"
 		>
-			<input name="csrfToken" value={ csrfToken } class="invisible"/>
-			if method == "PUT" {
-				<input name="id" value={ fmt.Sprintf("%d", oldNews.ID) } class="invisible"/>
+			<input name="csrfToken" value={ param.CsrfToken } class="invisible"/>
+			if param.Method == "PUT" {
+				<input name="id" value={ fmt.Sprintf("%d", param.OldNews.ID) } class="invisible"/>
 			}
 			<div class="mb-3">
 				<label for="title" class="form-label">Title</label>
-				<input type="text" class="form-control" id="title" name="title" value={ oldNews.Title }/>
+				<input type="text" class="form-control" id="title" name="title" value={ param.OldNews.Title }/>
 			</div>
 			<div class="mb-3">
 				<label for="category" class="form-label">Category</label>
-				<input type="text" class="form-control" id="category" value={ oldNews.Category } name="category"/>
+				<select name="category_id" class="form-select" aria-label="Default select example">
+					<option selected>Category</option>
+					if len(param.Categories) > 0 {
+						for _, v := range param.Categories {
+							<option value={ fmt.Sprintf("%d", v.ID) }>{ v.Name }</option>
+						}
+					}
+				</select>
 			</div>
 			<div class="mb-1">
 				<label for="cover" class="form-label">Cover</label>
 				<input class="form-control" name="cover" type="file" id="cover"/>
 			</div>
-			if method == "PUT" {
-				@ImagePreview("https://storage.googleapis.com/go-news-bucket/" + oldNews.Cover)
+			if param.Method == "PUT" {
+				@ImagePreview("https://storage.googleapis.com/go-news-bucket/" + param.OldNews.Cover)
 			}
 			// <div id="res-output" class="ck ck-content"></div>
 			<input id="res-content" name="contents" class="invisible"/>
-			@view_component_CKEeditor.CKEeditor(oldNews.Content)
+			@view_component_CKEeditor.CKEeditor(param.OldNews.Content)
 			<button type="submit" hx-on:click={ setDataToContentDiv() } class="mt-3 btn btn-primary">Submit</button>
 		</form>
 	</div>

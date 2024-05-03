@@ -22,16 +22,64 @@ templ Slidebar(param ParamNavbar) {
 		</a>
 		<ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
 			<li>
-				<div id="page-dashboard" hx-trigger="click" hx-on:click={ checkUrl("#page-dashboard", "dashboard") } style="cursor: pointer;" hx-get="?page=dashboard&partial=1" hx-replace-url="?page=dashboard" hx-swap="outerHTML" hx-target="#content" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+				<div
+					id="page-dashboard"
+					hx-trigger="click"
+					style="cursor: pointer;"
+					hx-get="/user"
+					hx-replace-url="/user"
+					hx-swap="outerHTML"
+					hx-target="#content"
+					data-bs-toggle="collapse"
+					class="nav-link px-0 align-middle text-white"
+				>
 					<i class="fs-4 bi bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
 				</div>
 			</li>
 			<li>
-				<div id="page-news" style="cursor: pointer;" hx-trigger="click" hx-on:click={ checkUrl("#page-news", "news") } hx-get="?page=news&partial=1" hx-replace-url="?page=news" hx-swap="outerHTML" hx-target="#content" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-					<i class="fs-sm-5 fs-4 bi bi-newspaper"></i> <span class="ms-1 d-none d-sm-inline">News</span>
+				<div class="dropdown pb-4">
+					<a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="fs-4 bi bi bi-newspaper"></i>
+						<span class="ms-1 d-none d-sm-inline">News</span>
+					</a>
+					<ul class="dropdown-menu dropdown-menu-primary text-small shadow">
+						<li>
+							<div
+								id="page-news"
+								style="cursor: pointer;"
+								hx-trigger="click"								
+								hx-get="/user/news"
+								hx-replace-url="/user/news"
+								hx-swap="outerHTML"
+								hx-target="#content"
+								data-bs-toggle="collapse"
+								class="dropdown-item"
+							>
+								<span class="ms-1 d-none d-sm-inline">News</span>
+							</div>
+						</li>
+						<li>
+							<hr class="dropdown-divider"/>
+						</li>
+						<li>
+							<div
+								id="page-category"
+								style="cursor: pointer;"
+								hx-trigger="click"
+								hx-on:click={ checkUrl("#page-category", "category") }
+								hx-get="?page=category&partial=1"
+								hx-replace-url="?page=category"
+								hx-swap="outerHTML"
+								hx-target="#content"
+								data-bs-toggle="collapse"
+								class="dropdown-item"
+							>
+								<span class="ms-1 d-none d-sm-inline">Category</span>
+							</div>
+						</li>
+					</ul>
 				</div>
 			</li>
-			
 		</ul>
 		<div class="dropdown pb-4">
 			<a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

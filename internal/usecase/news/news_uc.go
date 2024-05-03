@@ -16,6 +16,7 @@ type UcNews interface {
 	Create(param ParamCreate) (err error)
 	Delete(param ParamDelete) (err error)
 	GetNews(param ParamGetNews) (news []entity.News, err error)
+	GetDistinctCategory(ctx context.Context) (categories []string, err error)
 	GetNewsById(ctx context.Context, id string) (news entity.News, err error)
 }
 
@@ -30,18 +31,16 @@ func NewNewsUc(Gc pkg.Gcloud, DB *gorm.DB) UcNews {
 
 type ParamDelete struct {
 	Ctx context.Context
-	Req req_dto_news.DeleteNews	
+	Req req_dto_news.DeleteNews
 }
 
 func (u *ucNews) Delete(param ParamDelete) (err error) {
 	err = u.db.WithContext(param.Ctx).Transaction(func(tx *gorm.DB) error {
 		oldNews := new(entity.News)
-		if oldNews.Cover != "" {
-			if err := u.Gc.DeleteInStorage(param.Ctx, []string{oldNews.Cover});  err != nil {
-				return err
-			}
-		}
 		if err := tx.First(oldNews, "id = ?", param.Req.ID).Error; err != nil {
+			return err
+		}
+		if err := u.Gc.DeleteInStorage(param.Ctx, []string{oldNews.Cover}); err != nil {
 			return err
 		}
 		if err := tx.Delete(oldNews, "id = ?", param.Req.ID).Error; err != nil {
@@ -50,7 +49,7 @@ func (u *ucNews) Delete(param ParamDelete) (err error) {
 		return nil
 	})
 	if err != nil {
-		helper.LogsError(err)		
+		helper.LogsError(err)
 	}
 	return
 }
@@ -70,11 +69,11 @@ func (u *ucNews) Create(param ParamCreate) (err error) {
 	}
 
 	err = u.db.WithContext(param.Ctx).Create(&entity.News{
-		UserID:   param.UserID,
-		Title:    param.Req.Title,
-		Cover:    url[0],
-		Category: param.Req.Category,
-		Content:  param.Req.Contents,
+		UserID:     param.UserID,
+		CategoryID: param.Req.CategoriID,
+		Title:      param.Req.Title,
+		Cover:      url[0],
+		Content:    param.Req.Contents,
 	}).Error
 
 	if err != nil {
@@ -104,7 +103,7 @@ func (u *ucNews) GetNews(param ParamGetNews) (news []entity.News, err error) {
 
 	err = tx.Limit(int(param.Limit)).
 		Find(&news).Error
-		
+
 	return
 }
 func (u *ucNews) GetNewsById(ctx context.Context, id string) (news entity.News, err error) {
@@ -114,6 +113,16 @@ func (u *ucNews) GetNewsById(ctx context.Context, id string) (news entity.News, 
 		if err == gorm.ErrRecordNotFound {
 			err = new(dto_response.Response).ErrNews404()
 		}
+		helper.LogsError(err)
+	}
+	return
+}
+
+func (u *ucNews) GetDistinctCategory(ctx context.Context) (categories []string, err error) {
+	news := new(entity.News)
+	err = u.db.WithContext(ctx).Model(news).Select("category").Distinct("category").Pluck("category", &categories).Error
+	if err != nil {
+		helper.LogsError(err)
 	}
 	return
 }

@@ -1,0 +1,28 @@
+package view_admin_content_category
+
+import "github.com/news/view/component/modal"
+import "github.com/news/internal/entity"
+
+
+templ CreateCategory(csrfToken string) {
+	<form action="/user/news/category" method="post">
+		<div class="modal-body">
+			<div class="mb-3">
+				<label for="name" class="form-label">Name</label>
+				<input type="text" class="form-control" id="name" name="name"/>
+			</div>
+			<input type="hidden" class="invisibility" name="csrfToken" value={ csrfToken }/>
+		</div>
+		<div class="modal-footer">
+			<button type="submit" class="btn btn-primary">Submit</button>
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		</div>
+	</form>
+}
+
+
+templ Category(Categories []entity.Category,csrfToken string) {
+    <div>
+        @view_modal.Modal("Category", "Category", "btn-warning", "", "createCategory", CreateCategory(csrfToken))
+    </div>
+}

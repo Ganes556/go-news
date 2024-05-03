@@ -27,7 +27,7 @@ func NewGorm(param ParamNewGorm) *gorm.DB {
 		panic(err)
 	}
 
-	if err := db.AutoMigrate(new(entity.User), new(entity.News)); err != nil {
+	if err := db.AutoMigrate(new(entity.User), new(entity.Category), new(entity.News)); err != nil {
 		panic(err)
 	}
 

@@ -2,7 +2,7 @@ package handler_user
 
 import (
 	"encoding/json"
-	"strings"
+	"fmt"
 	"time"
 
 	"github.com/a-h/templ"
@@ -13,9 +13,11 @@ import (
 	dto_response "github.com/news/internal/dto/response"
 	"github.com/news/internal/entity"
 	helper_handler "github.com/news/internal/handler"
+	uc_category "github.com/news/internal/usecase/category"
 	uc_news "github.com/news/internal/usecase/news"
 	uc_user "github.com/news/internal/usecase/user"
 	"github.com/news/pkg"
+	view_admin_content_category "github.com/news/view/admin/content/category"
 	view_admin_content_dashboard "github.com/news/view/admin/content/dashboard"
 	view_admin_content_news "github.com/news/view/admin/content/news"
 	view_admin_layout "github.com/news/view/admin/layout"
@@ -30,17 +32,20 @@ type HandlerUser interface {
 	PostLogin(c *fiber.Ctx) error
 	GetLogout(c *fiber.Ctx) error
 	GetDashboard(c *fiber.Ctx) error
+	GetCategory(c *fiber.Ctx) error
+	GetNews(c *fiber.Ctx) error
 }
 
 type handlerUser struct {
-	uc        uc_user.UcUser
-	ucNews    uc_news.UcNews
-	validator pkg.Validator
-	session   *session.Store
+	uc         uc_user.UcUser
+	ucNews     uc_news.UcNews
+	ucCategory uc_category.UcCategory
+	validator  pkg.Validator
+	session    *session.Store
 }
 
-func NewHandlerUser(uc uc_user.UcUser, ucNews uc_news.UcNews, validator pkg.Validator, session *session.Store) HandlerUser {
-	return &handlerUser{uc, ucNews, validator, session}
+func NewHandlerUser(uc uc_user.UcUser, ucNews uc_news.UcNews, ucCategory uc_category.UcCategory, validator pkg.Validator, session *session.Store) HandlerUser {
+	return &handlerUser{uc, ucNews, ucCategory, validator, session}
 }
 
 func (h *handlerUser) GetLogin(c *fiber.Ctx) error {
@@ -117,27 +122,47 @@ func (h *handlerUser) GetNews(c *fiber.Ctx) error {
 	name := sess.Get("name").(string)
 
 	ctx := c.UserContext()
-	var title string = "News"
-	var contentComponent templ.Component
-	var errRes = []dto_response.Response{}
-
 	csrfToken := c.Locals("csrfToken").(string)
 
-	switch q["page"] {
-	case "news":
-		news, err := h.ucNews.GetNews(uc_news.ParamGetNews{
-			Ctx: ctx,
+	news, err := h.ucNews.GetNews(uc_news.ParamGetNews{
+		Ctx: ctx,
+	})
+
+	var component templ.Component
+
+	var categories []entity.Category
+	var errRes []dto_response.Response
+
+	if err != nil {
+		errRes = append(errRes, dto_response.Response{
+			Message: fiber.ErrInternalServerError.Message,
+			Code:    fiber.ErrInternalServerError.Code,
 		})
+		c.Set("HX-Refresh", "true")
+	}
+
+	if q["page"] != "" {
+		categories, err = h.ucCategory.GetAll(ctx)
 		if err != nil {
+			helper.LogsError(err)
 			errRes = append(errRes, dto_response.Response{
 				Message: fiber.ErrInternalServerError.Message,
 				Code:    fiber.ErrInternalServerError.Code,
 			})
+			c.Set("HX-Refresh", "true")
 		}
-		contentComponent = view_admin_content_news.GetNews(news, csrfToken)
-	case "create-news":
-		contentComponent = view_admin_content_news.ModifiedNews(c, entity.News{}, csrfToken, "POST", "/news")
-	case "edit-news":
+	}
+
+	switch q["page"] {
+	case "create":
+		component = view_admin_content_news.ModifiedNews(view_admin_content_news.DtoModifiedNews{
+			C:          c,
+			CsrfToken:  csrfToken,
+			Method:     "POST",
+			Url:        "/user/news",
+			Categories: categories,
+		})
+	case "update":
 		if q["id"] == "" {
 			errRes = append(errRes, dto_response.Response{
 				Message: "id news wajib diisi",
@@ -149,17 +174,45 @@ func (h *handlerUser) GetNews(c *fiber.Ctx) error {
 			if err != nil {
 				if errRe, ok := err.(*dto_response.Response); ok {
 					errRes = append(errRes, *errRe)
+				} else {
+					errRes = append(errRes, dto_response.Response{
+						Message: fiber.ErrInternalServerError.Message,
+						Code:    fiber.ErrInternalServerError.Code,
+					})
 				}
+				c.Set("HX-Refresh", "true")
 			}
-			contentComponent = view_admin_content_news.ModifiedNews(c, news, "PUT", csrfToken, "/news")
+			component = view_admin_content_news.ModifiedNews(view_admin_content_news.DtoModifiedNews{
+				C:          c,
+				CsrfToken:  csrfToken,
+				Method:     "PUT",
+				Url:        "/user/news",
+				OldNews:    news,
+				Categories: categories,
+			})
 		}
 	default:
-		contentComponent = view_admin_content_dashboard.Dashboard(username, name)
+		component = view_admin_content_news.GetNews(news, csrfToken)
+	}
+
+	if len(errRes) > 0 {
+		header := c.GetReqHeaders()
+		if header["Hx-Request"] != nil && header["Hx-Request"][0] == "true" {
+			return flash.WithError(c, fiber.Map{
+				"error":    true,
+				"messages": helper.JSONStringify(errRes),
+			}).SendString("")
+		}
+		return flash.WithError(c, fiber.Map{
+			"error":    true,
+			"messages": helper.JSONStringify(errRes),
+		}).Redirect(c.Path())
 	}
 
 	if q["partial"] == "1" {
+		fmt.Println("kena")
 		return helper_handler.Render(c, view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
-			Content: contentComponent,
+			Content: component,
 			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
 				Username: username,
 				Name:     name,
@@ -168,9 +221,9 @@ func (h *handlerUser) GetNews(c *fiber.Ctx) error {
 	}
 
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
-		Title: title,
+		Title: "News",
 		Contents: view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
-			Content: contentComponent,
+			Content: component,
 			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
 				Username: username,
 				Name:     name,
@@ -178,7 +231,57 @@ func (h *handlerUser) GetNews(c *fiber.Ctx) error {
 		}),
 		C: c,
 	}))
+}
 
+func (h *handlerUser) GetCategory(c *fiber.Ctx) error {
+	q := c.Queries()
+	sess, _ := h.session.Get(c)
+	username := sess.Get("username").(string)
+	name := sess.Get("name").(string)
+
+	ctx := c.UserContext()
+	csrfToken := c.Locals("csrfToken").(string)
+
+	categories, err := h.ucCategory.GetAll(ctx)
+	if err != nil {
+		header := c.GetReqHeaders()
+		errRes := dto_response.Response{
+			Message: fiber.ErrInternalServerError.Message,
+			Code:    500,
+		}
+		if header["Hx-Request"] != nil && header["Hx-Request"][0] == "true" {
+			return flash.WithError(c, fiber.Map{
+				"error":    true,
+				"messages": helper.JSONStringify(errRes),
+			}).SendString("")
+		}
+		return flash.WithError(c, fiber.Map{
+			"error": true,
+			"messages": helper.JSONStringify(errRes),
+		}).Redirect(c.Path())
+	}
+
+	if q["partial"] == "1" {
+		return helper_handler.Render(c, view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
+			Content: view_admin_content_category.Category(categories, csrfToken),
+			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
+				Username: username,
+				Name:     name,
+			}),
+		}))
+	}
+
+	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+		Title: "News Category",
+		Contents: view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
+			Content: view_admin_content_category.Category(categories, csrfToken),
+			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
+				Username: username,
+				Name:     name,
+			}),
+		}),
+		C: c,
+	}))
 }
 
 func (h *handlerUser) GetDashboard(c *fiber.Ctx) error {
@@ -187,75 +290,20 @@ func (h *handlerUser) GetDashboard(c *fiber.Ctx) error {
 	username := sess.Get("username").(string)
 	name := sess.Get("name").(string)
 
-	ctx := c.UserContext()
-
-	var contentComponent templ.Component
-	var errRes = []dto_response.Response{}
-	var title string
-	if q["page"] != "" && strings.Contains(q["page"], "news") {
-		title = "News"
-	} else {
-		title = "Dashboard"
-	}
-
-	csrfToken := c.Locals("csrfToken").(string)
-
-	switch q["page"] {
-	case "news":
-		news, err := h.ucNews.GetNews(uc_news.ParamGetNews{
-			Ctx: ctx,
-		})
-		if err != nil {
-			errRes = append(errRes, dto_response.Response{
-				Message: fiber.ErrInternalServerError.Message,
-				Code:    fiber.ErrInternalServerError.Code,
-			})
-		}
-		contentComponent = view_admin_content_news.GetNews(news, csrfToken)
-	case "create-news":
-		contentComponent = view_admin_content_news.ModifiedNews(c, entity.News{}, csrfToken, "POST", "/user/news")
-	case "edit-news":
-		if q["id"] == "" {
-			errRes = append(errRes, dto_response.Response{
-				Message: "id news wajib diisi",
-				Code:    400,
-			})
-		} else {
-			id := q["id"]
-			news, err := h.ucNews.GetNewsById(ctx, id)
-			if err != nil {
-				if errRe, ok := err.(*dto_response.Response); ok {
-					errRes = append(errRes, *errRe)
-				}
-			}
-			contentComponent = view_admin_content_news.ModifiedNews(c, news, csrfToken, "PUT", "/user/news")
-		}
-	default:
-		contentComponent = view_admin_content_dashboard.Dashboard(username, name)
-	}
-
-	if len(errRes) > 0 {
-		return flash.WithError(c, fiber.Map{
-			"error": true,
-			"messages": helper.JSONStringify(errRes),
-		}).Redirect("/user/dashboard")
-	}
-	
 	if q["partial"] == "1" {
 		return helper_handler.Render(c, view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
-			Content: contentComponent,
+			Content: view_admin_content_dashboard.Dashboard(username, name),
 			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
 				Username: username,
 				Name:     name,
 			}),
-			C: c,
 		}))
 	}
 
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
-		Title: title,
+		Title: "Dashboard",
 		Contents: view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
-			Content: contentComponent,
+			Content: view_admin_content_dashboard.Dashboard(username, name),
 			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
 				Username: username,
 				Name:     name,

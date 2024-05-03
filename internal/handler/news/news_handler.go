@@ -1,8 +1,6 @@
 package handler_news
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/news/helper"
@@ -11,8 +9,9 @@ import (
 	helper_handler "github.com/news/internal/handler"
 	uc_news "github.com/news/internal/usecase/news"
 	"github.com/news/pkg"
+	view_toast "github.com/news/view/component/toast"
 	view_layout "github.com/news/view/layout"
-	view_user_news "github.com/news/view/user"
+	view_news "github.com/news/view/news"
 	"github.com/sujit-baniya/flash"
 )
 
@@ -20,6 +19,7 @@ type NewsHandler interface {
 	PostNews(c *fiber.Ctx) error
 	GetNewsUser(c *fiber.Ctx) error
 	DelNews(c *fiber.Ctx) error
+	GetCategories(c *fiber.Ctx) error
 }
 
 type newsHandler struct {
@@ -93,16 +93,16 @@ func (h *newsHandler) PostNews(c *fiber.Ctx) error {
 
 func (h *newsHandler) GetNewsUser(c *fiber.Ctx) error{
 	ctx := c.UserContext()
-	news, err := h.uc.GetNews(uc_news.ParamGetNews{
+	news, _ := h.uc.GetNews(uc_news.ParamGetNews{
 		Ctx: ctx,
 	})
-	if err != nil {
+	// if err != nil {
 
-	}
+	// }
 	
 	return helper_handler.Render(c,view_layout.Layout(view_layout.ParamLayout{
 		Title: "News",
-		Contents: view_user_news.News(news),
+		Contents: view_news.News(news),
 		C: c,
 	}))
 }
@@ -138,7 +138,22 @@ func (h *newsHandler) DelNews(c *fiber.Ctx) error {
 		"success": true,
 		"messages": helper.JSONStringify(dto_response.Response{
 			Code: 200,
-			Message: fmt.Sprintf("successfully delete news with id %d", req.ID),
+			Message: "successfully delete news",
 		}),
 	}).Redirect("/user?page=news")
+}
+
+func (h *newsHandler) GetCategories(c *fiber.Ctx) error {
+	ctx := c.UserContext()
+	categories, err := h.uc.GetDistinctCategory(ctx)
+	if err != nil {
+		return helper_handler.Render(c, view_toast.Toast(view_toast.ParamToast{
+			Messages: "something wrong!",
+			Mode: "danger",
+			Timer: 1500,
+		}))
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": categories,
+	})
 }

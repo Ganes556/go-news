@@ -11,7 +11,7 @@ func (e *Response) Error() string {
 
 func (e *Response) ErrAuth400() error {
 	e.Code = 400
-	e.Message = "username atau password tidak valid"
+	e.Message = "invalid username or password"
 	return e
 }
 
@@ -29,6 +29,12 @@ func (e *Response) ErrAuth500() error {
 
 func (e *Response) ErrNews404() error {
 	e.Code = 404
-	e.Message = "berita tidak ditemukan"
+	e.Message = "news not found"
+	return e
+}
+
+func (e *Response) ErrCategory409() error {
+	e.Code = 409
+	e.Message = "category already exist"
 	return e
 }

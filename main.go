@@ -20,6 +20,7 @@ import (
 	handler_news "github.com/news/internal/handler/news"
 	handler_user "github.com/news/internal/handler/user"
 	"github.com/news/internal/middleware"
+	uc_category "github.com/news/internal/usecase/category"
 	uc_news "github.com/news/internal/usecase/news"
 	uc_user "github.com/news/internal/usecase/user"
 	"github.com/news/pkg"
@@ -70,7 +71,7 @@ func main() {
 		SingleUseToken:    true,
 		Expiration:        1 * time.Hour,
 		Extractor: func(c *fiber.Ctx) (string, error) {
-			tokenFromQuery := c.Query("csrfToken")			
+			tokenFromQuery := c.Query("csrfToken")
 			if tokenFromQuery != "" {
 				return tokenFromQuery, nil
 			}
@@ -94,16 +95,19 @@ func main() {
 
 	userUc := uc_user.NewUcUser(DB, encryptor)
 	newsUc := uc_news.NewNewsUc(gcp, DB)
+	categoryUc := uc_category.NewCategoryUc(DB)
 
 	userGroup := app.Group("/user", timeoutMid.Timeout(nil), authMid.Authorized)
-	userHandler := handler_user.NewHandlerUser(userUc, newsUc, validator, session)
+	userHandler := handler_user.NewHandlerUser(userUc, newsUc, categoryUc, validator, session)
 	newsHandler := handler_news.NewNewsHandler(newsUc, validator, session)
 	{
 		userGroup.Get("/login", userHandler.GetLogin)
 		userGroup.Post("/login", userHandler.PostLogin)
 		userGroup.Get("/logout", userHandler.GetLogout)
 		userGroup.Get("", userHandler.GetDashboard)
+		userGroup.Get("/news", userHandler.GetNews)
 		userGroup.Post("/news", newsHandler.PostNews)
+		userGroup.Get("/news/categories", newsHandler.GetCategories)
 		userGroup.Delete("/news/:id", newsHandler.DelNews)
 	}
 

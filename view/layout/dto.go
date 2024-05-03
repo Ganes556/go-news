@@ -6,7 +6,7 @@ import (
 )
 
 type ParamLayout struct {
-	C *fiber.Ctx
-	Title    string
-	Contents templ.Component
+	C         *fiber.Ctx
+	Title     string
+	Contents  templ.Component
 }

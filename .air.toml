@@ -3,7 +3,7 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "templ generate && go build -o ./tmp/main.exe ."
+  cmd = "templ generate && go build -o ./tmp/main ."
   delay = 1000
   exclude_dir = ["assets", "node_modules", "src"]
   exclude_file = ["webpack.config.js", "tsconfig.json", "package-json", "package-lock.json"]
