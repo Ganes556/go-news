@@ -5,7 +5,7 @@ import (
 	"github.com/news/internal/entity"
 )
 
-var DefaultUser = []entity.User{
+var DefaultUser = []entity.Users{
 	// admin
 	{
 		Base: entity.Base{

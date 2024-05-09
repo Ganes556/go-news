@@ -11,5 +11,5 @@ type DtoModifiedNews struct {
 	CsrfToken  string
 	Method     string
 	Url        string
-	Categories []entity.Category
+	Categories []entity.Categories
 }

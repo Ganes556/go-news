@@ -16,11 +16,12 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/news/helper"
 	conf_internal "github.com/news/internal/conf"
+	handler_categories "github.com/news/internal/handler/categories"
 	handler_error "github.com/news/internal/handler/error"
 	handler_news "github.com/news/internal/handler/news"
 	handler_user "github.com/news/internal/handler/user"
 	"github.com/news/internal/middleware"
-	uc_category "github.com/news/internal/usecase/category"
+	uc_categories "github.com/news/internal/usecase/categories"
 	uc_news "github.com/news/internal/usecase/news"
 	uc_user "github.com/news/internal/usecase/user"
 	"github.com/news/pkg"
@@ -93,27 +94,35 @@ func main() {
 	authMid := middleware.NewAuthMiddleware(session)
 	commonMid := middleware.NewCommonMid(session)
 
+	// usecase
 	userUc := uc_user.NewUcUser(DB, encryptor)
 	newsUc := uc_news.NewNewsUc(gcp, DB)
-	categoryUc := uc_category.NewCategoryUc(DB)
-
+	categoriesUc := uc_categories.NewCategoriesUc(DB, gcp)
+	// handler
+	userHandler := handler_user.NewHandlerUser(userUc, validator, session)
+	newsHandler := handler_news.NewNewsHandler(newsUc, categoriesUc, validator, session)
+	categoriesHandler := handler_categories.NewHandlerCategories(categoriesUc, validator, session)
+	
 	userGroup := app.Group("/user", timeoutMid.Timeout(nil), authMid.Authorized)
-	userHandler := handler_user.NewHandlerUser(userUc, newsUc, categoryUc, validator, session)
-	newsHandler := handler_news.NewNewsHandler(newsUc, validator, session)
+
+
 	{
-		userGroup.Get("/login", userHandler.GetLogin)
-		userGroup.Post("/login", userHandler.PostLogin)
-		userGroup.Get("/logout", userHandler.GetLogout)
-		userGroup.Get("", userHandler.GetDashboard)
-		userGroup.Get("/news", userHandler.GetNews)
+		userGroup.Get("/login", userHandler.ViewLogin)
+		userGroup.Post("/login", userHandler.Login)
+		userGroup.Get("/logout", userHandler.Logout)
+		userGroup.Get("", userHandler.ViewDashboard)
+		userGroup.Get("/news", newsHandler.ViewNewsAdmin)
 		userGroup.Post("/news", newsHandler.PostNews)
-		userGroup.Get("/news/categories", newsHandler.GetCategories)
+		userGroup.Post("/news/categories", categoriesHandler.PostCategories)
+		userGroup.Get("/news/categories", categoriesHandler.ViewCategoriesAdmin)
+		userGroup.Put("/news/categories/:id", categoriesHandler.PutCategories)
+		userGroup.Delete("/news/categories/:id", categoriesHandler.DelCategories)
 		userGroup.Delete("/news/:id", newsHandler.DelNews)
 	}
 
 	newsGroup := app.Group("/news", timeoutMid.Timeout(nil))
 	{
-		newsGroup.Get("/", newsHandler.GetNewsUser)
+		newsGroup.Get("/", newsHandler.ViewNewsUser)
 	}
 
 	errHandler := handler_error.NewErrorHandler()

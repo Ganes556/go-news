@@ -16,8 +16,8 @@ type UcNews interface {
 	Create(param ParamCreate) (err error)
 	Delete(param ParamDelete) (err error)
 	GetNews(param ParamGetNews) (news []entity.News, err error)
-	GetDistinctCategory(ctx context.Context) (categories []string, err error)
-	GetNewsById(ctx context.Context, id string) (news entity.News, err error)
+	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
+	GetTotalPost(ctx context.Context) (total int64)
 }
 
 type ucNews struct {
@@ -66,14 +66,14 @@ func (u *ucNews) Create(param ParamCreate) (err error) {
 	if err != nil {
 		helper.LogsError(err)
 		return err
-	}
+	}	
 
 	err = u.db.WithContext(param.Ctx).Create(&entity.News{
-		UserID:     param.UserID,
-		CategoryID: param.Req.CategoriID,
-		Title:      param.Req.Title,
-		Cover:      url[0],
-		Content:    param.Req.Contents,
+		UsersID:      param.UserID,
+		CategoriesID: param.Req.CategoryID,
+		Title:        param.Req.Title,
+		Cover:        url[0],
+		Content:      param.Req.Contents,
 	}).Error
 
 	if err != nil {
@@ -93,9 +93,9 @@ type ParamGetNews struct {
 func (u *ucNews) GetNews(param ParamGetNews) (news []entity.News, err error) {
 	news = []entity.News{}
 	if param.Limit <= 0 {
-		param.Limit = 10
+		param.Limit = 5
 	}
-	tx := u.db.WithContext(param.Ctx).Order("id ASC").Preload("User")
+	tx := u.db.WithContext(param.Ctx).Omit("content").Order("id ASC").Preload("Users").Preload("Categories")
 
 	if param.Next != 0 {
 		tx.Where("id > ?", param.Next)
@@ -103,26 +103,21 @@ func (u *ucNews) GetNews(param ParamGetNews) (news []entity.News, err error) {
 
 	err = tx.Limit(int(param.Limit)).
 		Find(&news).Error
-
 	return
 }
-func (u *ucNews) GetNewsById(ctx context.Context, id string) (news entity.News, err error) {
+func (u *ucNews) GetNewsById(ctx context.Context, id uint) (news entity.News, err error) {
 	news = entity.News{}
 	err = u.db.WithContext(ctx).First(&news, "id = ?", id).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = new(dto_response.Response).ErrNews404()
+			err = new(dto_response.Response).Err404("news")
 		}
 		helper.LogsError(err)
 	}
 	return
 }
 
-func (u *ucNews) GetDistinctCategory(ctx context.Context) (categories []string, err error) {
-	news := new(entity.News)
-	err = u.db.WithContext(ctx).Model(news).Select("category").Distinct("category").Pluck("category", &categories).Error
-	if err != nil {
-		helper.LogsError(err)
-	}
+func (u *ucNews) GetTotalPost(ctx context.Context) (total int64) {
+	u.db.WithContext(ctx).Select("id").Find(&entity.News{}).Count(&total)
 	return
 }

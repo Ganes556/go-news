@@ -48,7 +48,7 @@ templ Slidebar(param ParamNavbar) {
 								id="page-news"
 								style="cursor: pointer;"
 								hx-trigger="click"								
-								hx-get="/user/news"
+								hx-get="/user/news?partial=1"
 								hx-replace-url="/user/news"
 								hx-swap="outerHTML"
 								hx-target="#content"
@@ -66,15 +66,14 @@ templ Slidebar(param ParamNavbar) {
 								id="page-category"
 								style="cursor: pointer;"
 								hx-trigger="click"
-								hx-on:click={ checkUrl("#page-category", "category") }
-								hx-get="?page=category&partial=1"
-								hx-replace-url="?page=category"
+								hx-get="/user/news/categories?partial=1"
+								hx-replace-url="/user/news/categories"	
 								hx-swap="outerHTML"
 								hx-target="#content"
 								data-bs-toggle="collapse"
 								class="dropdown-item"
 							>
-								<span class="ms-1 d-none d-sm-inline">Category</span>
+								<span class="ms-1 d-none d-sm-inline">Categories</span>
 							</div>
 						</li>
 					</ul>

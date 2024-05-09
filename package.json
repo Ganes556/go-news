@@ -31,6 +31,7 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "dropzone": "^6.0.0-beta.2",
     "htmx.org": "^1.9.11",
     "sweetalert2": "^11.10.8"
   },
@@ -40,6 +41,7 @@
     "@ckeditor/ckeditor5-dev-utils": "^32.1.2",
     "@ckeditor/ckeditor5-theme-lark": "^41.3.1",
     "@types/bootstrap": "^5.2.10",
+    "@types/dropzone": "^5.7.8",
     "autoprefixer": "^10.4.19",
     "css-loader": "^5.2.7",
     "mini-css-extract-plugin": "^2.9.0",

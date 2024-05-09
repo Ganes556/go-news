@@ -27,14 +27,14 @@ func (e *Response) ErrAuth500() error {
 	return e
 }
 
-func (e *Response) ErrNews404() error {
+func (e *Response) Err404(field string) error {
 	e.Code = 404
-	e.Message = "news not found"
+	e.Message = field + " not found"
 	return e
 }
 
-func (e *Response) ErrCategory409() error {
+func (e *Response) Err409(field string) error {
 	e.Code = 409
-	e.Message = "category already exist"
+	e.Message = field + " already exist"
 	return e
 }

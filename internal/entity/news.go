@@ -4,13 +4,13 @@ type UrlImages []string
 
 type News struct {
 	Base
-	UserID        uint      `json:"-"`
-	CategoryID    uint      `json:"-"`
-	Category      *Category `json:"-"`
-	User          *User     `json:"author"`
-	Title         string    `gorm:"type:varchar(150)" json:"title"`
-	Cover         string    `gorm:"type:varchar(255)" json:"cover"`
-	ContentImages UrlImages `gorm:"serializer:json" json:"-"`
-	Content       string    `json:"content"`
-	CountView     uint      `json:"count_view"`
+	UsersID       uint        `gorm:"not null"`
+	CategoriesID  uint        `gorm:"not null"`
+	Categories    *Categories `json:"-"`
+	Users         *Users
+	Title         string    `gorm:"type:varchar(150);not null"`
+	Cover         string    `gorm:"type:varchar(255);not null"`
+	ContentImages UrlImages `gorm:"serializer:json"`
+	Content       string    `gorm:"not null"`
+	CountView     uint
 }

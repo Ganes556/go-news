@@ -11,7 +11,7 @@ import (
 )
 
 type UcUser interface {
-	Login(ctx context.Context, req req_dto_user.Login) (user *entity.User, err error)
+	Login(ctx context.Context, req req_dto_user.Login) (user *entity.Users, err error)
 }
 
 type ucUser struct {
@@ -26,8 +26,8 @@ func NewUcUser(db *gorm.DB, encryptor helper.Encryptor) UcUser {
 	}
 }
 
-func (u *ucUser) Login(ctx context.Context, req req_dto_user.Login) (user *entity.User, err error) {
-	user = &entity.User{}
+func (u *ucUser) Login(ctx context.Context, req req_dto_user.Login) (user *entity.Users, err error) {
+	user = &entity.Users{}
 	err = u.db.WithContext(ctx).First(user,"username = ?", req.Username).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

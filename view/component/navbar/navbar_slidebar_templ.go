@@ -44,33 +44,16 @@ func Slidebar(param ParamNavbar) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white vh-100\"><a href=\"/user\" class=\"d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none\"><span class=\"fs-5 d-none d-sm-inline\">Menu</span></a><ul class=\"nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start\" id=\"menu\"><li><div id=\"page-dashboard\" hx-trigger=\"click\" style=\"cursor: pointer;\" hx-get=\"/user\" hx-replace-url=\"/user\" hx-swap=\"outerHTML\" hx-target=\"#content\" data-bs-toggle=\"collapse\" class=\"nav-link px-0 align-middle text-white\"><i class=\"fs-4 bi bi-speedometer2\"></i> <span class=\"ms-1 d-none d-sm-inline\">Dashboard</span></div></li><li><div class=\"dropdown pb-4\"><a href=\"#\" class=\"d-flex align-items-center text-white text-decoration-none dropdown-toggle\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"><i class=\"fs-4 bi bi bi-newspaper\"></i> <span class=\"ms-1 d-none d-sm-inline\">News</span></a><ul class=\"dropdown-menu dropdown-menu-primary text-small shadow\"><li><div id=\"page-news\" style=\"cursor: pointer;\" hx-trigger=\"click\" hx-get=\"/user/news\" hx-replace-url=\"/user/news\" hx-swap=\"outerHTML\" hx-target=\"#content\" data-bs-toggle=\"collapse\" class=\"dropdown-item\"><span class=\"ms-1 d-none d-sm-inline\">News</span></div></li><li><hr class=\"dropdown-divider\"></li><li>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white vh-100\"><a href=\"/user\" class=\"d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none\"><span class=\"fs-5 d-none d-sm-inline\">Menu</span></a><ul class=\"nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start\" id=\"menu\"><li><div id=\"page-dashboard\" hx-trigger=\"click\" style=\"cursor: pointer;\" hx-get=\"/user\" hx-replace-url=\"/user\" hx-swap=\"outerHTML\" hx-target=\"#content\" data-bs-toggle=\"collapse\" class=\"nav-link px-0 align-middle text-white\"><i class=\"fs-4 bi bi-speedometer2\"></i> <span class=\"ms-1 d-none d-sm-inline\">Dashboard</span></div></li><li><div class=\"dropdown pb-4\"><a href=\"#\" class=\"d-flex align-items-center text-white text-decoration-none dropdown-toggle\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"><i class=\"fs-4 bi bi bi-newspaper\"></i> <span class=\"ms-1 d-none d-sm-inline\">News</span></a><ul class=\"dropdown-menu dropdown-menu-primary text-small shadow\"><li><div id=\"page-news\" style=\"cursor: pointer;\" hx-trigger=\"click\" hx-get=\"/user/news?partial=1\" hx-replace-url=\"/user/news\" hx-swap=\"outerHTML\" hx-target=\"#content\" data-bs-toggle=\"collapse\" class=\"dropdown-item\"><span class=\"ms-1 d-none d-sm-inline\">News</span></div></li><li><hr class=\"dropdown-divider\"></li><li><div id=\"page-category\" style=\"cursor: pointer;\" hx-trigger=\"click\" hx-get=\"/user/news/categories?partial=1\" hx-replace-url=\"/user/news/categories\" hx-swap=\"outerHTML\" hx-target=\"#content\" data-bs-toggle=\"collapse\" class=\"dropdown-item\"><span class=\"ms-1 d-none d-sm-inline\">Categories</span></div></li></ul></div></li></ul><div class=\"dropdown pb-4\"><a href=\"#\" class=\"d-flex align-items-center text-white text-decoration-none dropdown-toggle\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"><i class=\"fs-4 bi bi-person-circle\"></i> <span class=\"d-none d-sm-inline mx-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, checkUrl("#page-category", "category"))
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(param.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\component\navbar\navbar_slidebar.templ`, Line: 85, Col: 54}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"page-category\" style=\"cursor: pointer;\" hx-trigger=\"click\" hx-on:click=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var2 templ.ComponentScript = checkUrl("#page-category", "category")
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2.Call)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-get=\"?page=category&amp;partial=1\" hx-replace-url=\"?page=category\" hx-swap=\"outerHTML\" hx-target=\"#content\" data-bs-toggle=\"collapse\" class=\"dropdown-item\"><span class=\"ms-1 d-none d-sm-inline\">Category</span></div></li></ul></div></li></ul><div class=\"dropdown pb-4\"><a href=\"#\" class=\"d-flex align-items-center text-white text-decoration-none dropdown-toggle\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"><i class=\"fs-4 bi bi-person-circle\"></i> <span class=\"d-none d-sm-inline mx-2\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(param.Name)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\component\navbar\navbar_slidebar.templ`, Line: 86, Col: 54}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

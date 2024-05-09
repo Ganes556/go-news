@@ -4,34 +4,45 @@ import "github.com/news/view/component/CKEeditor"
 import "github.com/news/internal/entity"
 import "fmt"
 import "time"
+import "github.com/news/view/component/alert"
 
 script setDataToContentDiv() {
 	let d = htmx.find("#res-content")
 	d.value = editor.getData()
 }
 
-script alertDelete(href string) {
-	Swal.fire({
-		title: 'Are you sure?',
-		text: `You won't be able to revert this!`,
-		icon: 'warning',
-		showCancelButton: true,
-		confirmButtonColor: '#3085d6',
-		cancelButtonColor: '#d33',
-		confirmButtonText: 'Yes, delete it!'
-	}).then((result) => {
-		if (result.isConfirmed) {
-			fetch(href, {
-                method: 'DELETE'
-            }).then(e => {
-				window.location.href = "/user?page=news"
-			})
-		}
-	});
+templ TrNews(news []entity.News, csrfToken string, lastIndex int) {
+	for i, v := range news {
+		<tr
+			class="align-middle"
+			if i + 1 == len(news) {
+				hx-get={ fmt.Sprintf("?partial=1&next=%d&last_index=%d", v.ID, i+1 + lastIndex) }
+				hx-trigger="intersect once"
+				hx-swap="afterend"
+			}
+		>
+			<th scope="row">{ fmt.Sprintf("%d",i+1 + lastIndex) }</th>
+			<td>{ v.Title }</td>
+			<td>{ v.Categories.Name }</td>
+			<td>{ time.Unix(v.CreatedAt, 0).Format(time.DateTime) }</td>
+			<td>{ v.Users.Name }</td>
+			<td class="row gx-1 justify-content-center">
+				<div class="col">
+					<i hx-get={ fmt.Sprintf("?page=update&partial=1&id=%d", v.ID) } hx-swap="outerHTML" hx-replace-url={ fmt.Sprintf("?page=edit-news&id=%d", v.ID) } hx-target="#content" class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
+				</div>
+				<div class="col">
+					<i
+						onClick={ view_component_alert.AlertDeleteScript(fmt.Sprintf("/user/news/%d?csrfToken=%s", v.ID, csrfToken)) }
+						class="bi bi-trash-fill text-danger h-4 cursor-pointer"
+					></i>
+				</div>
+			</td>
+		</tr>
+	}
 }
 
 templ GetNews(news []entity.News, csrfToken string) {
-	<div class="container py-3">
+	<div id="container-news" class="container-fluid py-3">
 		<h1>News</h1>
 		<div
 			class="btn btn-primary me-3"
@@ -40,7 +51,7 @@ templ GetNews(news []entity.News, csrfToken string) {
 			hx-swap="outerHTML"
 			hx-target="#content"
 		>
-			Tambah News
+			Add News
 		</div>
 		<div class="table-responsive-lg mt-5">
 			<table class="table table-striped">
@@ -55,26 +66,7 @@ templ GetNews(news []entity.News, csrfToken string) {
 					</tr>
 				</thead>
 				<tbody>
-					for i, v := range news {
-						<tr class="align-middle">
-							<th scope="row">{ fmt.Sprintf("%d",i+1) }</th>
-							<td>{ v.Title }</td>
-							<td>{ v.Category.Name }</td>
-							<td>{ time.Unix(v.CreatedAt, 0).Format(time.DateTime) }</td>
-							<td>{ v.User.Name }</td>
-							<td class="row gx-1 justify-content-center">
-								<div class="col">
-									<i hx-get={ fmt.Sprintf("?page=update&partial=1&id=%d", v.ID) } hx-swap="outerHTML" hx-replace-url={ fmt.Sprintf("?page=edit-news&id=%d", v.ID) } hx-target="#content" class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
-								</div>
-								<div class="col">
-									<i
-										onClick={ alertDelete(fmt.Sprintf("/user/news/%d?csrfToken=%s", v.ID, csrfToken)) }
-										class="bi bi-trash-fill text-danger h-4 cursor-pointer"
-									></i>
-								</div>
-							</td>
-						</tr>
-					}
+					@TrNews(news, csrfToken, 0)
 				</tbody>
 			</table>
 		</div>
@@ -106,7 +98,6 @@ templ ImagePreview(urlImg string) {
 templ ModifiedNews(param DtoModifiedNews) {
 	<div class="container">
 		<h1 class="mb-3">Add News</h1>
-		<div id="res-output"></div>
 		<form
 			method={ param.Method }
 			action={ templ.URL(param.Url) }
@@ -124,10 +115,18 @@ templ ModifiedNews(param DtoModifiedNews) {
 			<div class="mb-3">
 				<label for="category" class="form-label">Category</label>
 				<select name="category_id" class="form-select" aria-label="Default select example">
-					<option selected>Category</option>
+					if param.OldNews.CategoriesID != 0 {
+						<option>Select one of this category</option>
+					} else {
+						<option selected>Select one of this category</option>
+					}
 					if len(param.Categories) > 0 {
 						for _, v := range param.Categories {
-							<option value={ fmt.Sprintf("%d", v.ID) }>{ v.Name }</option>
+							if v.ID == param.OldNews.CategoriesID {
+								<option selected value={ fmt.Sprintf("%d", v.ID) }>{ v.Name }</option>
+							} else {
+								<option value={ fmt.Sprintf("%d", v.ID) }>{ v.Name }</option>
+							}
 						}
 					}
 				</select>
