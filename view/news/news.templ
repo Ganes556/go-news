@@ -1,32 +1,70 @@
 package view_news
 
 import "github.com/news/internal/entity"
+import "fmt"
 
-templ News(news []entity.News) {
+templ DataNews(news []entity.News) {
+	for i, v := range news {
+		if i == 0 {
+			<div class="card bg-dark text-white mb-3">
+				<img src={ "https://storage.googleapis.com/go-news-bucket/" + v.Cover } class="card-img" alt="..."/>
+				<div
+					class="position-absolute bottom-0 text-light w-100 p-2"
+					style="background-color: rgba(0, 0, 0, 0.5)"
+					x-data="date"
+				>
+					<h5 class="card-title">{ v.Title }</h5>
+					<p class="m-0" x-text={ fmt.Sprintf("formatDate(%d)", v.CreatedAt) }></p>
+				</div>
+			</div>
+		} else {
+			<div class="card mb-3" style="max-width: 540px;">
+				<div class="row g-0">
+					<div class="col-md-4">
+						<img src={ "https://storage.googleapis.com/go-news-bucket/" + v.Cover } class="img-fluid rounded-start" alt="..."/>
+					</div>
+					<div class="col-md-8">
+						<div class="card-body" x-data="date">
+							<h5 class="card-title">{ v.Title }</h5>
+							<p class="card-text" x-text={ fmt.Sprintf("formatDate(%d)", v.CreatedAt) }></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	}
+}
+
+templ NavNews(categories []entity.Categories, activeCategory string) {
 	<section>
-		<nav class="navbar navbar-light bg-light">
+		<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="#">
+				<a class="navbar-brand" href="/news">
 					// <img src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top"/>
 					News.id
 				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav">
-						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="#">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#">Features</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#">Pricing</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-						</li>
+						for _, v := range categories {
+							<li class="nav-item">
+								<a
+									if activeCategory == v.Name {
+										class="nav-link active"
+										aria-current="page"
+									} else {
+										class="nav-link"
+									}
+									href={ templ.SafeURL("?category=" + v.Name) }
+								>{ v.Name }</a>
+							</li>
+						}
 					</ul>
 				</div>
 			</div>
 		</nav>
+		<div class="container d-flex flex-column" hx-get={ "/news?category=" + activeCategory } hx-trigger="load once" hx-swap="innerHTML"></div>
 	</section>
 }

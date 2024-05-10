@@ -45,11 +45,6 @@ func ReturnErrFlash(c *fiber.Ctx, redirectTo string, errs []dto_response.Respons
 
 func ReturnOkFlash(c *fiber.Ctx, redirectTo string , msg dto_response.Response) error {
 	header := c.GetReqHeaders()
-
-	if redirectTo == "" {
-		redirectTo = c.Path()
-	}
-
 	if msg.Message == "" {
 		msg = dto_response.Response{
 			Message: "success",
@@ -68,6 +63,11 @@ func ReturnOkFlash(c *fiber.Ctx, redirectTo string , msg dto_response.Response) 
 			"messages": helper.JSONStringify(msg),
 		}).SendString("")
 	}
+
+	if redirectTo == "" {
+		redirectTo = c.Path()
+	}
+
 	return flash.WithSuccess(c, fiber.Map{
 		"error":    true,
 		"messages": helper.JSONStringify(msg),

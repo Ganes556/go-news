@@ -1,6 +1,8 @@
 package handler_news
 
 import (
+	"fmt"
+
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -202,7 +204,7 @@ func (h *handlerNews) PutNews(c *fiber.Ctx) error {
 	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
 		return helper_handler.ReturnErrFlash(c, "", err.Errs)
 	}
-	
+
 	ctx := c.UserContext()
 	sess, _ := h.session.Get(c)
 	userid := sess.Get("id")
@@ -228,23 +230,48 @@ func (h *handlerNews) PutNews(c *fiber.Ctx) error {
 }
 
 func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {
+	req := req_dto_news.ViewNewsUser{}
+	c.QueryParser(&req)
+	if err := h.validator.Validate(&req); err != nil && len(err.Errs) > 0 {
+		return helper_handler.ReturnErrFlash(c, "", err.Errs)
+	}
 
+	header := c.GetReqHeaders()
 	ctx := c.UserContext()
 
-	news, err := h.uc.GetNews(uc_news.ParamGetNews{
-		Ctx: ctx,
-	})
+	if req.Category != "" && header["Hx-Request"] != nil && header["Hx-Request"][0] == "true" {
+		fmt.Println("kena")
+		news, err := h.uc.GetNewsByCategory(uc_news.ParamGetNewsByCategory{
+			Ctx:      ctx,
+			Category: req.Category,
+		})
 
+		if err != nil {
+			if errRes, ok := err.(*dto_response.Response); ok {
+				return helper_handler.ReturnErrFlash(c, "", []dto_response.Response{*errRes})
+			}
+			return helper_handler.ReturnErrFlash(c, "", nil)
+		}
+		return helper_handler.Render(c, view_news.DataNews(news))
+	}
+
+	categories, err := h.ucCategories.GetAll(ctx)
 	if err != nil {
 		if errRes, ok := err.(*dto_response.Response); ok {
 			return helper_handler.ReturnErrFlash(c, "", []dto_response.Response{*errRes})
 		}
 		return helper_handler.ReturnErrFlash(c, "", nil)
 	}
-
+	if len(categories) > 0 {
+		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+			Title:    categories[0].Name,
+			Contents: view_news.NavNews(categories, categories[0].Name),
+			C:        c,
+		}))
+	}
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 		Title:    "News",
-		Contents: view_news.News(news),
+		Contents: view_news.NavNews(categories, ""),
 		C:        c,
 	}))
 }

@@ -28,3 +28,9 @@ type ViewNews struct {
 	Next      uint   `query:"next" validate:"omitempty"`
 	Limit     uint   `query:"next" validate:"omitempty"`
 }
+
+type ViewNewsUser struct {
+	Category string `query:"category" validate:"omitempty"`
+	Next     uint   `query:"next" validate:"omitempty"`
+	Limit    uint   `query:"next" validate:"omitempty"`
+}

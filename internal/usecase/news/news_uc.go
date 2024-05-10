@@ -17,6 +17,7 @@ type UcNews interface {
 	Update(param ParamUpdate) (err error)
 	Delete(param ParamDelete) (err error)
 	GetNews(param ParamGetNews) (news []entity.News, err error)
+	GetNewsByCategory(param ParamGetNewsByCategory) (news []entity.News, err error)
 	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
 	GetTotalPost(ctx context.Context) (total int64)
 }
@@ -134,7 +135,7 @@ func (u *ucNews) Update(param ParamUpdate) (err error) {
 
 		return nil
 	})
-	return	
+	return
 }
 
 type ParamGetNews struct {
@@ -146,7 +147,7 @@ type ParamGetNews struct {
 func (u *ucNews) GetNews(param ParamGetNews) (news []entity.News, err error) {
 	news = []entity.News{}
 	if param.Limit <= 0 {
-		param.Limit = 5
+		param.Limit = 10
 	}
 	tx := u.db.WithContext(param.Ctx).Omit("content").Order("id ASC").Preload("Users").Preload("Categories")
 
@@ -167,6 +168,32 @@ func (u *ucNews) GetNewsById(ctx context.Context, id uint) (news entity.News, er
 		}
 		helper.LogsError(err)
 	}
+	return
+}
+
+type ParamGetNewsByCategory struct {
+	Ctx      context.Context
+	Category string
+	Next     uint
+	Limit    uint
+}
+
+func (u *ucNews) GetNewsByCategory(param ParamGetNewsByCategory) (news []entity.News, err error) {
+	news = []entity.News{}
+	if param.Limit <= 0 {
+		param.Limit = 10
+	}
+	
+	tx := u.db.WithContext(param.Ctx).Omit("content").Order("id ASC").Preload("Categories", func (db *gorm.DB) *gorm.DB {
+		return db.Where("name = ?", param.Category)
+	})
+
+	if param.Next != 0 {
+		tx.Where("id > ?", param.Next)
+	}
+
+	err = tx.Limit(int(param.Limit)).
+		Find(&news).Error
 	return
 }
 
