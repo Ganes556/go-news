@@ -22,6 +22,7 @@ import (
 
 type HandlerNews interface {
 	PostNews(c *fiber.Ctx) error
+	PutNews(c *fiber.Ctx) error
 	ViewNewsUser(c *fiber.Ctx) error
 	DelNews(c *fiber.Ctx) error
 	ViewNewsAdmin(c *fiber.Ctx) error
@@ -186,6 +187,44 @@ func (h *handlerNews) PostNews(c *fiber.Ctx) error {
 			Code:    200,
 		}),
 	}).Redirect("/user/news?page=create")
+}
+
+func (h *handlerNews) PutNews(c *fiber.Ctx) error {
+	req := new(req_dto_news.UpdateNews)
+	c.ParamsParser(req)
+	c.BodyParser(req)
+	file, err := c.FormFile("cover")
+
+	if err == nil {
+		req.Cover = file
+	}
+
+	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
+		return helper_handler.ReturnErrFlash(c, "", err.Errs)
+	}
+	
+	ctx := c.UserContext()
+	sess, _ := h.session.Get(c)
+	userid := sess.Get("id")
+
+	err = h.uc.Update(uc_news.ParamUpdate{
+		Ctx:    ctx,
+		Req:    *req,
+		UserID: userid.(uint),
+	})
+
+	if err != nil {
+		helper.LogsError(err)
+		if errRes, ok := err.(*dto_response.Response); ok {
+			return helper_handler.ReturnErrFlash(c, "", []dto_response.Response{*errRes})
+		}
+		return helper_handler.ReturnErrFlash(c, "", nil)
+	}
+
+	return helper_handler.ReturnOkFlash(c, "/user/news", dto_response.Response{
+		Message: "successfully edit article",
+		Code:    200,
+	})
 }
 
 func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {

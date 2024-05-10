@@ -12,11 +12,14 @@ import "bytes"
 
 func showEditor(oldContents string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_showEditor_0d6e`,
-		Function: `function __templ_showEditor_0d6e(oldContents){// let editor
+		Name: `__templ_showEditor_8e77`,
+		Function: `function __templ_showEditor_8e77(oldContents){// let editor
     ckeditor
         .create( document.querySelector( '#editor' ))
         .then(newEditor => {
+            newEditor.model.document.on( 'change', () => {
+                htmx.find("#res-content").value = newEditor.getData()
+            } );
             window.editor = newEditor;
             editor.setData(oldContents)
         })
@@ -24,8 +27,8 @@ func showEditor(oldContents string) templ.ComponentScript {
             console.error( error );
         } );
 }`,
-		Call:       templ.SafeScript(`__templ_showEditor_0d6e`, oldContents),
-		CallInline: templ.SafeScriptInline(`__templ_showEditor_0d6e`, oldContents),
+		Call:       templ.SafeScript(`__templ_showEditor_8e77`, oldContents),
+		CallInline: templ.SafeScriptInline(`__templ_showEditor_8e77`, oldContents),
 	}
 }
 

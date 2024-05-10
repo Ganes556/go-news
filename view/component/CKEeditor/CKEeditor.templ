@@ -5,6 +5,9 @@ script showEditor(oldContents string) {
     ckeditor
         .create( document.querySelector( '#editor' ))
         .then(newEditor => {
+            newEditor.model.document.on( 'change', () => {
+                htmx.find("#res-content").value = newEditor.getData()
+            } );
             window.editor = newEditor;
             editor.setData(oldContents)
         })

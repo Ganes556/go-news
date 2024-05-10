@@ -12,6 +12,14 @@ type CreateNews struct {
 	Cover      *multipart.FileHeader `form:"cover" validate:"required"`
 }
 
+type UpdateNews struct {
+	ID         uint                  `params:"id" validate:"required"`
+	Title      string                `form:"title" validate:"omitempty"`
+	CategoryID uint                  `form:"category_id" validate:"omitempty"`
+	Contents   string                `form:"contents" validate:"omitempty"`
+	Cover      *multipart.FileHeader `form:"cover" validate:"omitempty"`
+}
+
 type ViewNews struct {
 	IdEdit    uint   `query:"id" validate:"omitempty"`
 	Partial   string `query:"partial" validate:"omitempty,oneof=1 0"`

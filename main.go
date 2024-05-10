@@ -113,6 +113,7 @@ func main() {
 		userGroup.Get("", userHandler.ViewDashboard)
 		userGroup.Get("/news", newsHandler.ViewNewsAdmin)
 		userGroup.Post("/news", newsHandler.PostNews)
+		userGroup.Put("/news/:id", newsHandler.PutNews)
 		userGroup.Post("/news/categories", categoriesHandler.PostCategories)
 		userGroup.Get("/news/categories", categoriesHandler.ViewCategoriesAdmin)
 		userGroup.Put("/news/categories/:id", categoriesHandler.PutCategories)

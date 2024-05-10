@@ -58,7 +58,11 @@ func ReturnOkFlash(c *fiber.Ctx, redirectTo string , msg dto_response.Response) 
 	}
 
 	if header["Hx-Request"] != nil && header["Hx-Request"][0] == "true" {
-		c.Set("HX-Refresh", "true")
+		if redirectTo != "" {
+			c.Set("HX-Redirect", redirectTo)
+		}else {
+			c.Set("HX-Refresh", "true")
+		}
 		return flash.WithSuccess(c, fiber.Map{
 			"success":    true,
 			"messages": helper.JSONStringify(msg),

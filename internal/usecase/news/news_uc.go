@@ -14,6 +14,7 @@ import (
 
 type UcNews interface {
 	Create(param ParamCreate) (err error)
+	Update(param ParamUpdate) (err error)
 	Delete(param ParamDelete) (err error)
 	GetNews(param ParamGetNews) (news []entity.News, err error)
 	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
@@ -66,7 +67,7 @@ func (u *ucNews) Create(param ParamCreate) (err error) {
 	if err != nil {
 		helper.LogsError(err)
 		return err
-	}	
+	}
 
 	err = u.db.WithContext(param.Ctx).Create(&entity.News{
 		UsersID:      param.UserID,
@@ -82,6 +83,58 @@ func (u *ucNews) Create(param ParamCreate) (err error) {
 	}
 
 	return nil
+}
+
+type ParamUpdate struct {
+	Ctx    context.Context
+	Req    req_dto_news.UpdateNews
+	UserID uint
+}
+
+func (u *ucNews) Update(param ParamUpdate) (err error) {
+	err = u.db.WithContext(param.Ctx).Transaction(func(tx *gorm.DB) error {
+		var oldData entity.News
+
+		if err2 := tx.First(&oldData, "id = ?", param.Req.ID).Error; err2 != nil {
+			if err2 == gorm.ErrRecordNotFound {
+				return new(dto_response.Response).Err404("news")
+			}
+			helper.LogsError(err2)
+			return err2
+		}
+		var newCover string
+		if param.Req.Cover != nil {
+			err2 := u.Gc.DeleteInStorage(param.Ctx, []string{oldData.Cover})
+			if err2 != nil {
+				helper.LogsError(err2)
+				return err2
+			}
+			covers, err2 := u.Gc.Upload2Storage(param.Ctx, "cover", []*multipart.FileHeader{param.Req.Cover})
+			if err2 != nil {
+				helper.LogsError(err2)
+				return err2
+			}
+			newCover = covers[0]
+		}
+		err2 := tx.Updates(&entity.News{
+			Base: entity.Base{
+				ID: param.Req.ID,
+			},
+			UsersID:      param.UserID,
+			CategoriesID: param.Req.CategoryID,
+			Cover:        newCover,
+			Title:        param.Req.Title,
+			Content:      param.Req.Contents,
+		}).Error
+
+		if err2 != nil {
+			helper.LogsError(err2)
+			return err2
+		}
+
+		return nil
+	})
+	return	
 }
 
 type ParamGetNews struct {
