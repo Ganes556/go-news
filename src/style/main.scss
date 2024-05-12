@@ -1,5 +1,7 @@
+@import './myvariables';
 @import "~bootstrap/scss/bootstrap";
 @import 'bootstrap-icons/font/bootstrap-icons.css';
+@import '~@fontsource/roboto';
 
 .table-responsive-manual {
     max-height:50rem;

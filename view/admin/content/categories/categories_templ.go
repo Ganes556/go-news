@@ -28,7 +28,7 @@ func CreateCategory(csrfToken string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form action=\"/user/news/categories\" method=\"post\"><div class=\"modal-body\"><div class=\"mb-3\" id=\"input-post\"><label for=\"name\" class=\"form-label\">Name</label> <input type=\"text\" class=\"form-control\" autofocus id=\"name\" name=\"name\"></div><input type=\"hidden\" class=\"invisibility\" name=\"csrfToken\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form action=\"/user/news/categories\" method=\"post\"><div class=\"modal-body\" x-trap=\"open\"><div class=\"mb-3\" id=\"input-post\"><label for=\"name\" class=\"form-label\">Name</label> <input type=\"text\" class=\"form-control\" autofocus id=\"name\" name=\"name\"></div><input type=\"hidden\" class=\"invisibility\" name=\"csrfToken\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -75,7 +75,7 @@ func GetCategories(categories []entity.Categories, csrfToken string) templ.Compo
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container py-3\"><h1>Categories</h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container py-3\"><h1>Categories</h1><div x-data=\"{open: false}\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -83,7 +83,7 @@ func GetCategories(categories []entity.Categories, csrfToken string) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"table-responsive-sm mt-5\"><table class=\"table table-sm table-striped\" style=\"max-width:50rem\"><thead><tr><th scope=\"col\">#</th><th scope=\"col\">Category</th><th scope=\"col\">Action</th></tr></thead> <tbody>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"table-responsive-sm mt-5\"><table class=\"table table-sm table-striped\" style=\"max-width:50rem\"><thead><tr><th scope=\"col\">#</th><th scope=\"col\">Category</th><th scope=\"col\">Action</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,7 +95,7 @@ func GetCategories(categories []entity.Categories, csrfToken string) templ.Compo
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", i+1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\categories\categories.templ`, Line: 48, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\categories\categories.templ`, Line: 50, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -108,7 +108,7 @@ func GetCategories(categories []entity.Categories, csrfToken string) templ.Compo
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\categories\categories.templ`, Line: 49, Col: 19}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view\admin\content\categories\categories.templ`, Line: 51, Col: 19}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {

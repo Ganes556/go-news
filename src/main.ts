@@ -5,6 +5,8 @@ import ckeditor from './ckeditor';
 import htmx from './htmx';
 // import * as dropzone from 'dropzone';
 import Alpine from 'alpinejs';
+import focus from '@alpinejs/focus';
+import { formatDate } from './alpine_func';
 
 declare global {
   interface Window {
@@ -22,18 +24,11 @@ window.bootstrap = bootstrap;
 window.Swal = Swal;
 window.Alpine = Alpine;
 
+// formatting date
 Alpine.data('date', () => ({
-  formatDate(unix: any) {
-    const unixTimestampMilliseconds = parseInt(unix) * 1000;
-    const date = new Date(unixTimestampMilliseconds);
-    const localeOptions: any = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
-    return date.toLocaleDateString('id-ID', localeOptions);
-  },
+  formatDate,
 }));
+
+Alpine.plugin(focus);
 
 Alpine.start();

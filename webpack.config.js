@@ -47,7 +47,7 @@ module.exports = {
     new CKEditorTranslationsPlugin({
       // UI language. Language codes follow the https://en.wikipedia.org/wiki/ISO_639-1 format.
       // When changing the built-in language, remember to also change it in the editor's configuration (src/ckeditor.ts).
-      language: "en",
+      language: 'en',
       additionalLanguages: 'all',
     }),
     new webpack.BannerPlugin({
@@ -108,15 +108,31 @@ module.exports = {
           },
         ],
       },
-      // Rule for processing the Bootstrap icons
       {
-        test: /\.woff2?$/,
-        type: 'asset/resource',
-        generator: {
-          //filename: 'fonts/[name]-[hash][ext][query]'
-          filename: 'fonts/[name][ext][query]',
-        },
+        test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg)(\?[a-z0-9=.]+)?$/, // to import images and fonts
+        exclude: [path.resolve(__dirname, 'node_modules/@ckeditor')],
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'resource/[name].[ext]',
+            },
+          },
+        ],
       },
+      // Rule for processing the Bootstrap icons
+      // {
+      //   test: /\.woff2?$/,
+      //   include: [path.resolve(__dirname, 'node_modules/bootstrap-icons')],
+      //   use: [
+      //     {
+      //       loader: 'file-loader',
+      //       options: {
+      //         name: 'fonts/[name].[ext]',
+      //       },
+      //     },
+      //   ],
+      // },
       // Rule for processing .scss files
       {
         test: /\.s[ac]ss$/,
@@ -124,6 +140,9 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
+          },
+          {
+            loader: 'resolve-url-loader',
           },
           {
             loader: 'sass-loader',

@@ -1,7 +1,7 @@
 package view_modal
 
 templ Modal(title, btnName, btnType, size, id string, body templ.Component) {
-	<button type="button" class={ "btn " + btnType } data-bs-toggle="modal" data-bs-target={ "#" + id }>
+	<button type="button" class={ "btn " + btnType } data-bs-toggle="modal" data-bs-target={ "#" + id } @click="open = true">
 		{ btnName }
 	</button>
 	<div class="modal" tabindex="-1" id={ id }>
@@ -9,7 +9,7 @@ templ Modal(title, btnName, btnType, size, id string, body templ.Component) {
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">{ title }</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					<button type="button" @click="open = false" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				@body
 			</div>

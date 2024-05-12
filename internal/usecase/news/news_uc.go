@@ -183,11 +183,11 @@ func (u *ucNews) GetNewsByCategory(param ParamGetNewsByCategory) (news []entity.
 	if param.Limit <= 0 {
 		param.Limit = 10
 	}
-	
-	tx := u.db.WithContext(param.Ctx).Omit("content").Order("id ASC").Preload("Categories", func (db *gorm.DB) *gorm.DB {
-		return db.Where("name = ?", param.Category)
-	})
 
+	tx := u.db.WithContext(param.Ctx).
+		Omit("content").
+		Order("id ASC").
+		InnerJoins("Categories", u.db.Where(&entity.Categories{Name: param.Category}))
 	if param.Next != 0 {
 		tx.Where("id > ?", param.Next)
 	}

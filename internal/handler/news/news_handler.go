@@ -1,8 +1,6 @@
 package handler_news
 
 import (
-	"fmt"
-
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -239,8 +237,7 @@ func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {
 	header := c.GetReqHeaders()
 	ctx := c.UserContext()
 
-	if req.Category != "" && header["Hx-Request"] != nil && header["Hx-Request"][0] == "true" {
-		fmt.Println("kena")
+	if req.Category != "" && header["Hx-Request"] != nil && header["Hx-Request"][0] == "true" {		
 		news, err := h.uc.GetNewsByCategory(uc_news.ParamGetNewsByCategory{
 			Ctx:      ctx,
 			Category: req.Category,
@@ -265,13 +262,13 @@ func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {
 	if len(categories) > 0 {
 		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 			Title:    categories[0].Name,
-			Contents: view_news.NavNews(categories, categories[0].Name),
+			Contents: view_news.News(categories, categories[0].Name),
 			C:        c,
 		}))
 	}
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 		Title:    "News",
-		Contents: view_news.NavNews(categories, ""),
+		Contents: view_news.News(categories, ""),
 		C:        c,
 	}))
 }

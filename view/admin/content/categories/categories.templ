@@ -7,7 +7,7 @@ import "github.com/news/view/component/alert"
 
 templ CreateCategory(csrfToken string) {
 	<form action="/user/news/categories" method="post">
-		<div class="modal-body">
+		<div class="modal-body" x-trap="open">
 			<div class="mb-3" id="input-post">
 				<label for="name" class="form-label">Name</label>
 				<input type="text" class="form-control" autofocus id="name" name="name"/>
@@ -33,7 +33,9 @@ script showEditModal(id uint, name string) {
 templ GetCategories(categories []entity.Categories, csrfToken string) {
 	<div class="container py-3">
 		<h1>Categories</h1>
-		@view_modal.Modal("Add Category", "Add Category", "btn-primary", "", "createCategory", CreateCategory(csrfToken))
+		<div x-data="{open: false}">
+			@view_modal.Modal("Add Category", "Add Category", "btn-primary", "", "createCategory", CreateCategory(csrfToken))
+		</div>
 		<div class="table-responsive-sm mt-5">
 			<table class="table table-sm table-striped" style="max-width:50rem">
 				<thead>
