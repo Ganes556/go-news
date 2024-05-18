@@ -31,6 +31,11 @@ type ViewNews struct {
 
 type ViewNewsUser struct {
 	Category string `query:"category" validate:"omitempty"`
+	Search   string `form:"search" xml:"search" json:"search" validate:"omitempty"`
 	Next     uint   `query:"next" validate:"omitempty"`
 	Limit    uint   `query:"next" validate:"omitempty"`
+}
+
+type ViewNewsContentUser struct {
+	Title string `params:"title" validate:"required"`
 }

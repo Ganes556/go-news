@@ -1,6 +1,8 @@
 package handler_news
 
 import (
+	"fmt"
+
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -15,6 +17,7 @@ import (
 	view_admin_content_news "github.com/news/view/admin/content/news"
 	view_admin_layout "github.com/news/view/admin/layout"
 	view_navbar "github.com/news/view/component/navbar"
+	view_error "github.com/news/view/error"
 	view_layout "github.com/news/view/layout"
 	view_news "github.com/news/view/news"
 	"github.com/sujit-baniya/flash"
@@ -24,6 +27,7 @@ type HandlerNews interface {
 	PostNews(c *fiber.Ctx) error
 	PutNews(c *fiber.Ctx) error
 	ViewNewsUser(c *fiber.Ctx) error
+	ViewNewsContentUser(c *fiber.Ctx) error
 	DelNews(c *fiber.Ctx) error
 	ViewNewsAdmin(c *fiber.Ctx) error
 }
@@ -186,7 +190,7 @@ func (h *handlerNews) PostNews(c *fiber.Ctx) error {
 			Message: "successfully add article",
 			Code:    200,
 		}),
-	}).Redirect("/user/news?page=create")
+	}).Redirect("/user/news")
 }
 
 func (h *handlerNews) PutNews(c *fiber.Ctx) error {
@@ -230,6 +234,7 @@ func (h *handlerNews) PutNews(c *fiber.Ctx) error {
 func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {
 	req := req_dto_news.ViewNewsUser{}
 	c.QueryParser(&req)
+	c.BodyParser(&req)
 	if err := h.validator.Validate(&req); err != nil && len(err.Errs) > 0 {
 		return helper_handler.ReturnErrFlash(c, "", err.Errs)
 	}
@@ -237,38 +242,139 @@ func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {
 	header := c.GetReqHeaders()
 	ctx := c.UserContext()
 
-	if req.Category != "" && header["Hx-Request"] != nil && header["Hx-Request"][0] == "true" {		
-		news, err := h.uc.GetNewsByCategory(uc_news.ParamGetNewsByCategory{
-			Ctx:      ctx,
-			Category: req.Category,
-		})
+	if header["Hx-Request"] != nil && header["Hx-Request"][0] == "true" {
+		if req.Category != "" {
+			news, err := h.uc.GetNewsByFilter(uc_news.ParamGetNewsByFilter{
+				Ctx:      ctx,
+				Category: req.Category,
+				Next:     req.Next,
+			})
 
-		if err != nil {
-			if errRes, ok := err.(*dto_response.Response); ok {
-				return helper_handler.ReturnErrFlash(c, "", []dto_response.Response{*errRes})
+			if err != nil {
+				c.Set("HX-Retarget", "#error-get-content-news")
+				c.Set("HX-Reswap", "innerHTML")
+				if errRes, ok := err.(*dto_response.Response); ok {
+					return c.SendString(fmt.Sprintf("%d: %s", errRes.Code, errRes.Message))
+				}
+				return c.SendString(fmt.Sprintf("%d: %s", fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message))
 			}
-			return helper_handler.ReturnErrFlash(c, "", nil)
+			if req.Next != 0 {
+				return helper_handler.Render(c, view_news.DataListNews(news, true))
+			}
+			return helper_handler.Render(c, view_news.DataListNews(news, false))
 		}
-		return helper_handler.Render(c, view_news.DataNews(news))
+
+		if req.Search != "" {
+			news, err := h.uc.GetNewsByFilter(uc_news.ParamGetNewsByFilter{
+				Ctx:   ctx,
+				Title: req.Search,
+				Next:  req.Next,
+			})
+
+			if err != nil {
+				c.Set("HX-Retarget", "#error-search-news")
+				c.Set("HX-Reswap", "innerHTML")
+				if errRes, ok := err.(*dto_response.Response); ok {
+					return c.SendString(fmt.Sprintf("%d: %s", errRes.Code, errRes.Message))
+				}
+				return c.SendString(fmt.Sprintf("%d: %s", fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message))
+			}
+			return helper_handler.Render(c, view_news.DataSearchTitle(news, req.Search))
+		}
+
+		return nil
 	}
 
 	categories, err := h.ucCategories.GetAll(ctx)
+
 	if err != nil {
 		if errRes, ok := err.(*dto_response.Response); ok {
-			return helper_handler.ReturnErrFlash(c, "", []dto_response.Response{*errRes})
+			return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+				Title:    categories[0].Name,
+				Contents: view_error.Error(errRes.Message, errRes.Code),
+				C:        c,
+			}))
 		}
-		return helper_handler.ReturnErrFlash(c, "", nil)
+		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+			Title:    categories[0].Name,
+			Contents: view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code),
+			C:        c,
+		}))
+	}
+	if req.Category != "" {
+		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+			Title:    req.Category,
+			Contents: view_news.News(categories, req.Category, view_news.NewsListContainer()),
+			C:        c,
+		}))
 	}
 	if len(categories) > 0 {
 		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 			Title:    categories[0].Name,
-			Contents: view_news.News(categories, categories[0].Name),
+			Contents: view_news.News(categories, categories[0].Name, view_news.NewsListContainer()),
 			C:        c,
 		}))
 	}
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 		Title:    "News",
-		Contents: view_news.News(categories, ""),
+		Contents: view_news.News(categories, "", view_news.NewsListContainer()),
+		C:        c,
+	}))
+}
+
+func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
+	req := new(req_dto_news.ViewNewsContentUser)
+
+	c.ParamsParser(req)
+
+	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
+		return helper_handler.ReturnErrFlash(c, "", err.Errs)
+	}
+
+	ctx := c.UserContext()
+
+	news, err := h.uc.GetNewsByTitle(ctx, req.Title)
+	fmt.Println("err ->", err)
+	if err != nil {
+		var contentErr templ.Component = view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code)
+		if errRes, ok := err.(*dto_response.Response); ok {
+			contentErr = view_error.Error(errRes.Message, errRes.Code)
+		}
+		return helper_handler.Render(c, view_layout.Layout(
+			view_layout.ParamLayout{
+				C:        c,
+				Title:    "Error",
+				Contents: contentErr,
+			},
+		))
+	}
+
+	categories, err := h.ucCategories.GetAll(ctx)
+
+	if err != nil {
+		if errRes, ok := err.(*dto_response.Response); ok {
+			return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+				Title:    categories[0].Name,
+				Contents: view_error.Error(errRes.Message, errRes.Code),
+				C:        c,
+			}))
+		}
+		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+			Title:    categories[0].Name,
+			Contents: view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code),
+			C:        c,
+		}))
+	}
+	if len(categories) > 0 {
+		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+			Title:    categories[0].Name,
+			Contents: view_news.News(categories, categories[0].Name, view_news.NewsContent(news)),
+			C:        c,
+		}))
+	}
+	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+		Title:    req.Title,
+		Contents: view_news.News(categories, "", view_news.NewsContent(news)),
 		C:        c,
 	}))
 }

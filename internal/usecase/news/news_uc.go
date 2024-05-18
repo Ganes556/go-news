@@ -3,6 +3,8 @@ package uc_news
 import (
 	"context"
 	"mime/multipart"
+	"net/url"
+	"strings"
 
 	"github.com/news/helper"
 	req_dto_news "github.com/news/internal/dto/request/news"
@@ -17,8 +19,9 @@ type UcNews interface {
 	Update(param ParamUpdate) (err error)
 	Delete(param ParamDelete) (err error)
 	GetNews(param ParamGetNews) (news []entity.News, err error)
-	GetNewsByCategory(param ParamGetNewsByCategory) (news []entity.News, err error)
+	GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News, err error)
 	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
+	GetNewsByTitle(ctx context.Context, title string) (news entity.News, err error)
 	GetTotalPost(ctx context.Context) (total int64)
 }
 
@@ -171,14 +174,15 @@ func (u *ucNews) GetNewsById(ctx context.Context, id uint) (news entity.News, er
 	return
 }
 
-type ParamGetNewsByCategory struct {
+type ParamGetNewsByFilter struct {
 	Ctx      context.Context
 	Category string
+	Title    string
 	Next     uint
 	Limit    uint
 }
 
-func (u *ucNews) GetNewsByCategory(param ParamGetNewsByCategory) (news []entity.News, err error) {
+func (u *ucNews) GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News, err error) {
 	news = []entity.News{}
 	if param.Limit <= 0 {
 		param.Limit = 10
@@ -186,14 +190,37 @@ func (u *ucNews) GetNewsByCategory(param ParamGetNewsByCategory) (news []entity.
 
 	tx := u.db.WithContext(param.Ctx).
 		Omit("content").
-		Order("id ASC").
-		InnerJoins("Categories", u.db.Where(&entity.Categories{Name: param.Category}))
+		Order("id ASC")
+	if param.Category != "" {
+		tx = tx.InnerJoins("Categories", u.db.Where(&entity.Categories{Name: param.Category}))
+	}
+
+	if param.Title != "" {
+		tx = tx.Where("title LIKE ?", "%" + param.Title + "%").Preload("Categories")
+	}
+
 	if param.Next != 0 {
-		tx.Where("id > ?", param.Next)
+		tx.Where("news.id > ?", param.Next)
 	}
 
 	err = tx.Limit(int(param.Limit)).
 		Find(&news).Error
+	return
+}
+
+func (u *ucNews) GetNewsByTitle(ctx context.Context, title string) (news entity.News, err error) {
+	var parsedTitle string
+	news = entity.News{}
+	parsedTitle, err = url.QueryUnescape(title)
+	if err != nil {
+		return
+	}
+	title = strings.ToLower(parsedTitle)
+
+	err = u.db.WithContext(ctx).Preload("Categories").First(&news,"title = ?", title).Error
+	if err == gorm.ErrRecordNotFound {
+		err = new(dto_response.Response).Err404("news")
+	}
 	return
 }
 
