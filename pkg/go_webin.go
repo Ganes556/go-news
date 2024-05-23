@@ -36,7 +36,5 @@ func Decode(img io.Reader) (io.Reader, error) {
 		}
 	}	
 
-	
-
 	return &buff, nil
 }

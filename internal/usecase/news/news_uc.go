@@ -22,6 +22,7 @@ type UcNews interface {
 	GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News, err error)
 	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
 	GetNewsByTitle(ctx context.Context, title string) (news entity.News, err error)
+	GetNewsPopular(ctx context.Context) (news []entity.News, err error)
 	GetTotalPost(ctx context.Context) (total int64)
 }
 
@@ -152,10 +153,10 @@ func (u *ucNews) GetNews(param ParamGetNews) (news []entity.News, err error) {
 	if param.Limit <= 0 {
 		param.Limit = 10
 	}
-	tx := u.db.WithContext(param.Ctx).Omit("content").Order("id ASC").Preload("Users").Preload("Categories")
+	tx := u.db.WithContext(param.Ctx).Omit("content").Order("id DESC").Preload("Users").Preload("Categories")
 
 	if param.Next != 0 {
-		tx.Where("id > ?", param.Next)
+		tx.Where("news.id < ?", param.Next)
 	}
 
 	err = tx.Limit(int(param.Limit)).
@@ -190,7 +191,7 @@ func (u *ucNews) GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News
 
 	tx := u.db.WithContext(param.Ctx).
 		Omit("content").
-		Order("id ASC")
+		Order("id DESC")
 	if param.Category != "" {
 		tx = tx.InnerJoins("Categories", u.db.Where(&entity.Categories{Name: param.Category}))
 	}
@@ -200,7 +201,7 @@ func (u *ucNews) GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News
 	}
 
 	if param.Next != 0 {
-		tx.Where("news.id > ?", param.Next)
+		tx.Where("news.id < ?", param.Next)
 	}
 
 	err = tx.Limit(int(param.Limit)).
@@ -224,6 +225,13 @@ func (u *ucNews) GetNewsByTitle(ctx context.Context, title string) (news entity.
 	return
 }
 
+func (u *ucNews) GetNewsPopular(ctx context.Context) (news []entity.News, err error) {
+	err = u.db.WithContext(ctx).Order("count_view DESC").Preload("Categories").Limit(10).Find(&news).Error
+	if err != nil {
+		helper.LogsError(err)
+	}
+	return
+}
 func (u *ucNews) GetTotalPost(ctx context.Context) (total int64) {
 	u.db.WithContext(ctx).Select("id").Find(&entity.News{}).Count(&total)
 	return

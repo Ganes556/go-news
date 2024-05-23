@@ -12,23 +12,40 @@ import "bytes"
 
 func showEditor(oldContents string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_showEditor_8e77`,
-		Function: `function __templ_showEditor_8e77(oldContents){// let editor
-    ckeditor
-        .create( document.querySelector( '#editor' ))
-        .then(newEditor => {
-            newEditor.model.document.on( 'change', () => {
-                htmx.find("#res-content").value = newEditor.getData()
+		Name: `__templ_showEditor_c9ba`,
+		Function: `function __templ_showEditor_c9ba(oldContents){// let editor
+    if(typeof ckeditor !== 'undefined') {    
+        ckeditor
+            .create( document.querySelector( '#editor' ))
+            .then(newEditor => {
+                newEditor.model.document.on( 'change', () => {
+                    htmx.find("#res-content").value = newEditor.getData()
+                } );
+                window.editor = newEditor;
+                editor.setData(oldContents)
+            })
+            .catch( error => {
+                console.error( error );
             } );
-            window.editor = newEditor;
-            editor.setData(oldContents)
+    }else {
+        window.addEventListener('load', function () {
+            ckeditor
+                .create( document.querySelector( '#editor' ))
+                .then(newEditor => {
+                    newEditor.model.document.on( 'change', () => {
+                        htmx.find("#res-content").value = newEditor.getData()
+                    } );
+                    window.editor = newEditor;
+                    editor.setData(oldContents)
+                })
+                .catch( error => {
+                    console.error( error );
+                } );
         })
-        .catch( error => {
-            console.error( error );
-        } );
+    }
 }`,
-		Call:       templ.SafeScript(`__templ_showEditor_8e77`, oldContents),
-		CallInline: templ.SafeScriptInline(`__templ_showEditor_8e77`, oldContents),
+		Call:       templ.SafeScript(`__templ_showEditor_c9ba`, oldContents),
+		CallInline: templ.SafeScriptInline(`__templ_showEditor_c9ba`, oldContents),
 	}
 }
 

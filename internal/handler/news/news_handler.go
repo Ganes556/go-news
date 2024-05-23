@@ -26,7 +26,7 @@ import (
 type HandlerNews interface {
 	PostNews(c *fiber.Ctx) error
 	PutNews(c *fiber.Ctx) error
-	ViewNewsUser(c *fiber.Ctx) error
+	ViewNewsHomeUser(c *fiber.Ctx) error
 	ViewNewsContentUser(c *fiber.Ctx) error
 	DelNews(c *fiber.Ctx) error
 	ViewNewsAdmin(c *fiber.Ctx) error
@@ -137,6 +137,7 @@ func (h *handlerNews) ViewNewsAdmin(c *fiber.Ctx) error {
 	}
 
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+		C: c,
 		Title: "News",
 		Contents: view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
 			Content: component,
@@ -145,7 +146,6 @@ func (h *handlerNews) ViewNewsAdmin(c *fiber.Ctx) error {
 				Name:     name,
 			}),
 		}),
-		C: c,
 	}))
 }
 
@@ -159,11 +159,11 @@ func (h *handlerNews) PostNews(c *fiber.Ctx) error {
 	}
 
 	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
-		return helper_handler.ReturnErrFlash(c, "", err.Errs)
+		return helper_handler.ReturnErrFlash(c, "/user/news?page=create", err.Errs)
 	}
 
 	if err != nil {
-		return helper_handler.ReturnErrFlash(c, "", nil)
+		return helper_handler.ReturnErrFlash(c, "/user/news?page=create", nil)
 	}
 
 	ctx := c.UserContext()
@@ -179,9 +179,9 @@ func (h *handlerNews) PostNews(c *fiber.Ctx) error {
 	if err != nil {
 		helper.LogsError(err)
 		if errRes, ok := err.(*dto_response.Response); ok {
-			return helper_handler.ReturnErrFlash(c, "", []dto_response.Response{*errRes})
+			return helper_handler.ReturnErrFlash(c, "/user/news?page=create", []dto_response.Response{*errRes})
 		}
-		return helper_handler.ReturnErrFlash(c, "", nil)
+		return helper_handler.ReturnErrFlash(c, "/user/news?page=create", nil)
 	}
 
 	return flash.WithSuccess(c, fiber.Map{
@@ -190,7 +190,7 @@ func (h *handlerNews) PostNews(c *fiber.Ctx) error {
 			Message: "successfully add article",
 			Code:    200,
 		}),
-	}).Redirect("/user/news")
+	}).Redirect("/user/news?page=create")
 }
 
 func (h *handlerNews) PutNews(c *fiber.Ctx) error {
@@ -231,7 +231,7 @@ func (h *handlerNews) PutNews(c *fiber.Ctx) error {
 	})
 }
 
-func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {
+func (h *handlerNews) ViewNewsHomeUser(c *fiber.Ctx) error {
 	req := req_dto_news.ViewNewsUser{}
 	c.QueryParser(&req)
 	c.BodyParser(&req)
@@ -282,6 +282,19 @@ func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {
 			return helper_handler.Render(c, view_news.DataSearchTitle(news, req.Search))
 		}
 
+		if req.Popular == "1" {
+			news, err := h.uc.GetNewsPopular(ctx)
+			if err != nil {
+				c.Set("HX-Retarget", "#error-popular-news")
+				c.Set("HX-Reswap", "innerHTML")
+				if errRes, ok := err.(*dto_response.Response); ok {
+					return c.SendString(fmt.Sprintf("%d: %s", errRes.Code, errRes.Message))
+				}
+				return c.SendString(fmt.Sprintf("%d: %s", fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message))
+			}
+			return helper_handler.Render(c, view_news.DataNewsPopular(news))
+		}
+		
 		return nil
 	}
 
@@ -301,23 +314,24 @@ func (h *handlerNews) ViewNewsUser(c *fiber.Ctx) error {
 			C:        c,
 		}))
 	}
+
 	if req.Category != "" {
 		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 			Title:    req.Category,
-			Contents: view_news.News(categories, req.Category, view_news.NewsListContainer()),
+			Contents: view_news.NewsHome(categories, req.Category),
 			C:        c,
 		}))
 	}
 	if len(categories) > 0 {
 		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 			Title:    categories[0].Name,
-			Contents: view_news.News(categories, categories[0].Name, view_news.NewsListContainer()),
+			Contents: view_news.NewsHome(categories, categories[0].Name),
 			C:        c,
 		}))
 	}
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 		Title:    "News",
-		Contents: view_news.News(categories, "", view_news.NewsListContainer()),
+		Contents: view_news.NewsHome(categories, ""),
 		C:        c,
 	}))
 }
@@ -334,7 +348,6 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 	ctx := c.UserContext()
 
 	news, err := h.uc.GetNewsByTitle(ctx, req.Title)
-	fmt.Println("err ->", err)
 	if err != nil {
 		var contentErr templ.Component = view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code)
 		if errRes, ok := err.(*dto_response.Response); ok {
@@ -368,13 +381,13 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 	if len(categories) > 0 {
 		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 			Title:    categories[0].Name,
-			Contents: view_news.News(categories, categories[0].Name, view_news.NewsContent(news)),
+			Contents: view_news.NewsContent(news, categories, categories[0].Name),
 			C:        c,
 		}))
 	}
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 		Title:    req.Title,
-		Contents: view_news.News(categories, "", view_news.NewsContent(news)),
+		Contents: view_news.NewsContent(news, categories, categories[0].Name),
 		C:        c,
 	}))
 }

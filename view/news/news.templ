@@ -3,243 +3,31 @@ package view_news
 import "github.com/news/internal/entity"
 import "fmt"
 
-templ DataListNews(news []entity.News, next bool) {
-	<style type="text/css">
-		.fit-cover {
-			object-fit: cover;
-		}
-
-		@media (min-width: 768px) {
-			.fit-cover {
-				position: absolute;
-			}
-		}
-	</style>
-	for i, v := range news {
-		if i == 0 && next != true {
-			<div
-				class="card bg-dark text-white mb-2"
-				if i + 1 == len(news) {
-					hx-get={ fmt.Sprintf("/news?category=%s&next=%d", v.Categories.Name, v.ID) }
-					hx-trigger="intersect once"
-					hx-swap="afterend"
-				}
-			>
-				<img src={ "https://storage.googleapis.com/go-news-bucket/" + v.Cover } class="card-img object-fit-cover" height="400" style="object-position: top" alt="..."/>
-				<div
-					class="position-absolute bottom-0 text-light w-100 p-2"
-					style="background-color: rgba(0, 0, 0, 0.5)"
-					x-data="date"
-				>
-					<a class="card-title h-5 fw-bold text-decoration-none" href={ templ.URL("/news/" + v.Title) }>
-						{ v.Title }
-					</a>
-					<p class="card-text"><small x-text={ fmt.Sprintf("formatDate(%d)", v.CreatedAt) }></small></p>
-				</div>
-			</div>
-		} else {
-			<div
-				class="card mb-3"
-				if i + 1 == len(news) {
-					hx-get={ fmt.Sprintf("/news?category=%s&next=%d", v.Categories.Name, v.ID) }
-					hx-trigger="intersect once"
-					hx-swap="afterend"
-				}
-			>
-				<div class="row g-0">
-					<div class="col-sm-4 position-relative">
-						<img src={ "https://storage.googleapis.com/go-news-bucket/" + v.Cover } class="card-img fit-cover w-100 h-100" alt="..."/>
-					</div>
-					<div class="col-sm-8">
-						<div class="card-body">
-							<h5 class="card-title">
-								<a class="link-dark text-decoration-none" href={ templ.URL("/news/" + v.Title) }>
-									{ v.Title }
-								</a>
-							</h5>
-							<span class="badge rounded-pill bg-dark">{ v.Categories.Name } </span>
-						</div>
-						<div
-							class="card-footer border-none d-flex align-items-center align-self-center"
-							x-data="date"
-						>
-							<p class="card-text"><small class="text-body-secondary" x-text={ fmt.Sprintf("formatDate(%d)", v.CreatedAt) }></small></p>
-						</div>
-					</div>
-				</div>
-			</div>
-		}
+templ NewsHome(categories []entity.Categories, activeCategory string) {
+	@NewsTemplate(categories, activeCategory) {
+		<div
+			x-bind:hx-get="`/news?category=${$store.tabs.active}`"
+			x-init="$nextTick(() => htmx.process($el))"
+			hx-trigger="load once"
+			hx-swap="innerHTML"
+		></div>
 	}
 }
 
-templ DataSearchTitle(news []entity.News, title string) {
-	if len(news) > 0 {
-		for i, v := range news {
-			<div
-				class="card mb-3"
-				if i + 1 == len(news) {
-					hx-get={ fmt.Sprintf("/news?next=%d", v.ID) }
-					x-bind:hx-vals={ fmt.Sprintf("JSON.stringify({'search': '%s'})", title) }
-					hx-trigger="intersect once"
-					hx-swap="afterend"
-				}
-			>
-				<div class="row g-0">
-					<div class="col-sm-4 position-relative">
-						<img src={ "https://storage.googleapis.com/go-news-bucket/" + v.Cover } height="150" class="card-img fit-cover w-100 h-100" alt="..."/>
-					</div>
-					<div class="col-sm-8">
-						<div class="card-body">
-							<h5 class="card-title">
-								<a class="link-dark text-decoration-none" href={ templ.URL("/news/" + v.Title) }>
-									{ v.Title }
-								</a>
-							</h5>
-							<span class="badge rounded-pill bg-dark">{ v.Categories.Name } </span>
-						</div>
-						<div
-							class="card-footer border-none d-flex align-items-center align-self-center"
-							x-data="date"
-						>
-							<p class="card-text"><small class="text-body-secondary" x-text={ fmt.Sprintf("formatDate(%d)", v.CreatedAt) }></small></p>
-						</div>
-					</div>
-				</div>
+templ NewsContent(news entity.News, categories []entity.Categories, activeCategory string) {
+	@NewsTemplate(categories, activeCategory) {
+		<div
+			x-effect={ fmt.Sprintf("() => $store.tabs.active = '%s'", news.Categories.Name) }
+			class="container-fluid"
+		>
+			<div x-data="date" class="mb-5 mx-auto text-center">
+				<h1>{ news.Title }</h1>
+				<p><small class="text-body-secondary mb-3" x-text={ fmt.Sprintf("formatDate(%d)", news.CreatedAt) }></small></p>
+				<img class="img-fluid img-thumbnail" src={ "https://storage.googleapis.com/go-news-bucket/" + news.Cover } alt=""/>
 			</div>
-		}
+			<div class="ck ck-content">
+				@templ.Raw(news.Content)
+			</div>
+		</div>
 	}
-}
-
-css className() {
-	margin-left: -40px;
-}
-
-templ NewsListContainer() {
-	<div
-		x-bind:hx-get="`/news?category=${$store.tabs.active}`"
-		x-init="$nextTick(() => htmx.process($el))"
-		hx-trigger="load once"
-		hx-swap="innerHTML"
-	></div>
-}
-
-templ NewsContent(news entity.News) {
-	<div
-		x-effect="() => $store.tabs.active = ''"
-	>
-		<div class="py-4">
-			<h5 class="fw-bold">
-				<i class="bi bi-house me-3"></i><span>{ news.Categories.Name }</span>
-			</h5>
-			<div style="height:.5rem;width: 6rem;background-color:#0DB2BA"></div>
-		</div>
-		<div x-data="date" class="mb-5">
-			<h1>{ news.Title }</h1>
-			<p><small class="text-body-secondary mb-3" x-text={ fmt.Sprintf("formatDate(%d)", news.CreatedAt) }></small></p>
-			<img class="object-fit-xxl-contain" width="800" height="400" src={ "https://storage.googleapis.com/go-news-bucket/" + news.Cover } alt=""/>
-		</div>
-		<div class="ck ck-content">
-			@templ.Raw(news.Content)
-		</div>
-	</div>
-}
-
-script tabsStore(activeCategory string) {
-	document.addEventListener('alpine:init', () => {
-		Alpine.store('tabs', {
-			active: activeCategory,
-			init() {
-				Alpine.effect(() => {
-					document.title = this.active
-					console.log(this.active)
-				})
-			}
-		})
-	})
-}
-
-templ News(categories []entity.Categories, activeCategory string, content templ.Component) {
-	@tabsStore(activeCategory)
-	<nav class="navbar navbar-expand-md border-bottom" style="background-color: #F7F7FC;">
-		<div class="container">
-			<div class="d-flex" style="height:100px">
-				<a href="#" class="navbar-brand my-auto text-dark">Brand</a>
-			</div>
-			<ul class="navbar-nav">
-				<li class="nav-item me-2">
-					<a href="#" class="nav-link"><i class="bi bi-twitter-x"></i></a>
-				</li>
-				<li class="nav-item me-2">
-					<a href="#" class="nav-link"><i class="bi bi-whatsapp"></i></a>
-				</li>
-			</ul>
-		</div>
-	</nav>
-	<nav id="navbar" class="navbar navbar-expand-md justify-content-start sticky-top shadow px-3 mb-5" style="background-color: #F7F7FC;">
-		<div class="container">
-			<ul
-				class="nav w-100 justify-content-start flex-wrap nav-underline"
-				x-data
-			>
-				for _, v := range categories {
-					<li class="nav-item">
-						<a
-							class="nav-link fs-6"
-							:class={ fmt.Sprintf("{ 'active fw-normal' : $store.tabs.active === '%s' }", v.Name) }
-							x-on:click={ fmt.Sprintf("$store.tabs.active = '%s' ", v.Name) }
-							hx-get={ "/news?category=" + v.Name }
-							hx-replace-url={ fmt.Sprintf("/news?category=%s", v.Name) }
-							hx-target="#content-news"
-							hx-trigger="click"
-							hx-swap="innerHTML"
-							href="#"
-						>{ v.Name }</a>
-					</li>
-				}
-				<li class="nav-item ms-auto position-relative" x-data="{open: false}">
-					<div class="input-group">
-						<input
-							@click="open = true"
-							hx-get="/news"
-							hx-trigger="keyup delay:500ms changed"
-							hx-target="#res-search"
-							hx-swap="innerHTML"
-							name="search"
-							class="form-control border-end-0 border rounded"
-							type="search"
-							placeholder="search..."
-							id="example-search-input"
-						/>
-						<span class="input-group-append">
-							<button class="btn btn-outline-secondary bg-white border-bottom-0 border rounded" type="button">
-								<i class="bi bi-search"></i>
-							</button>
-						</span>
-					</div>
-					<div
-						id="res-search"
-						x-show="open"
-						@mousedown.outside="open = false"
-						class="list-group position-absolute start-0 mt-1 translate-middle-x bg-body-tertiary p-3"
-						style="width: 180%; height: 20rem; overflow-y: auto"
-					>
-						<div id="error-search-news" class="text-center text-danger" hx-swap-oob="true"></div>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</nav>
-	<section class="container">
-		<div class="mb-3">
-			<div
-				x-data
-				id="content-news"
-				class="col-9"
-			>
-				@content
-				<div id="error-get-content-news" class="text-center text-danger" hx-swap-oob="true"></div>
-			</div>
-			<div class="col-3" id="content-popular"></div>
-		</div>
-	</section>
 }

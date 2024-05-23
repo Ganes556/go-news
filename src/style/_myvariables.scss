@@ -1,7 +1,8 @@
 $font-familly-base: "Roboto" !default;
 
 // custom color nav-link
+$link-color : #0DB2BA;
 $nav-underline-gap: 1.2rem;
 $nav-link-color: #000;
-$nav-link-hover-color: #0DB2BA !default;
-$nav-underline-link-active-color: #0DB2BA !default;
+$nav-link-hover-color: $link-color !default;
+$nav-underline-link-active-color: $link-color !default;

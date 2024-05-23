@@ -1,0 +1,132 @@
+package view_news
+
+import (
+	"github.com/news/internal/entity"
+	"fmt"
+)
+
+templ DataListNews(news []entity.News, next bool) {
+	<style type="text/css">
+		.fit-cover {
+			object-fit: cover;
+			object-position:top;
+		}
+
+		@media (min-width: 768px) {
+			.fit-cover {
+				position: absolute;
+			}
+		}
+	</style>
+	for i, v := range news {
+		if i == 0 && next != true {
+			<div
+				class="card bg-dark text-white mb-2"
+				if i + 1 == len(news) {
+					hx-get={ fmt.Sprintf("/news?category=%s&next=%d", v.Categories.Name, v.ID) }
+					hx-trigger="intersect once"
+					hx-swap="afterend"
+				}
+			>
+				<img src={ "https://storage.googleapis.com/go-news-bucket/" + v.Cover } class="card-img object-fit-fill" height="400" width="800" alt="..."/>
+				<div
+					class="position-absolute bottom-0 text-light w-100 p-2"
+					style="background-color: rgba(0, 0, 0, 0.5)"
+					x-data="date"
+				>
+					<a class="card-title h-5 fw-bold text-decoration-none line-clamp" href={ templ.URL("/news/" + v.Title) }>
+						{ v.Title }
+					</a>
+					<p class="card-text"><small x-text={ fmt.Sprintf("formatDate(%d)", v.CreatedAt) }></small></p>
+				</div>
+			</div>
+		} else {
+			<div
+				class="card mb-3"
+				if i + 1 == len(news) {
+					hx-get={ fmt.Sprintf("/news?category=%s&next=%d", v.Categories.Name, v.ID) }
+					hx-trigger="intersect once"
+					hx-swap="afterend"
+				}
+			>
+				<div class="row g-0">
+					<div class="col-sm-4 position-relative">
+						<img src={ "https://storage.googleapis.com/go-news-bucket/" + v.Cover } class="card-img fit-cover w-100 h-100" alt="..."/>
+					</div>
+					<div class="col-sm-8">
+						<div class="card-body">
+							<h5 class="card-title">
+								<a class="link-dark text-decoration-none line-clamp" href={ templ.URL("/news/" + v.Title) }>
+									{ v.Title }
+								</a>
+							</h5>
+							<span class="badge rounded-pill bg-dark">{ v.Categories.Name } </span>
+						</div>
+						<div
+							class="card-footer border-none d-flex align-items-center align-self-center"
+							x-data="date"
+						>
+							<p class="card-text"><small class="text-body-secondary" x-text={ fmt.Sprintf("formatDate(%d)", v.CreatedAt) }></small></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	}
+}
+
+templ DataSearchTitle(news []entity.News, title string) {
+	if len(news) > 0 {
+		for i, v := range news {
+			<div
+				class="card mb-3"
+				if i + 1 == len(news) {
+					hx-get={ fmt.Sprintf("/news?next=%d", v.ID) }
+					x-bind:hx-vals={ fmt.Sprintf("JSON.stringify({'search': '%s'})", title) }
+					hx-trigger="intersect once"
+					hx-swap="afterend"
+				}
+			>
+				<div class="row g-0">
+					<div class="card-body">
+						<h5 class="card-title">
+							<a class="link-dark text-decoration-none line-clamp" href={ templ.URL("/news/" + v.Title) }>
+								{ v.Title }
+							</a>
+						</h5>
+						<span class="badge rounded-pill bg-dark h-6">{ v.Categories.Name } </span>
+					</div>
+					<div
+						class="card-footer border-none d-flex align-items-center align-self-center"
+						x-data="date"
+					>
+						<p class="card-text"><small class="text-body-secondary" x-text={ fmt.Sprintf("formatDate(%d)", v.CreatedAt) }></small></p>
+					</div>
+				</div>
+			</div>
+		}
+	}
+}
+
+templ DataNewsPopular(news []entity.News) {
+	if len(news) > 0 {
+		<div class="shadow p-3">
+			for i, v := range news {
+				<div class="d-flex mb-3">
+					<div class="my-auto text-color-link me-3 h4">
+						{ fmt.Sprintf("%d.", i + 1) }
+					</div>
+					<div class="my-auto">
+						<a class="text-decoration-none line-clamp" href={ templ.URL("/news/" + v.Title) }>
+							{ v.Title }
+						</a>
+					</div>
+				</div>
+			}
+		</div>
+	} else {
+		<div class="h-5 text-center">
+			empty
+		</div>
+	}
+}

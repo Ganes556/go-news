@@ -22,8 +22,8 @@ import (
 )
 
 var (
-	InvalidImageFormat = "format gambar tidak valid"
-	InvalidImageSize   = "ukuran gambar harus kurang dari 5mb"
+	InvalidImageFormat = "invalid image format"
+	InvalidImageSize   = "image size should be less than 5mb"
 )
 
 type Gcloud interface {

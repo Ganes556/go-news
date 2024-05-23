@@ -5,6 +5,7 @@ import "github.com/news/internal/entity"
 import "fmt"
 import "time"
 import "github.com/news/view/component/alert"
+import "github.com/news/pkg"
 
 script setDataToContentDiv() {
 	let d = htmx.find("#res-content")
@@ -141,9 +142,25 @@ templ ModifiedNews(param DtoModifiedNews) {
 					}
 				</select>
 			</div>
-			<div class="mb-1">
+			<div class="mb-1" x-init="$nextTick(() => {
+				const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`)
+				const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+			})">
 				<label for="cover" class="form-label">Cover</label>
+				<small
+					data-bs-toggle="tooltip"
+					data-bs-placement="top"
+					data-bs-title={ pkg.InvalidImageSize }
+				>
+					<i class="bi bi-question-circle"></i>
+				</small>
 				<input class="form-control" name="cover" type="file" id="cover"/>
+				<script>
+					window.addEventListener("load", function () {
+						const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+						const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+					})
+				</script>
 			</div>
 			if param.Method == "PUT" {
 				@ImagePreview("https://storage.googleapis.com/go-news-bucket/" + param.OldNews.Cover)

@@ -123,8 +123,8 @@ func main() {
 
 	newsGroup := app.Group("/news", timeoutMid.Timeout(nil))
 	{
-		newsGroup.Get("/", newsHandler.ViewNewsUser)
-		newsGroup.Get("/:title", newsHandler.ViewNewsContentUser)
+		newsGroup.Get("/", newsHandler.ViewNewsHomeUser)
+		newsGroup.Get("/:title", newsHandler.ViewNewsContentUser)		
 	}
 
 	errHandler := handler_error.NewErrorHandler()
