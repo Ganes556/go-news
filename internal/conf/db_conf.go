@@ -2,6 +2,7 @@ package conf_internal
 
 import (
 	"fmt"
+	"os"
 
 	sqlNative "github.com/go-sql-driver/mysql"
 	"github.com/news/internal/entity"
@@ -20,7 +21,14 @@ type ParamNewGorm struct {
 }
 
 func NewGorm(param ParamNewGorm) *gorm.DB {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", param.Username, param.Password, param.Host, param.Port, param.Database)
+	var dsn string
+	if os.Getenv("ENVIRONMENT") == "PRODUCTION" {
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+			param.Username, param.Password, param.Host, param.Port, param.Database)
+	}else {
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+			"root", "", "localhost", "3306", param.Database)
+	}
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 		NamingStrategy: schema.NamingStrategy{

@@ -6,3 +6,6 @@ node_modules
 package-lock.json
 client_secret*
 ./public/vendor/build
+db
+dist
+.dockerignore

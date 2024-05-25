@@ -142,7 +142,7 @@ func main() {
 
 	errHandler := handler_error.NewErrorHandler()
 	app.Use(commonMid.IsAdmin, errHandler.NotFound)
-
+	
 	app.Listen(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
 
 }
