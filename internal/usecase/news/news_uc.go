@@ -18,6 +18,7 @@ type UcNews interface {
 	Create(param ParamCreate) (err error)
 	Update(param ParamUpdate) (err error)
 	Delete(param ParamDelete) (err error)
+	AddViewingNews(param ParamAddViewingNews) (err error)
 	GetNews(param ParamGetNews) (news []entity.News, err error)
 	GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News, err error)
 	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
@@ -142,6 +143,64 @@ func (u *ucNews) Update(param ParamUpdate) (err error) {
 	return
 }
 
+type ParamAddViewingNews struct {
+	Ctx    context.Context
+	Ip     string
+	IdNews uint
+}
+
+func (u *ucNews) AddViewingNews(param ParamAddViewingNews) (err error) {
+	err = u.db.WithContext(param.Ctx).Transaction(func(tx *gorm.DB) error {
+
+		ipread := new(entity.IpRead)
+		if err2 := tx.Preload("News", func(db *gorm.DB) *gorm.DB {
+			return db.Where("id = ?", param.IdNews).Select("id")
+		}).First(ipread, "ip = ?", param.Ip).Error; err2 != nil {
+			if err2 == gorm.ErrRecordNotFound {
+				if err3 := tx.Create(&entity.IpRead{
+					IP: param.Ip,
+					News: []entity.News{
+						{
+							Base: entity.Base{
+								ID: param.IdNews,
+							},
+						}},
+				}).Error; err3 != nil {
+					helper.LogsError(err)
+					return err3
+				}
+			}
+			if err2 != gorm.ErrRecordNotFound {
+				return err2
+			}
+		} else {			
+			if err3 := tx.Model(&entity.IpRead{
+				Base: ipread.Base,
+				IP: ipread.IP,
+				News: ipread.News,
+			}).Association("News").Append([]entity.News{
+				{
+					Base: entity.Base{
+						ID: param.IdNews,
+					},
+				}}); err3 != nil {
+				helper.LogsError(err)
+				return err3
+			}
+		}
+
+		if len(ipread.News) == 0 {
+			if err2 := tx.Model(&entity.News{}).Where("id = ?", param.IdNews).Update("count_view", gorm.Expr("count_view + 1")).Error; err2 != nil {
+				helper.LogsError(err)
+				return err2
+			}
+		}
+
+		return nil
+	})
+	return
+}
+
 type ParamGetNews struct {
 	Ctx   context.Context
 	Next  uint
@@ -197,7 +256,7 @@ func (u *ucNews) GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News
 	}
 
 	if param.Title != "" {
-		tx = tx.Where("title LIKE ?", "%" + param.Title + "%").Preload("Categories")
+		tx = tx.Where("title LIKE ?", "%"+param.Title+"%").Preload("Categories")
 	}
 
 	if param.Next != 0 {
@@ -218,10 +277,11 @@ func (u *ucNews) GetNewsByTitle(ctx context.Context, title string) (news entity.
 	}
 	title = strings.ToLower(parsedTitle)
 
-	err = u.db.WithContext(ctx).Preload("Categories").First(&news,"title = ?", title).Error
+	err = u.db.WithContext(ctx).Preload("Categories").First(&news, "title = ?", title).Error
 	if err == gorm.ErrRecordNotFound {
 		err = new(dto_response.Response).Err404("news")
 	}
+
 	return
 }
 

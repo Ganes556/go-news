@@ -26,9 +26,9 @@ import (
 type HandlerNews interface {
 	PostNews(c *fiber.Ctx) error
 	PutNews(c *fiber.Ctx) error
+	DelNews(c *fiber.Ctx) error
 	ViewNewsHomeUser(c *fiber.Ctx) error
 	ViewNewsContentUser(c *fiber.Ctx) error
-	DelNews(c *fiber.Ctx) error
 	ViewNewsAdmin(c *fiber.Ctx) error
 }
 
@@ -349,6 +349,25 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 
 	news, err := h.uc.GetNewsByTitle(ctx, req.Title)
 	if err != nil {
+		var contentErr templ.Component = view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code)
+		if errRes, ok := err.(*dto_response.Response); ok {
+			contentErr = view_error.Error(errRes.Message, errRes.Code)
+		}
+		return helper_handler.Render(c, view_layout.Layout(
+			view_layout.ParamLayout{
+				C:        c,
+				Title:    "Error",
+				Contents: contentErr,
+			},
+		))
+	}
+
+	// compute views
+	if err := h.uc.AddViewingNews(uc_news.ParamAddViewingNews{
+		Ctx: ctx,
+		Ip: c.IP(),
+		IdNews: news.ID,
+	}); err != nil {
 		var contentErr templ.Component = view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code)
 		if errRes, ok := err.(*dto_response.Response); ok {
 			contentErr = view_error.Error(errRes.Message, errRes.Code)

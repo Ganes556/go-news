@@ -13,9 +13,11 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/gofiber/storage/mysql"
+	"github.com/jasonlvhit/gocron"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/news/helper"
 	conf_internal "github.com/news/internal/conf"
+	"github.com/news/internal/cron_func"
 	handler_categories "github.com/news/internal/handler/categories"
 	handler_error "github.com/news/internal/handler/error"
 	handler_news "github.com/news/internal/handler/news"
@@ -44,6 +46,17 @@ func main() {
 	// pkg
 	validator := pkg.NewValidator()
 	gcp := pkg.NewGcloud(nil, os.Getenv("GC_BUCKET"))
+
+	// cron
+	cronFunc := cron_func.NewCronFunc(DB)
+	s := gocron.NewScheduler()
+	err := s.Every(1).Day().Do(cronFunc.DBResetIpread)
+	if err != nil {
+		panic(err)
+	}
+	go func() {
+		<- s.Start()
+	}()
 
 	// middleware
 	session := session.New(session.Config{
@@ -124,7 +137,7 @@ func main() {
 	newsGroup := app.Group("/news", timeoutMid.Timeout(nil))
 	{
 		newsGroup.Get("/", newsHandler.ViewNewsHomeUser)
-		newsGroup.Get("/:title", newsHandler.ViewNewsContentUser)		
+		newsGroup.Get("/:title", newsHandler.ViewNewsContentUser)
 	}
 
 	errHandler := handler_error.NewErrorHandler()
