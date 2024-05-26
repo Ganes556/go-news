@@ -16,7 +16,6 @@ import (
 	view_admin_layout "github.com/news/view/admin/layout"
 	view_auth "github.com/news/view/auth"
 	view_navbar "github.com/news/view/component/navbar"
-	view_error "github.com/news/view/error"
 	view_layout "github.com/news/view/layout"
 	"github.com/sujit-baniya/flash"
 )
@@ -115,15 +114,7 @@ func (h *handlerUser) ViewDashboard(c *fiber.Ctx) error {
 
 	ctx := c.UserContext()
 
-	totalPost, totalViews, err := h.ucNews.GetTotalPostAndViews(ctx)
-
-	if err != nil {
-		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
-			C: c,
-			Title: "Error",
-			Contents: view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code),
-		}))
-	}
+	totalPost, totalViews := h.ucNews.GetTotalPostAndViews(ctx)
 
 	if req.Partial == "1" {
 		return helper_handler.Render(c, view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
