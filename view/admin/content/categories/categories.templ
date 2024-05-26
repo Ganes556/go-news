@@ -31,7 +31,7 @@ script showEditModal(id uint, name string) {
 }
 
 templ GetCategories(categories []entity.Categories, csrfToken string) {
-	<div class="container py-3">
+	<div class="container-fluid py-3">
 		<h1>Categories</h1>
 		<div x-data="{open: false}">
 			@view_modal.Modal("Add Category", "Add Category", "btn-primary", "", "createCategory", CreateCategory(csrfToken))

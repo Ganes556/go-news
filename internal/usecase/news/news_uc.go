@@ -24,7 +24,7 @@ type UcNews interface {
 	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
 	GetNewsByTitle(ctx context.Context, title string) (news entity.News, err error)
 	GetNewsPopular(ctx context.Context) (news []entity.News, err error)
-	GetTotalPost(ctx context.Context) (total int64)
+	GetTotalPostAndViews(ctx context.Context) (totalPost, totalViews int64, err error)
 }
 
 type ucNews struct {
@@ -292,7 +292,17 @@ func (u *ucNews) GetNewsPopular(ctx context.Context) (news []entity.News, err er
 	}
 	return
 }
-func (u *ucNews) GetTotalPost(ctx context.Context) (total int64) {
-	u.db.WithContext(ctx).Select("id").Find(&entity.News{}).Count(&total)
+
+func (u *ucNews) GetTotalPostAndViews(ctx context.Context) (totalPost, totalViews int64, err error) {
+	err = u.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err2 := tx.Find(&entity.News{}).Select("id").Count(&totalPost).Error; err2 != nil {
+			return err2
+		}
+
+		if err2 := tx.Model(&entity.News{}).Select("SUM(count_view) AS count_views").Row().Scan(&totalViews); err2 != nil {
+			return err2
+		}
+		return nil
+	})
 	return
 }

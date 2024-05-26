@@ -55,7 +55,7 @@ func main() {
 		panic(err)
 	}
 	go func() {
-		<- s.Start()
+		<-s.Start()
 	}()
 
 	// middleware
@@ -112,12 +112,11 @@ func main() {
 	newsUc := uc_news.NewNewsUc(gcp, DB)
 	categoriesUc := uc_categories.NewCategoriesUc(DB, gcp)
 	// handler
-	userHandler := handler_user.NewHandlerUser(userUc, validator, session)
+	userHandler := handler_user.NewHandlerUser(userUc, newsUc, validator, session)
 	newsHandler := handler_news.NewNewsHandler(newsUc, categoriesUc, validator, session)
 	categoriesHandler := handler_categories.NewHandlerCategories(categoriesUc, validator, session)
-	
-	userGroup := app.Group("/user", timeoutMid.Timeout(nil), authMid.Authorized)
 
+	userGroup := app.Group("/user", timeoutMid.Timeout(nil), authMid.Authorized)
 
 	{
 		userGroup.Get("/login", userHandler.ViewLogin)
@@ -142,7 +141,7 @@ func main() {
 
 	errHandler := handler_error.NewErrorHandler()
 	app.Use(commonMid.IsAdmin, errHandler.NotFound)
-	
+
 	app.Listen(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
 
 }

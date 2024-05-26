@@ -75,7 +75,7 @@ func GetCategories(categories []entity.Categories, csrfToken string) templ.Compo
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container py-3\"><h1>Categories</h1><div x-data=\"{open: false}\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container-fluid py-3\"><h1>Categories</h1><div x-data=\"{open: false}\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
