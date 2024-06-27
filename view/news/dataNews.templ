@@ -108,7 +108,7 @@ templ DataSearchTitle(news []entity.News, title string) {
 	}
 }
 
-templ DataNewsPopular(news []entity.News) {
+templ DataNewsMostViewed(news []entity.News) {
 	if len(news) > 0 {
 		<div class="shadow p-3">
 			for i, v := range news {

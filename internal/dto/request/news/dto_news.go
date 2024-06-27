@@ -31,7 +31,7 @@ type ViewNews struct {
 
 type ViewNewsUser struct {
 	Category string `query:"category" validate:"omitempty"`
-	Popular  string `query:"popular" validate:"omitempty,oneof=1 0"`
+	MostViewed  string `query:"most_viewed" validate:"omitempty,oneof=1 0"`
 	Search   string `form:"search" xml:"search" json:"search" validate:"omitempty"`
 	Next     uint   `query:"next" validate:"omitempty"`
 	Limit    uint   `query:"next" validate:"omitempty"`

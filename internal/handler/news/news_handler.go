@@ -282,17 +282,17 @@ func (h *handlerNews) ViewNewsHomeUser(c *fiber.Ctx) error {
 			return helper_handler.Render(c, view_news.DataSearchTitle(news, req.Search))
 		}
 
-		if req.Popular == "1" {
-			news, err := h.uc.GetNewsPopular(ctx)
+		if req.MostViewed == "1" {
+			news, err := h.uc.GetNewsMostViewed(ctx)
 			if err != nil {
-				c.Set("HX-Retarget", "#error-popular-news")
+				c.Set("HX-Retarget", "#error-most-viewed-news")
 				c.Set("HX-Reswap", "innerHTML")
 				if errRes, ok := err.(*dto_response.Response); ok {
 					return c.SendString(fmt.Sprintf("%d: %s", errRes.Code, errRes.Message))
 				}
 				return c.SendString(fmt.Sprintf("%d: %s", fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message))
 			}
-			return helper_handler.Render(c, view_news.DataNewsPopular(news))
+			return helper_handler.Render(c, view_news.DataNewsMostViewed(news))
 		}
 		
 		return nil

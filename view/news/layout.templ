@@ -153,16 +153,16 @@ templ NewsTemplate(categories []entity.Categories, activeCategory string) {
 			<div class="col-1"></div>
 			<div
 				class="col-12 col-md-4 pt-3"
-				id="content-popular"
+				id="content-most-viewed"
 			>
-				<h5 class="mb-3 text-center">Popular</h5>
+				<h5 class="mb-3 text-center">Most Viewed</h5>
 				<div
-					hx-get="/news?popular=1"
+					hx-get="/news?most_viewed=1"
 					hx-trigger="load once"
 					hx-target="this"
 					hx-swap="innerHTML"
 				></div>
-				<div id="error-popular-news" class="text-center text-danger" hx-swap-oob="true"></div>
+				<div id="error-most-viewed-news" class="text-center text-danger" hx-swap-oob="true"></div>
 			</div>
 		</div>
 	</section>

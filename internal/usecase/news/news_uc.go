@@ -24,7 +24,7 @@ type UcNews interface {
 	GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News, err error)
 	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
 	GetNewsByTitle(ctx context.Context, title string) (news entity.News, err error)
-	GetNewsPopular(ctx context.Context) (news []entity.News, err error)
+	GetNewsMostViewed(ctx context.Context) (news []entity.News, err error)
 	GetTotalPostAndViews(ctx context.Context) (totalPost, totalViews int64)
 }
 
@@ -286,7 +286,7 @@ func (u *ucNews) GetNewsByTitle(ctx context.Context, title string) (news entity.
 	return
 }
 
-func (u *ucNews) GetNewsPopular(ctx context.Context) (news []entity.News, err error) {
+func (u *ucNews) GetNewsMostViewed(ctx context.Context) (news []entity.News, err error) {
 	err = u.db.WithContext(ctx).Order("count_view DESC").Preload("Categories").Limit(10).Find(&news).Error
 	if err != nil {
 		helper.LogsError(err)

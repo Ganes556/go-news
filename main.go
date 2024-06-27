@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/redirect"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/gofiber/storage/mysql"
@@ -101,6 +102,13 @@ func main() {
 		},
 		KeyGenerator: utils.UUIDv4,
 		Session:      session,
+	}))
+
+	app.Use(redirect.New(redirect.Config{
+		Rules: map[string]string{
+			"/":   "/news",
+		},
+		StatusCode: 301,
 	}))
 
 	timeoutMid := middleware.NewTimeoutMiddleware()
