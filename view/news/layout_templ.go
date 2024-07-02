@@ -13,21 +13,20 @@ import "fmt"
 
 func tabsStore(activeCategory string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_tabsStore_4c12`,
-		Function: `function __templ_tabsStore_4c12(activeCategory){document.addEventListener('alpine:init', () => {
+		Name: `__templ_tabsStore_20fa`,
+		Function: `function __templ_tabsStore_20fa(activeCategory){document.addEventListener('alpine:init', () => {
 		Alpine.store('tabs', {
 			active: activeCategory,
 			init() {
 				Alpine.effect(() => {
 					document.title = this.active
-					console.log(this.active)
 				})
 			}
 		})
 	})
 }`,
-		Call:       templ.SafeScript(`__templ_tabsStore_4c12`, activeCategory),
-		CallInline: templ.SafeScriptInline(`__templ_tabsStore_4c12`, activeCategory),
+		Call:       templ.SafeScript(`__templ_tabsStore_20fa`, activeCategory),
+		CallInline: templ.SafeScriptInline(`__templ_tabsStore_20fa`, activeCategory),
 	}
 }
 
@@ -65,7 +64,7 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ 'active fw-normal' : $store.tabs.active === '%s' }", v.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 60, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 59, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -78,7 +77,7 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$store.tabs.active = '%s' ", v.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 61, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 60, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -91,7 +90,7 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("/news?category=" + v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 62, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 61, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -104,7 +103,7 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/news?category=%s", v.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 63, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 62, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -117,7 +116,7 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 68, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 67, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

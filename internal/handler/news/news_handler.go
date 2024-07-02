@@ -74,12 +74,10 @@ func (h *handlerNews) ViewNewsAdmin(c *fiber.Ctx) error {
 	}
 
 	var categories []entity.Categories
-	if req.Page != "" {
-		categories, err = h.ucCategories.GetAll(ctx)
-		if err != nil {
-			helper.LogsError(err)
-			return helper_handler.ReturnErrFlash(c, "", nil)
-		}
+	categories, err = h.ucCategories.GetAll(ctx)
+	if err != nil {
+		helper.LogsError(err)
+		return helper_handler.ReturnErrFlash(c, "", nil)
 	}
 
 	switch req.Page {
@@ -122,18 +120,20 @@ func (h *handlerNews) ViewNewsAdmin(c *fiber.Ctx) error {
 			})
 		}
 	default:
-		component = view_admin_content_news.GetNews(news, csrfToken)
+		component = view_admin_content_news.GetNews(news, categories, csrfToken)
 	}
 
 	if req.Partial == "1" && c.GetReqHeaders()["Hx-Request"] != nil {
-		
-		if req.Title != nil {	
-			if *req.Title == "" {
+		fmt.Println("request->",req.Title, req.Category)
+		if req.Title != nil || req.Category != nil {	
+			if *req.Title == "" && *req.Category == "" {
 				return helper_handler.Render(c, view_admin_content_news.TrNews(news, csrfToken, req.LastIndex))
 			}
+			
 			news, err = h.uc.GetNewsByFilter(uc_news.ParamGetNewsByFilter{
 				Ctx:   ctx,
 				Title: *req.Title,
+				Category: *req.Category,
 				Next:  req.Next,
 				Limit: 10,
 			})
