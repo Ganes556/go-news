@@ -6,7 +6,7 @@ toolchain go1.22.3
 
 require (
 	cloud.google.com/go/storage v1.40.0
-	github.com/a-h/templ v0.2.648
+	github.com/a-h/templ v0.2.731
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1

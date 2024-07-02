@@ -10,9 +10,8 @@ This is simple news project to implement full stack with golang
 2. Fiber
 3. Templ
 4. Bootstrap
-5. AlpineJs
-6. Webpack
-7. Node
+5. Alpine.js
+6. Vite
 
 # Requirement
 
@@ -24,19 +23,18 @@ This is simple news project to implement full stack with golang
 
 ## With Docker
 
-1. Node version >= 20
-2. Docker
+1. Docker
 
 # How to Run
 
 ## Without Docker
 
-1. npm i
-2. npm run go-webpack
-3. air .
+1. cd frontend-bundle
+2. npm i
+3. npm run dev
+4. cd ../ 
+5. air .
 
 ## With Docker
 
-1. npm i
-2. npm run go-webpack
-3. docker compose up
+1. docker compose up

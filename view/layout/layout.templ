@@ -2,6 +2,7 @@ package view_layout
 
 import "github.com/sujit-baniya/flash"
 import "github.com/news/view/component/toast"
+import "os"
 
 templ Layout(param ParamLayout) {
 	<!DOCTYPE html>
@@ -9,8 +10,11 @@ templ Layout(param ParamLayout) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<link rel="stylesheet" href="/vendor/build/main.css"/>
-			<script defer src="/vendor/build/main.bundle.js"></script>
+			if os.Getenv("ENVIRONMENT") == "PRODUCTION" {
+				<script type="module" src="/main.js"></script>
+			} else {
+				<script type="module" src="http://localhost:5173/main.js"></script>
+			}
 			<title>{ param.Title }</title>
 		</head>
 		<body>

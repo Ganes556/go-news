@@ -77,7 +77,7 @@ func main() {
 		}),
 	})
 
-	app.Static("/", "./public")
+	app.Static("/", "./static")
 
 	app.Use(csrf.New(csrf.Config{
 		CookieHTTPOnly:    true,
