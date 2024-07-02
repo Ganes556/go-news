@@ -29,7 +29,7 @@ templ TrNews(news []entity.News, csrfToken string, lastIndex int) {
 			<td>{ v.Users.Name }</td>
 			<td class="row gx-1 justify-content-center">
 				<div class="col">
-					<i hx-get={ fmt.Sprintf("?page=update&partial=1&id=%d", v.ID) } hx-swap="outerHTML" hx-replace-url={ fmt.Sprintf("?page=update&id=%d", v.ID) } hx-target="#content" class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
+					<i hx-get={ fmt.Sprintf("?page=update&id=%d", v.ID) } hx-swap="outerHTML" hx-replace-url={ fmt.Sprintf("?page=update&id=%d", v.ID) } hx-target="#content" class="bi bi-pencil-fill text-success h-4 cursor-pointer"></i>
 				</div>
 				<div class="col">
 					<i
@@ -47,7 +47,7 @@ templ GetNews(news []entity.News, csrfToken string) {
 		<h1>News</h1>
 		<div
 			class="btn btn-primary me-3"
-			hx-get="?page=create&partial=1"
+			hx-get="?page=create"
 			hx-replace-url="?page=create"
 			hx-swap="outerHTML"
 			hx-target="#content"
@@ -55,6 +55,16 @@ templ GetNews(news []entity.News, csrfToken string) {
 			Add News
 		</div>
 		<div class="table-responsive-lg mt-5">
+			<input
+				class="form-control"
+				type="text"
+				name="title"
+				hx-get="?partial=1"
+				hx-trigger="keyup delay:500ms changed"
+				hx-target="#results"
+				hx-swap="innerHTML"
+				placeholder="search by title..."
+			/>
 			<table class="table table-striped">
 				<thead>
 					<tr>
@@ -66,7 +76,7 @@ templ GetNews(news []entity.News, csrfToken string) {
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="results">
 					@TrNews(news, csrfToken, 0)
 				</tbody>
 			</table>
@@ -142,10 +152,13 @@ templ ModifiedNews(param DtoModifiedNews) {
 					}
 				</select>
 			</div>
-			<div class="mb-1" x-init="$nextTick(() => {
+			<div
+				class="mb-1"
+				x-init="$nextTick(() => {
 				const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`)
 				const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-			})">
+			})"
+			>
 				<label for="cover" class="form-label">Cover</label>
 				<small
 					data-bs-toggle="tooltip"

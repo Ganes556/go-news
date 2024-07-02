@@ -57,7 +57,10 @@ func (h *handlerNews) ViewNewsAdmin(c *fiber.Ctx) error {
 	ctx := c.UserContext()
 	csrfToken := c.Locals("csrfToken").(string)
 
-	news, err := h.uc.GetNews(uc_news.ParamGetNews{
+	var news []entity.News
+	var err error
+
+	news, err = h.uc.GetNews(uc_news.ParamGetNews{
 		Ctx:   ctx,
 		Next:  req.Next,
 		Limit: req.Limit,
@@ -123,21 +126,34 @@ func (h *handlerNews) ViewNewsAdmin(c *fiber.Ctx) error {
 	}
 
 	if req.Partial == "1" && c.GetReqHeaders()["Hx-Request"] != nil {
+		
+		if req.Title != nil {	
+			if *req.Title == "" {
+				return helper_handler.Render(c, view_admin_content_news.TrNews(news, csrfToken, req.LastIndex))
+			}
+			news, err = h.uc.GetNewsByFilter(uc_news.ParamGetNewsByFilter{
+				Ctx:   ctx,
+				Title: *req.Title,
+				Next:  req.Next,
+				Limit: 10,
+			})
+			if err != nil {
+				return helper_handler.ReturnErrFlash(c, "", []dto_response.Response{{
+					Message: fiber.ErrInternalServerError.Message,
+					Code: fiber.ErrInternalServerError.Code,
+				}})
+			}
+			return helper_handler.Render(c, view_admin_content_news.TrNews(news, csrfToken, req.LastIndex))
+		}
+		
+		// data infinite scroll
 		if req.Next != 0 {
 			return helper_handler.Render(c, view_admin_content_news.TrNews(news, csrfToken, req.LastIndex))
 		}
-		return helper_handler.Render(c, view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
-			C:       c,
-			Content: component,
-			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
-				Username: username,
-				Name:     name,
-			}),
-		}))
 	}
 
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
-		C: c,
+		C:     c,
 		Title: "News",
 		Contents: view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
 			Content: component,
@@ -294,7 +310,7 @@ func (h *handlerNews) ViewNewsHomeUser(c *fiber.Ctx) error {
 			}
 			return helper_handler.Render(c, view_news.DataNewsMostViewed(news))
 		}
-		
+
 		return nil
 	}
 
@@ -364,8 +380,8 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 
 	// compute views
 	if err := h.uc.AddViewingNews(uc_news.ParamAddViewingNews{
-		Ctx: ctx,
-		Ip: c.IP(),
+		Ctx:    ctx,
+		Ip:     c.IP(),
 		IdNews: news.ID,
 	}); err != nil {
 		var contentErr templ.Component = view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code)

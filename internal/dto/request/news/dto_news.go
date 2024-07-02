@@ -21,20 +21,22 @@ type UpdateNews struct {
 	Cover      *multipart.FileHeader `form:"cover" validate:"omitempty"`
 }
 type ViewNews struct {
-	IdEdit    uint   `query:"id" validate:"omitempty"`
-	Partial   string `query:"partial" validate:"omitempty,oneof=1 0"`
-	LastIndex int    `query:"last_index" validate:"omitempty,min=1"`
-	Page      string `query:"page" validate:"omitempty,oneof=create update"`
-	Next      uint   `query:"next" validate:"omitempty"`
-	Limit     uint   `query:"next" validate:"omitempty"`
+	IdEdit    uint    `query:"id" validate:"omitempty"`
+	Partial   string  `query:"partial" validate:"omitempty,oneof=1 0"`
+	LastIndex int     `query:"last_index" validate:"omitempty,min=1"`
+	Page      string  `query:"page" validate:"omitempty,oneof=create update"`
+	Title     *string `query:"title" validate:"omitempty"`
+	Category  *string `query:"category" validate:"omitempty"`
+	Next      uint    `query:"next" validate:"omitempty"`
+	Limit     uint    `query:"next" validate:"omitempty"`
 }
 
 type ViewNewsUser struct {
-	Category string `query:"category" validate:"omitempty"`
-	MostViewed  string `query:"most_viewed" validate:"omitempty,oneof=1 0"`
-	Search   string `form:"search" xml:"search" json:"search" validate:"omitempty"`
-	Next     uint   `query:"next" validate:"omitempty"`
-	Limit    uint   `query:"next" validate:"omitempty"`
+	Category   string `query:"category" validate:"omitempty"`
+	MostViewed string `query:"most_viewed" validate:"omitempty,oneof=1 0"`
+	Search     string `form:"search" xml:"search" json:"search" validate:"omitempty"`
+	Next       uint   `query:"next" validate:"omitempty"`
+	Limit      uint   `query:"next" validate:"omitempty"`
 }
 
 type ViewNewsContentUser struct {

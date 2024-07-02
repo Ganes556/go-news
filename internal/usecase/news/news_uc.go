@@ -257,7 +257,7 @@ func (u *ucNews) GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News
 	}
 
 	if param.Title != "" {
-		tx = tx.Where("title LIKE ?", "%"+param.Title+"%").Preload("Categories")
+		tx = tx.Where("title LIKE ?", "%"+param.Title+"%").Preload("Users").Preload("Categories")
 	}
 
 	if param.Next != 0 {
