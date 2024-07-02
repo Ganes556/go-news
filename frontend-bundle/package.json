@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "postcss-nesting": "^12.1.5",
     "sass": "^1.77.6",
     "vite": "^5.3.1"
   },
@@ -19,6 +20,7 @@
     "@popperjs/core": "^2.11.8",
     "@rollup/plugin-inject": "^5.0.5",
     "alpinejs": "^3.14.1",
+    "autoprefixer": "^10.4.19",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "ckeditor5": "^42.0.0",
