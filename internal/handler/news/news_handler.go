@@ -358,12 +358,12 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 	c.ParamsParser(req)
 
 	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
-		return helper_handler.ReturnErrFlash(c, "", err.Errs)
+		return helper_handler.ReturnErrFlash(c, "/", err.Errs)
 	}
 
 	ctx := c.UserContext()
 
-	news, err := h.uc.GetNewsByTitle(ctx, req.Title)
+	news, err := h.uc.GetNewsBySlug(ctx, req.Slug)
 	if err != nil {
 		var contentErr templ.Component = view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code)
 		if errRes, ok := err.(*dto_response.Response); ok {
@@ -413,15 +413,16 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 			C:        c,
 		}))
 	}
-	if len(categories) > 0 {
-		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
-			Title:    categories[0].Name,
-			Contents: view_news.NewsContent(news, categories, categories[0].Name),
-			C:        c,
-		}))
-	}
+	// if len(categories) > 0 {
+	// 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+	// 		Title:    categories[0].Name,
+	// 		Contents: view_news.NewsContent(news, categories, categories[0].Name),
+	// 		C:        c,
+	// 	}))
+	// }
+	fmt.Println("kena")
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
-		Title:    req.Title,
+		Title:    news.Title,
 		Contents: view_news.NewsContent(news, categories, categories[0].Name),
 		C:        c,
 	}))

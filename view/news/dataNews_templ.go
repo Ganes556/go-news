@@ -77,7 +77,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var4 templ.SafeURL = templ.URL("/news/" + v.Title)
+				var templ_7745c5c3_Var4 templ.SafeURL = templ.URL("/news/" + v.Slug)
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -153,7 +153,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var9 templ.SafeURL = templ.URL("/news/" + v.Title)
+				var templ_7745c5c3_Var9 templ.SafeURL = templ.URL("/news/" + v.Slug)
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var9)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -267,7 +267,7 @@ func DataSearchTitle(news []entity.News, title string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var16 templ.SafeURL = templ.URL("/news/" + v.Title)
+				var templ_7745c5c3_Var16 templ.SafeURL = templ.URL("/news/" + v.Slug)
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var16)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -362,7 +362,7 @@ func DataNewsMostViewed(news []entity.News) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var22 templ.SafeURL = templ.URL("/news/" + v.Title)
+				var templ_7745c5c3_Var22 templ.SafeURL = templ.URL("/news/" + v.Slug)
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var22)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

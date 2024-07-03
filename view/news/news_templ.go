@@ -8,8 +8,10 @@ package view_news
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/news/internal/entity"
-import "fmt"
+import (
+	"fmt"
+	"github.com/news/internal/entity"
+)
 
 func NewsHome(categories []entity.Categories, activeCategory string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -92,7 +94,7 @@ func NewsContent(news entity.News, categories []entity.Categories, activeCategor
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("() => $store.tabs.active = '%s'", news.Categories.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/news.templ`, Line: 20, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/news.templ`, Line: 22, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -105,7 +107,7 @@ func NewsContent(news entity.News, categories []entity.Categories, activeCategor
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(news.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/news.templ`, Line: 24, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/news.templ`, Line: 26, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -118,7 +120,7 @@ func NewsContent(news entity.News, categories []entity.Categories, activeCategor
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("formatDate(%d)", news.CreatedAt))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/news.templ`, Line: 25, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/news.templ`, Line: 27, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -131,7 +133,7 @@ func NewsContent(news entity.News, categories []entity.Categories, activeCategor
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("https://storage.googleapis.com/go-news-bucket/" + news.Cover)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/news.templ`, Line: 26, Col: 108}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/news.templ`, Line: 28, Col: 108}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {

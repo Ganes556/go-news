@@ -13,20 +13,24 @@ import "fmt"
 
 func tabsStore(activeCategory string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_tabsStore_20fa`,
-		Function: `function __templ_tabsStore_20fa(activeCategory){document.addEventListener('alpine:init', () => {
+		Name: `__templ_tabsStore_c07f`,
+		Function: `function __templ_tabsStore_c07f(activeCategory){document.addEventListener('alpine:init', () => {
 		Alpine.store('tabs', {
 			active: activeCategory,
 			init() {
 				Alpine.effect(() => {
-					document.title = this.active
+					let url = new URL(window.location.href);
+					let params = url.searchParams;
+					if(params.get('category')) {	
+						document.title = this.active
+					}
 				})
 			}
 		})
 	})
 }`,
-		Call:       templ.SafeScript(`__templ_tabsStore_20fa`, activeCategory),
-		CallInline: templ.SafeScriptInline(`__templ_tabsStore_20fa`, activeCategory),
+		Call:       templ.SafeScript(`__templ_tabsStore_c07f`, activeCategory),
+		CallInline: templ.SafeScriptInline(`__templ_tabsStore_c07f`, activeCategory),
 	}
 }
 
@@ -57,14 +61,14 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			return templ_7745c5c3_Err
 		}
 		for _, v := range categories {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"nav-item\"><a class=\"nav-link fs-6\" :class=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"nav-item\"><a class=\"nav-link fs-6\" style=\"cursor: pointer;\" :class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ 'active fw-normal' : $store.tabs.active === '%s' }", v.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 59, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 64, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -77,7 +81,7 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$store.tabs.active = '%s' ", v.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 60, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 65, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -90,7 +94,7 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("/news?category=" + v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 61, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 66, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -103,20 +107,20 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/news?category=%s", v.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 62, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 67, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#content-news\" hx-trigger=\"click\" hx-swap=\"innerHTML\" href=\"#\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#content-news\" hx-trigger=\"click\" hx-swap=\"innerHTML\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 67, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/layout.templ`, Line: 71, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -135,7 +139,7 @@ func NewsTemplate(categories []entity.Categories, activeCategory string) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"error-get-content-news\" class=\"text-center text-danger\" hx-swap-oob=\"true\"></div></div><div class=\"col-1\"></div><div class=\"col-12 col-md-4 pt-3\" id=\"content-most-viewed\"><h5 class=\"mb-3 text-center\">Most Viewed</h5><div hx-get=\"/news?most_viewed=1\" hx-trigger=\"load once\" hx-target=\"this\" hx-swap=\"innerHTML\"></div><div id=\"error-most-viewed-news\" class=\"text-center text-danger\" hx-swap-oob=\"true\"></div></div></div></section>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"error-get-content-news\" class=\"text-center text-danger\" hx-swap-oob=\"true\"></div></div><div class=\"col-1\"></div><div class=\"col-12 col-md-4 pt-3\" id=\"content-most-viewed\"><h5 class=\"mb-3 text-center\">Most Viewed</h5><div hx-get=\"/news?most_viewed=1\" hx-trigger=\"load once\" hx-target=\"this\" hx-swap=\"innerHTML ignoreTitle:true\"></div><div id=\"error-most-viewed-news\" class=\"text-center text-danger\" hx-swap-oob=\"true\"></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

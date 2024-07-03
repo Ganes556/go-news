@@ -46,6 +46,8 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.3 // indirect
+	github.com/gosimple/slug v1.14.0 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
@@ -59,6 +61,7 @@ require (
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
