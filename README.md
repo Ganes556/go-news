@@ -31,4 +31,3 @@ This is simple news project to implement full stack with golang
 3. Templ
 4. Bootstrap
 5. Alpine.js
-6. Vite
