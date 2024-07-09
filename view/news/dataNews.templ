@@ -20,8 +20,7 @@ templ DataListNews(news []entity.News, next bool) {
 	</style>
 	for i, v := range news {
 		if i == 0 && next != true {
-			<div
-				class="card bg-dark text-white mb-2"
+			<div class="card bg-dark text-white mb-2"
 				if i + 1 == len(news) {
 					hx-get={ fmt.Sprintf("/news?category=%s&next=%d", v.Categories.Name, v.ID) }
 					hx-trigger="intersect once"

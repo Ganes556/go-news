@@ -90,9 +90,9 @@ func main() {
 			if tokenFromQuery != "" {
 				return tokenFromQuery, nil
 			}
-
 			// If not found in the query parameters, attempt to extract from form data
 			tokenFromForm := c.FormValue("csrfToken")
+
 			if tokenFromForm != "" {
 				return tokenFromForm, nil
 			}
@@ -125,8 +125,10 @@ func main() {
 	categoriesHandler := handler_categories.NewHandlerCategories(categoriesUc, validator, session)
 
 	userGroup := app.Group("/user", timeoutMid.Timeout(nil), authMid.Authorized)
-
 	{
+
+		userGroup.Get("/profile", userHandler.Profile)
+		userGroup.Post("/profile", userHandler.PostProfile)
 		userGroup.Get("/login", userHandler.ViewLogin)
 		userGroup.Post("/login", userHandler.Login)
 		userGroup.Get("/logout", userHandler.Logout)

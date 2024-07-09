@@ -1,8 +1,10 @@
 package view_layout
 
-import "github.com/sujit-baniya/flash"
-import "github.com/news/view/component/toast"
-import "os"
+import (
+	view_toast "github.com/news/view/component/toast"
+	"github.com/sujit-baniya/flash"
+	"os"
+)
 
 templ Layout(param ParamLayout) {
 	<!DOCTYPE html>
@@ -13,6 +15,7 @@ templ Layout(param ParamLayout) {
 			if os.Getenv("ENVIRONMENT") == "PRODUCTION" {
 				<script type="module" src="/main.js"></script>
 			} else {
+				<script type="module" src="http://localhost:5173/@vite/client"></script>
 				<script type="module" src="http://localhost:5173/main.js"></script>
 			}
 			<title>{ param.Title }</title>

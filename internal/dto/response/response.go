@@ -15,6 +15,12 @@ func (e *Response) ErrAuth400() error {
 	return e
 }
 
+func (e *Response) ErrChangePassword400() error {
+	e.Code = 400
+	e.Message = "incorrect current password"
+	return e
+}
+
 func (e *Response) ErrAuth403() error {
 	e.Code = 401
 	e.Message = "forbidden"

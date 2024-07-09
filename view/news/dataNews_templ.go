@@ -49,7 +49,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 					var templ_7745c5c3_Var2 string
 					templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/news?category=%s&next=%d", v.Categories.Name, v.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 26, Col: 79}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 25, Col: 79}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 					if templ_7745c5c3_Err != nil {
@@ -67,7 +67,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("https://storage.googleapis.com/go-news-bucket/" + v.Cover)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 31, Col: 73}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 30, Col: 73}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -89,7 +89,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(v.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 38, Col: 15}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 37, Col: 15}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -102,7 +102,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("formatDate(%d)", v.CreatedAt))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 40, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 39, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -125,7 +125,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/news?category=%s&next=%d", v.Categories.Name, v.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 47, Col: 79}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 46, Col: 79}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -143,7 +143,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("https://storage.googleapis.com/go-news-bucket/" + v.Cover)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 54, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 53, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -165,7 +165,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(v.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 60, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 59, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -178,7 +178,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(v.Categories.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 63, Col: 67}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 62, Col: 67}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -191,7 +191,7 @@ func DataListNews(news []entity.News, next bool) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("formatDate(%d)", v.CreatedAt))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 69, Col: 114}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 68, Col: 114}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -239,7 +239,7 @@ func DataSearchTitle(news []entity.News, title string) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/news?next=%d", v.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 84, Col: 48}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 83, Col: 48}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -252,7 +252,7 @@ func DataSearchTitle(news []entity.News, title string) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("JSON.stringify({'search': '%s'})", title))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 85, Col: 76}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 84, Col: 76}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -279,7 +279,7 @@ func DataSearchTitle(news []entity.News, title string) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(v.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 94, Col: 17}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 93, Col: 17}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -292,7 +292,7 @@ func DataSearchTitle(news []entity.News, title string) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(v.Categories.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 97, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 96, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -305,7 +305,7 @@ func DataSearchTitle(news []entity.News, title string) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("formatDate(%d)", v.CreatedAt))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 103, Col: 113}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 102, Col: 113}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -352,7 +352,7 @@ func DataNewsMostViewed(news []entity.News) templ.Component {
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d.", i+1))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 117, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 116, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
@@ -374,7 +374,7 @@ func DataNewsMostViewed(news []entity.News) templ.Component {
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(v.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 121, Col: 16}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/news/dataNews.templ`, Line: 120, Col: 16}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
