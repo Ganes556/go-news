@@ -1,42 +1,34 @@
 # About App
 
-## Description
-
 This is simple news project to implement full stack with golang
 
-## Technology
+# Requirement Without Docker
+
+1. Golang version 1.23.1/latest
+2. Node version >= 20
+3. Air v1.51.0
+4. Make v4.4.1
+
+# Requirement With Docker
+
+1. Docker & Docker Compose
+2. Make v4.4.1
+
+# Run With CLI
+
+1. `make run-cli`
+> Note: Makesure to change the `ENVIRONMENT` variable inside .env file
+> to determine whether the program will be run in `DEVELOPEMENT` or `PRODUCTION`
+
+# Run With Docker
+
+1. `make run-docker`
+
+# Technology
 
 1. Golang
 2. Fiber
 3. Templ
 4. Bootstrap
-5. AlpineJs
-6. Webpack
-7. Node
-
-# Requirement
-
-## Without Docker
-
-1. Golang version 1.23.1/latest
-2. Node version >= 20
-3. Air
-
-## With Docker
-
-1. Node version >= 20
-2. Docker
-
-# How to Run
-
-## Without Docker
-
-1. npm i
-2. npm run go-webpack
-3. air .
-
-## With Docker
-
-1. npm i
-2. npm run go-webpack
-3. docker compose up
+5. Alpine.js
+6. Vite

@@ -1,11 +1,13 @@
 package view_admin_content_news
 
-import "github.com/news/view/component/CKEeditor"
-import "github.com/news/internal/entity"
-import "fmt"
-import "time"
-import "github.com/news/view/component/alert"
-import "github.com/news/pkg"
+import (
+	"fmt"
+	"github.com/news/internal/entity"
+	"github.com/news/pkg"
+	view_component_CKEeditor "github.com/news/view/component/CKEeditor"
+	view_component_alert "github.com/news/view/component/alert"
+	"time"
+)
 
 script setDataToContentDiv() {
 	let d = htmx.find("#res-content")
@@ -42,7 +44,7 @@ templ TrNews(news []entity.News, csrfToken string, lastIndex int) {
 	}
 }
 
-templ GetNews(news []entity.News, csrfToken string) {
+templ GetNews(news []entity.News, categories []entity.Categories, csrfToken string) {
 	<div id="container-news" class="container-fluid py-3">
 		<h1>News</h1>
 		<div
@@ -55,16 +57,32 @@ templ GetNews(news []entity.News, csrfToken string) {
 			Add News
 		</div>
 		<div class="table-responsive-lg mt-5">
-			<input
-				class="form-control"
-				type="text"
-				name="title"
-				hx-get="?partial=1"
-				hx-trigger="keyup delay:500ms changed"
-				hx-target="#results"
-				hx-swap="innerHTML"
-				placeholder="search by title..."
-			/>
+			<div class="d-flex flex-row mb-3 me-auto w-75">
+				<input
+					class="form-control flex-grow-1 me-3"
+					type="text"
+					name="title"
+					hx-get="?partial=1"
+					hx-trigger="keyup delay:500ms changed, change from:#category-select"
+					hx-include="#category-select"
+					hx-target="#results"
+					hx-swap="innerHTML"
+					placeholder="search by title..."
+				/>
+				<select
+					id="category-select"
+					name="category"
+					class="form-select form-select-sm w-25"
+					aria-label=".form-select-sm example"
+				>
+					<option selected value="">Select one of this category</option>
+					if len(categories) > 0 {
+						for _, v := range categories {
+							<option>{ v.Name }</option>
+						}
+					}
+				</select>
+			</div>
 			<table class="table table-striped">
 				<thead>
 					<tr>

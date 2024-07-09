@@ -9,8 +9,11 @@ script tabsStore(activeCategory string) {
 			active: activeCategory,
 			init() {
 				Alpine.effect(() => {
-					document.title = this.active
-					console.log(this.active)
+					let url = new URL(window.location.href);
+					let params = url.searchParams;
+					if(params.get('category')) {	
+						document.title = this.active
+					}
 				})
 			}
 		})
@@ -57,6 +60,7 @@ templ NewsTemplate(categories []entity.Categories, activeCategory string) {
 						<li class="nav-item">
 							<a
 								class="nav-link fs-6"
+								style="cursor: pointer;"
 								:class={ fmt.Sprintf("{ 'active fw-normal' : $store.tabs.active === '%s' }", v.Name) }
 								x-on:click={ fmt.Sprintf("$store.tabs.active = '%s' ", v.Name) }
 								hx-get={ "/news?category=" + v.Name }
@@ -64,7 +68,6 @@ templ NewsTemplate(categories []entity.Categories, activeCategory string) {
 								hx-target="#content-news"
 								hx-trigger="click"
 								hx-swap="innerHTML"
-								href="#"
 							>{ v.Name }</a>
 						</li>
 					}
@@ -160,7 +163,7 @@ templ NewsTemplate(categories []entity.Categories, activeCategory string) {
 					hx-get="/news?most_viewed=1"
 					hx-trigger="load once"
 					hx-target="this"
-					hx-swap="innerHTML"
+					hx-swap="innerHTML ignoreTitle:true"
 				></div>
 				<div id="error-most-viewed-news" class="text-center text-danger" hx-swap-oob="true"></div>
 			</div>

@@ -1,6 +1,8 @@
 package helper
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+)
 
 type Encryptor interface {
 	HashPassword(password string) (string, error)

@@ -3,10 +3,9 @@ package uc_news
 import (
 	"context"
 	"mime/multipart"
-	"net/url"
-	"strings"
 	"sync"
 
+	"github.com/gosimple/slug"
 	"github.com/news/helper"
 	req_dto_news "github.com/news/internal/dto/request/news"
 	dto_response "github.com/news/internal/dto/response"
@@ -23,7 +22,7 @@ type UcNews interface {
 	GetNews(param ParamGetNews) (news []entity.News, err error)
 	GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News, err error)
 	GetNewsById(ctx context.Context, id uint) (news entity.News, err error)
-	GetNewsByTitle(ctx context.Context, title string) (news entity.News, err error)
+	GetNewsBySlug(ctx context.Context, slug string) (news entity.News, err error)
 	GetNewsMostViewed(ctx context.Context) (news []entity.News, err error)
 	GetTotalPostAndViews(ctx context.Context) (totalPost, totalViews int64)
 }
@@ -79,6 +78,7 @@ func (u *ucNews) Create(param ParamCreate) (err error) {
 	err = u.db.WithContext(param.Ctx).Create(&entity.News{
 		UsersID:      param.UserID,
 		CategoriesID: param.Req.CategoryID,
+		Slug:         slug.Make(param.Req.Title),
 		Title:        param.Req.Title,
 		Cover:        url[0],
 		Content:      param.Req.Contents,
@@ -109,6 +109,7 @@ func (u *ucNews) Update(param ParamUpdate) (err error) {
 			helper.LogsError(err2)
 			return err2
 		}
+		// delete in gc
 		var newCover string
 		if param.Req.Cover != nil {
 			err2 := u.Gc.DeleteInStorage(param.Ctx, []string{oldData.Cover})
@@ -123,6 +124,10 @@ func (u *ucNews) Update(param ParamUpdate) (err error) {
 			}
 			newCover = covers[0]
 		}
+		var slugText string
+		if param.Req.Title != "" {
+			slugText = slug.Make(param.Req.Title)
+		}
 		err2 := tx.Updates(&entity.News{
 			Base: entity.Base{
 				ID: param.Req.ID,
@@ -130,6 +135,7 @@ func (u *ucNews) Update(param ParamUpdate) (err error) {
 			UsersID:      param.UserID,
 			CategoriesID: param.Req.CategoryID,
 			Cover:        newCover,
+			Slug:         slugText,
 			Title:        param.Req.Title,
 			Content:      param.Req.Contents,
 		}).Error
@@ -174,10 +180,10 @@ func (u *ucNews) AddViewingNews(param ParamAddViewingNews) (err error) {
 			if err2 != gorm.ErrRecordNotFound {
 				return err2
 			}
-		} else {			
+		} else {
 			if err3 := tx.Model(&entity.IpRead{
 				Base: ipread.Base,
-				IP: ipread.IP,
+				IP:   ipread.IP,
 				News: ipread.News,
 			}).Association("News").Append([]entity.News{
 				{
@@ -257,28 +263,22 @@ func (u *ucNews) GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News
 	}
 
 	if param.Title != "" {
-		tx = tx.Where("title LIKE ?", "%"+param.Title+"%").Preload("Users").Preload("Categories")
+		tx = tx.Where("title LIKE ?", "%"+param.Title+"%").Preload("Categories")
 	}
 
 	if param.Next != 0 {
 		tx.Where("news.id < ?", param.Next)
 	}
 
-	err = tx.Limit(int(param.Limit)).
+	err = tx.Limit(int(param.Limit)).Preload("Users").
 		Find(&news).Error
 	return
 }
 
-func (u *ucNews) GetNewsByTitle(ctx context.Context, title string) (news entity.News, err error) {
-	var parsedTitle string
+func (u *ucNews) GetNewsBySlug(ctx context.Context, slug string) (news entity.News, err error) {
+	
 	news = entity.News{}
-	parsedTitle, err = url.QueryUnescape(title)
-	if err != nil {
-		return
-	}
-	title = strings.ToLower(parsedTitle)
-
-	err = u.db.WithContext(ctx).Preload("Categories").First(&news, "title = ?", title).Error
+	err = u.db.WithContext(ctx).Preload("Categories").First(&news, "slug = ?", slug).Error
 	if err == gorm.ErrRecordNotFound {
 		err = new(dto_response.Response).Err404("news")
 	}
@@ -303,7 +303,7 @@ func (u *ucNews) GetTotalPostAndViews(ctx context.Context) (totalPost, totalView
 	}()
 	go func() {
 		defer wg.Done()
-		u.db.WithContext(ctx).Model(&entity.News{}).Select("SUM(count_view) AS count_views").Row().Scan(&totalViews);
+		u.db.WithContext(ctx).Model(&entity.News{}).Select("SUM(count_view) AS count_views").Row().Scan(&totalViews)
 	}()
 	wg.Wait()
 	return

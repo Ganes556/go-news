@@ -8,6 +8,7 @@ type News struct {
 	CategoriesID uint        `gorm:"not null"`
 	Categories   *Categories `json:"-"`
 	Users        *Users
+	Slug         string `gorm:"type:varchar(150);uniqueIndex;not null"`
 	Title        string `gorm:"type:varchar(150);uniqueIndex;not null"`
 	Cover        string `gorm:"type:varchar(255);not null"`
 	Content      string `gorm:"not null"`

@@ -74,12 +74,10 @@ func (h *handlerNews) ViewNewsAdmin(c *fiber.Ctx) error {
 	}
 
 	var categories []entity.Categories
-	if req.Page != "" {
-		categories, err = h.ucCategories.GetAll(ctx)
-		if err != nil {
-			helper.LogsError(err)
-			return helper_handler.ReturnErrFlash(c, "", nil)
-		}
+	categories, err = h.ucCategories.GetAll(ctx)
+	if err != nil {
+		helper.LogsError(err)
+		return helper_handler.ReturnErrFlash(c, "", nil)
 	}
 
 	switch req.Page {
@@ -122,18 +120,20 @@ func (h *handlerNews) ViewNewsAdmin(c *fiber.Ctx) error {
 			})
 		}
 	default:
-		component = view_admin_content_news.GetNews(news, csrfToken)
+		component = view_admin_content_news.GetNews(news, categories, csrfToken)
 	}
 
 	if req.Partial == "1" && c.GetReqHeaders()["Hx-Request"] != nil {
-		
-		if req.Title != nil {	
-			if *req.Title == "" {
+		fmt.Println("request->",req.Title, req.Category)
+		if req.Title != nil || req.Category != nil {	
+			if *req.Title == "" && *req.Category == "" {
 				return helper_handler.Render(c, view_admin_content_news.TrNews(news, csrfToken, req.LastIndex))
 			}
+			
 			news, err = h.uc.GetNewsByFilter(uc_news.ParamGetNewsByFilter{
 				Ctx:   ctx,
 				Title: *req.Title,
+				Category: *req.Category,
 				Next:  req.Next,
 				Limit: 10,
 			})
@@ -358,12 +358,12 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 	c.ParamsParser(req)
 
 	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
-		return helper_handler.ReturnErrFlash(c, "", err.Errs)
+		return helper_handler.ReturnErrFlash(c, "/", err.Errs)
 	}
 
 	ctx := c.UserContext()
 
-	news, err := h.uc.GetNewsByTitle(ctx, req.Title)
+	news, err := h.uc.GetNewsBySlug(ctx, req.Slug)
 	if err != nil {
 		var contentErr templ.Component = view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code)
 		if errRes, ok := err.(*dto_response.Response); ok {
@@ -413,15 +413,16 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 			C:        c,
 		}))
 	}
-	if len(categories) > 0 {
-		return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
-			Title:    categories[0].Name,
-			Contents: view_news.NewsContent(news, categories, categories[0].Name),
-			C:        c,
-		}))
-	}
+	// if len(categories) > 0 {
+	// 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+	// 		Title:    categories[0].Name,
+	// 		Contents: view_news.NewsContent(news, categories, categories[0].Name),
+	// 		C:        c,
+	// 	}))
+	// }
+	fmt.Println("kena")
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
-		Title:    req.Title,
+		Title:    news.Title,
 		Contents: view_news.NewsContent(news, categories, categories[0].Name),
 		C:        c,
 	}))

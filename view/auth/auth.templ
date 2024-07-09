@@ -1,8 +1,12 @@
 package view_auth
 
+script test() {
+  let a = new Date();
+}
+
 templ Login(param ParamAuth) {
 	<section class="vh-100 d-flex flex-column">
-		<form method={param.Method} action={templ.URL(param.Action)} class="d-flex flex-column shadow p-5 m-auto bg-body rounded" style="width: 40vw;max-width:500px">
+		<form method={ param.Method } action={ templ.URL(param.Action) } class="d-flex flex-column shadow p-5 m-auto bg-body rounded" style="width: 40vw;max-width:500px">
 			<div class="mb-4">
 				<p class="text-center fw-bold fs-3 text-capitalize">Login As Admin</p>
 			</div>

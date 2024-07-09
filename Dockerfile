@@ -1,5 +1,23 @@
+# Stage 1: Build the frontend
+FROM node:20.12.1-alpine as frontend-stage
+
+# Set the working directory in the container
+WORKDIR /app/frontend-bundle
+
+# Copy frontend-bundle
+COPY frontend-bundle ./
+
+# Install dependencies
+RUN npm install && npm run build
+
+# Copy the rest of your app's source code
+COPY . .
+
+# Build the app
+RUN npm run build
+
 # Stage 1: Build Go application
-FROM golang:1.22.3 as builder
+FROM golang:1.22.3 as backend-stage
 
 WORKDIR /app
 
@@ -46,8 +64,8 @@ RUN apk --no-cache add libpng libjpeg-turbo giflib tiff && \
 
 WORKDIR /root/
 
-COPY --from=builder ./app/main .
-COPY --from=builder ./app/public ./public
+COPY --from=backend-stage ./app/main .
+COPY --from=frontend-stage ./app/static ./static
 
 EXPOSE 8000
 

@@ -40,5 +40,5 @@ type ViewNewsUser struct {
 }
 
 type ViewNewsContentUser struct {
-	Title string `params:"title" validate:"required"`
+	Slug string `params:"slug" validate:"required"`
 }

@@ -13,6 +13,7 @@ import (
 	uc_user "github.com/news/internal/usecase/user"
 	"github.com/news/pkg"
 	view_admin_content_dashboard "github.com/news/view/admin/content/dashboard"
+	view_admin_content_profile "github.com/news/view/admin/content/profile"
 	view_admin_layout "github.com/news/view/admin/layout"
 	view_auth "github.com/news/view/auth"
 	view_navbar "github.com/news/view/component/navbar"
@@ -24,6 +25,8 @@ type HandlerUser interface {
 	ViewLogin(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) error
 	Logout(c *fiber.Ctx) error
+	Profile(c *fiber.Ctx) error
+	PostProfile(c *fiber.Ctx) error
 	ViewDashboard(c *fiber.Ctx) error
 }
 
@@ -90,6 +93,60 @@ func (h *handlerUser) Login(c *fiber.Ctx) error {
 	sess.Save()
 
 	return c.Redirect("/user")
+}
+
+func (h *handlerUser) Profile(c *fiber.Ctx) error {
+	sess, _ := h.session.Get(c)
+	username := sess.Get("username").(string)
+	name := sess.Get("name").(string)
+	csrfToken := c.Locals("csrfToken").(string)
+
+	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
+		Title: "Profile",
+		Contents: view_admin_layout.AdminLayout(view_admin_layout.ParamAdminLayout{
+			Content: view_admin_content_profile.Profile(name, username, csrfToken),
+			SlideBar: view_navbar.Slidebar(view_navbar.ParamNavbar{
+				Username: username,
+				Name:     name,
+			}),
+		}),
+		C: c,
+	}))
+}
+
+func (h *handlerUser) PostProfile(c *fiber.Ctx) error {
+	req := new(req_dto_user.EditProfile)
+	c.BodyParser(req)
+	if err := h.validator.Validate(req); err != nil && len(err.Errs) > 0 {
+		return helper_handler.ReturnErrFlash(c, "", err.Errs)
+	}
+	sess, _ := h.session.Get(c)
+	id := sess.Get("id").(uint)
+	username := sess.Get("username").(string)
+	name := sess.Get("name").(string)
+	ctx := c.UserContext()
+	err := h.uc.EditProfile(ctx, id, *req)
+	if err != nil {
+		if errRe, ok := err.(*dto_response.Response); ok {
+			return helper_handler.ReturnErrFlash(c, "", []dto_response.Response{*errRe})
+		}
+		return helper_handler.ReturnErrFlash(c, "", nil)
+	}
+
+	if req.Name != name {
+		sess.Set("name", req.Name)
+	}
+	if req.Username != username {
+		sess.Set("username", req.Username)
+	}
+	if req.Name != name || req.Username != username {
+		sess.Save()
+	}
+
+	return helper_handler.ReturnOkFlash(c, "/user/profile", dto_response.Response{
+		Message: "successfully edit profile",
+		Code: 200,
+	})
 }
 
 func (h *handlerUser) Logout(c *fiber.Ctx) error {

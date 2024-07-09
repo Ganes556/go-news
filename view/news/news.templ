@@ -1,7 +1,9 @@
 package view_news
 
-import "github.com/news/internal/entity"
-import "fmt"
+import (
+	"fmt"
+	"github.com/news/internal/entity"
+)
 
 templ NewsHome(categories []entity.Categories, activeCategory string) {
 	@NewsTemplate(categories, activeCategory) {
