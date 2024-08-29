@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/redirect"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/fiber/v2/utils"
-	"github.com/gofiber/storage/mysql"
 	"github.com/jasonlvhit/gocron"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/news/helper"
@@ -38,7 +36,7 @@ func main() {
 		Port:     os.Getenv("DB_PORT"),
 		Host:     os.Getenv("DB_HOST"),
 	}
-	DB := conf_internal.NewGorm(db_param)
+	DB, fStorage := conf_internal.NewGorm(db_param)
 	app := fiber.New()
 	app.Use(recover.New())
 
@@ -62,19 +60,7 @@ func main() {
 	// middleware
 	session := session.New(session.Config{
 		CookieHTTPOnly: true,
-		Storage: mysql.New(mysql.Config{
-			Host: db_param.Host,
-			Port: func() int {
-				port, _ := strconv.Atoi(db_param.Port) // Handle error appropriately
-				return port
-			}(),
-			Database:   db_param.Database,
-			Username:   db_param.Username,
-			Password:   db_param.Password,
-			Table:      "fiber_store",
-			Reset:      false,
-			GCInterval: 10 * time.Second,
-		}),
+		Storage: fStorage,
 	})
 
 	app.Static("/", "./static")
