@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  phpmyadmin:
+  phpmyadmin: # optional
     image: phpmyadmin
     container_name: phpmyadmin-go_news
     restart: always
@@ -45,7 +45,10 @@ services:
 
   app:
     container_name: go-news
-    build: .
+    build:
+      context: .
+      args:
+        DB_CONNECTION: $DB_CONNECTION
     env_file:
       - .env
     ports:

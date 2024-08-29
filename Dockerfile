@@ -23,9 +23,19 @@ WORKDIR /app
 
 COPY . .
 
-RUN go clean --modcache && \
-    go mod tidy && \
-    CGO_ENABLED=0 GOOS=linux go build -o main
+ARG DB_CONNECTION=mysql
+
+RUN echo "DB_CONNECTION is set to: $DB_CONNECTION"
+
+# Conditional build step for SQLite or other DB connections
+RUN go clean --modcache && go mod tidy && \
+    if [ "$DB_CONNECTION" = "sqlite" ]; then \
+        echo "Building with SQLite support"; \
+        CGO_ENABLED=1 GOOS=linux go build -o main; \
+    else \
+        echo "Building without SQLite support"; \
+        CGO_ENABLED=0 GOOS=linux go build -o main; \
+    fi
 
 # Stage 2: Build libwebp from source
 FROM alpine:latest AS builder2
