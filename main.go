@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -60,7 +62,7 @@ func main() {
 	// middleware
 	session := session.New(session.Config{
 		CookieHTTPOnly: true,
-		Storage: fStorage,
+		Storage:        fStorage,
 	})
 
 	app.Static("/", "./static")
@@ -92,7 +94,7 @@ func main() {
 
 	app.Use(redirect.New(redirect.Config{
 		Rules: map[string]string{
-			"/":   "/news",
+			"/": "/news",
 		},
 		StatusCode: 301,
 	}))
@@ -138,6 +140,19 @@ func main() {
 	errHandler := handler_error.NewErrorHandler()
 	app.Use(commonMid.IsAdmin, errHandler.NotFound)
 
-	app.Listen(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
+	if os.Getenv("SSL") != "" {
+		cer, err := tls.LoadX509KeyPair(os.Getenv("SSL_CERT"), os.Getenv("SSL_KEY"))
+		if err != nil {
+			log.Fatal(err)
+		}
+		config := &tls.Config{Certificates: []tls.Certificate{cer}}
+		ln, err := tls.Listen("tcp", ":443", config)
+		if err != nil {
+			panic(err)
+		}
+		log.Fatal(app.Listener(ln))
+	} else {
+		app.Listen(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
+	}
 
 }
