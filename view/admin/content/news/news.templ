@@ -6,7 +6,6 @@ import (
 	"github.com/news/pkg"
 	view_component_CKEeditor "github.com/news/view/component/CKEeditor"
 	view_component_alert "github.com/news/view/component/alert"
-	"time"
 )
 
 script setDataToContentDiv() {
@@ -17,7 +16,7 @@ script setDataToContentDiv() {
 templ TrNews(news []entity.News, csrfToken string, lastIndex int) {
 	for i, v := range news {
 		<tr
-			class="align-middle"
+			class="align-middle text-center"
 			if i + 1 == len(news) {
 				hx-get={ fmt.Sprintf("?partial=1&next=%d&last_index=%d", v.ID, i+1+lastIndex) }
 				hx-trigger="intersect once"
@@ -27,7 +26,7 @@ templ TrNews(news []entity.News, csrfToken string, lastIndex int) {
 			<th scope="row">{ fmt.Sprintf("%d",i+1 + lastIndex) }</th>
 			<td>{ v.Title }</td>
 			<td>{ v.Categories.Name }</td>
-			<td>{ time.Unix(v.CreatedAt, 0).Format(time.DateTime) }</td>
+			<td x-text={ fmt.Sprintf("formatDate(%d,true)", v.CreatedAt) }></td>
 			<td>{ v.Users.Name }</td>
 			<td class="row gx-1 justify-content-center">
 				<div class="col">
@@ -85,16 +84,16 @@ templ GetNews(news []entity.News, categories []entity.Categories, csrfToken stri
 			</div>
 			<table class="table table-striped">
 				<thead>
-					<tr>
+					<tr class="text-center">
 						<th scope="col">#</th>
 						<th scope="col">Title</th>
 						<th scope="col">Category</th>
-						<th scope="col">Date</th>
+						<th scope="col">Created At</th>
 						<th scope="col">Author</th>
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
-				<tbody id="results">
+				<tbody id="results" x-data="date">
 					@TrNews(news, csrfToken, 0)
 				</tbody>
 			</table>

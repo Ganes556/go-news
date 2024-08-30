@@ -1,4 +1,4 @@
-function formatDate(unixTimestamp) {
+function formatDate(unixTimestamp, formatAdmin = false) {
   const date = new Date(unixTimestamp * 1000);
   const day = date.toLocaleDateString('id-ID', { weekday: 'long' });
   const dayNumber = date.getDate();
@@ -21,6 +21,10 @@ function formatDate(unixTimestamp) {
   const hour = ('0' + date.getHours()).slice(-2);
   const minute = ('0' + date.getMinutes()).slice(-2);
   const timeZone = getTimeZoneAbbreviation();
+
+  if (formatAdmin) {
+    return `${dayNumber} ${month} ${year} | ${hour}:${minute} ${timeZone}`;
+  }
 
   return `${day}, ${dayNumber} ${month} ${year} | ${hour}:${minute} ${timeZone}`;
 }

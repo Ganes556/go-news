@@ -3,7 +3,6 @@ package uc_categories
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/news/helper"
@@ -52,7 +51,7 @@ func (u *ucCategories) Update(ctx context.Context, req req_dto_categories.Update
 		},
 		Name: req.Name,
 	}
-	fmt.Println("request", req)
+	// fmt.Println("request", req)
 	err = u.db.WithContext(ctx).Updates(&newCategory).Error
 	if err != nil {
 		var mysqlErr *mysql.MySQLError
