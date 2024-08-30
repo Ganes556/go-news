@@ -197,7 +197,9 @@ func (u *ucNews) AddViewingNews(param ParamAddViewingNews) (err error) {
 		}
 
 		if len(ipread.News) == 0 {
-			if err2 := tx.Model(&entity.News{}).Where("id = ?", param.IdNews).Update("count_view", gorm.Expr("count_view + 1")).Error; err2 != nil {
+			if err2 := tx.Model(&entity.News{}).
+				Where("id = ?", param.IdNews).
+				Update("count_view", gorm.Expr("count_view + 1")).Error; err2 != nil {
 				helper.LogsError(err)
 				return err2
 			}
@@ -257,7 +259,7 @@ func (u *ucNews) GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News
 
 	tx := u.db.WithContext(param.Ctx).
 		Omit("content").
-		Order("id DESC")
+		Order("news.id DESC")
 	if param.Category != "" {
 		tx = tx.InnerJoins("Categories", u.db.Where(&entity.Categories{Name: param.Category}))
 	}
@@ -276,7 +278,7 @@ func (u *ucNews) GetNewsByFilter(param ParamGetNewsByFilter) (news []entity.News
 }
 
 func (u *ucNews) GetNewsBySlug(ctx context.Context, slug string) (news entity.News, err error) {
-	
+
 	news = entity.News{}
 	err = u.db.WithContext(ctx).Preload("Categories").First(&news, "slug = ?", slug).Error
 	if err == gorm.ErrRecordNotFound {
