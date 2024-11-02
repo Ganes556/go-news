@@ -174,9 +174,7 @@ func (u *ucNews) AddViewingNews(param ParamAddViewingNews) (err error) {
 			},
 		}
 
-		if err2 := tx.Preload("News", func(db *gorm.DB) *gorm.DB {
-			return db.Where("id = ?", param.IdNews).Select("id")
-		}).First(&entity.IpRead{}, "ip = ?", param.Ip).Error; err2 != nil {
+		if err2 := tx.First(&entity.IpRead{}, "ip = ?", param.Ip).Error; err2 != nil {
 			if err2 == gorm.ErrRecordNotFound {
 				if err3 := tx.Create(&newIpread).Error; err3 != nil {
 					helper.LogsError(err)
