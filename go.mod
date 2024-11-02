@@ -12,7 +12,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/gofiber/fiber/v2 v2.52.4
+	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/storage/mysql v1.3.7
 	github.com/gofiber/storage/sqlite3 v1.3.8
 	github.com/gosimple/slug v1.14.0
