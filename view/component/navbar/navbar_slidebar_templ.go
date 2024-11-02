@@ -29,6 +29,11 @@ func checkUrl(id string, page string) templ.ComponentScript {
 	}
 }
 
+type ParamNavbar struct {
+	Username string
+	Name     string
+}
+
 func Slidebar(param ParamNavbar) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -57,7 +62,7 @@ func Slidebar(param ParamNavbar) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(param.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/component/navbar/navbar_slidebar.templ`, Line: 86, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/component/navbar/navbar_slidebar.templ`, Line: 91, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

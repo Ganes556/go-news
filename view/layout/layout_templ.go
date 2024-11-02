@@ -9,10 +9,17 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"github.com/gofiber/fiber/v2"
 	view_toast "github.com/news/view/component/toast"
 	"github.com/sujit-baniya/flash"
 	"os"
 )
+
+type ParamLayout struct {
+	C        *fiber.Ctx
+	Title    string
+	Contents templ.Component
+}
 
 func Layout(param ParamLayout) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -57,7 +64,7 @@ func Layout(param ParamLayout) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(param.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/layout/layout.templ`, Line: 21, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/layout/layout.templ`, Line: 28, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

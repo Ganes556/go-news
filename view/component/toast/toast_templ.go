@@ -9,6 +9,33 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "fmt"
+import "encoding/json"
+import "github.com/news/internal/dto/response"
+
+type ParamToast struct {
+	Messages string
+	Mode     string
+	Timer    int
+}
+
+func (p *ParamToast) getResponse() []dto_response.Response {
+	var r dto_response.Response
+	err := json.Unmarshal([]byte(p.Messages), &r)
+	if err == nil {
+		return []dto_response.Response{r}
+	}
+
+	var res []dto_response.Response
+	err = json.Unmarshal([]byte(p.Messages), &res)
+	if err != nil {
+		res = append(res, dto_response.Response{
+			Code:    500,
+			Message: "Something Wrong!",
+		})
+	}
+
+	return res
+}
 
 func toastTimer(second int) templ.ComponentScript {
 	return templ.ComponentScript{
@@ -83,7 +110,7 @@ func Toast(param ParamToast) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", v.Code))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/component/toast/toast.templ`, Line: 31, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/component/toast/toast.templ`, Line: 59, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -96,7 +123,7 @@ func Toast(param ParamToast) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(v.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/component/toast/toast.templ`, Line: 31, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/component/toast/toast.templ`, Line: 59, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {

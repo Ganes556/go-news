@@ -383,6 +383,7 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 		Ctx:    ctx,
 		Ip:     c.IP(),
 		IdNews: news.ID,
+		IdCategory: news.CategoriesID,
 	}); err != nil {
 		var contentErr templ.Component = view_error.Error(fiber.ErrInternalServerError.Message, fiber.ErrInternalServerError.Code)
 		if errRes, ok := err.(*dto_response.Response); ok {

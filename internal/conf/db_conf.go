@@ -88,7 +88,7 @@ func NewGorm(param ParamNewGorm) (*gorm.DB, fiber.Storage) {
 		panic(err)
 	}
 
-	if err := db.AutoMigrate(new(entity.Users), new(entity.Categories), new(entity.News), new(entity.IpRead)); err != nil {
+	if err := db.AutoMigrate(new(entity.Users), new(entity.Categories), new(entity.News), new(entity.IpRead), new(entity.IpReadable)); err != nil {
 		panic(err)
 	}
 	

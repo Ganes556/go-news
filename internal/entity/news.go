@@ -13,4 +13,5 @@ type News struct {
 	Cover        string `gorm:"type:varchar(255);not null"`
 	Content      string `gorm:"not null"`
 	CountView    uint
+	IpReadable   []IpReadable `gorm:"polymorphic:Owner"`
 }

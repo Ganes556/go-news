@@ -18,7 +18,7 @@ func NewCronFunc(DB *gorm.DB) CronFunc{
 }
 
 func (c *cronFunc) DBResetIpread() {
-	err := c.DB.Delete(&entity.IpRead{}, "1 = 1").Error
+	err := c.DB.Delete(&entity.IpRead{}, "1 = 1").Association("IpReadable").Clear().Error
 	if err != nil {
 		panic(err)
 	}

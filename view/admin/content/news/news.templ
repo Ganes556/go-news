@@ -6,7 +6,17 @@ import (
 	"github.com/news/pkg"
 	view_component_CKEeditor "github.com/news/view/component/CKEeditor"
 	view_component_alert "github.com/news/view/component/alert"
+	"github.com/gofiber/fiber/v2"
 )
+
+type DtoModifiedNews struct {
+	C          *fiber.Ctx
+	OldNews    entity.News
+	CsrfToken  string
+	Method     string
+	Url        string
+	Categories []entity.Categories
+}
 
 script setDataToContentDiv() {
 	let d = htmx.find("#res-content")

@@ -4,7 +4,14 @@ import (
 	view_toast "github.com/news/view/component/toast"
 	"github.com/sujit-baniya/flash"
 	"os"
+	"github.com/gofiber/fiber/v2"
 )
+
+type ParamLayout struct {
+	C         *fiber.Ctx
+	Title     string
+	Contents  templ.Component
+}
 
 templ Layout(param ParamLayout) {
 	<!DOCTYPE html>
