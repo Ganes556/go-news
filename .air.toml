@@ -1,6 +1,9 @@
 root = "."
 tmp_dir = "tmp"
 
+[env]
+  TEMPL_EXPERIMENT = "rawgo" # Set the rawgo experiment flag
+
 [build]
   bin = "./tmp/main"
   cmd = "templ generate && go build -o ./tmp/main.exe ."

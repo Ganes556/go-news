@@ -10,3 +10,4 @@ db
 dist
 .dockerignore
 static
+Dockerfile-build

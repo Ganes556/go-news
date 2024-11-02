@@ -21,15 +21,16 @@ templ Layout(param ParamLayout) {
 			<title>{ param.Title }</title>
 		</head>
 		<body>
-			if dat, ok := flash.Get(param.C)["success"].(string); ok && dat == "true" {
+			{{ flash := flash.Get(param.C)  }}
+			if dat, ok := flash["success"].(string); ok && dat == "true" {
 				@view_toast.Toast(view_toast.ParamToast{
-					Messages: flash.Get(param.C)["messages"].(string),
+					Messages: flash["messages"].(string),
 					Mode:     "success",
 					Timer:    1500,
 				})
-			} else if dat, ok := flash.Get(param.C)["error"].(string); ok && dat == "true" {
+			} else if dat, ok := flash["error"].(string); ok && dat == "true" {
 				@view_toast.Toast(view_toast.ParamToast{
-					Messages: flash.Get(param.C)["messages"].(string),
+					Messages: flash["messages"].(string),
 					Mode:     "danger",
 					Timer:    1500,
 				})

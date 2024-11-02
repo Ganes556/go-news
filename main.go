@@ -92,6 +92,10 @@ func main() {
 		Session:      session,
 	}))
 
+	if os.Getenv("SSL") == "1" {
+		app.Use(redirectToHTTPS)
+	}
+
 	app.Use(redirect.New(redirect.Config{
 		Rules: map[string]string{
 			"/": "/news",
@@ -140,19 +144,36 @@ func main() {
 	errHandler := handler_error.NewErrorHandler()
 	app.Use(commonMid.IsAdmin, errHandler.NotFound)
 
-	if os.Getenv("SSL") != "" {
+	if os.Getenv("SSL") == "1" {
 		cer, err := tls.LoadX509KeyPair(os.Getenv("SSL_CERT"), os.Getenv("SSL_KEY"))
 		if err != nil {
 			log.Fatal(err)
 		}
-		config := &tls.Config{Certificates: []tls.Certificate{cer}}
+		config := &tls.Config{
+			Certificates: []tls.Certificate{cer},
+		}
+
+		go func() {
+			if err := app.Listen(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))); err != nil {
+				panic(err)
+			}
+		}()
+
 		ln, err := tls.Listen("tcp", ":443", config)
 		if err != nil {
 			panic(err)
 		}
+
 		log.Fatal(app.Listener(ln))
 	} else {
 		app.Listen(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
 	}
+}
 
+func redirectToHTTPS(c *fiber.Ctx) error {
+	if c.Protocol() == "http" {
+		// Redirect to the HTTPS version of the requested URL
+		return c.Redirect("https://"+c.Hostname()+c.OriginalURL(), fiber.StatusMovedPermanently)
+	}
+	return c.Next()
 }
