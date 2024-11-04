@@ -421,7 +421,7 @@ func (h *handlerNews) ViewNewsContentUser(c *fiber.Ctx) error {
 	// 		C:        c,
 	// 	}))
 	// }
-	fmt.Println("kena")
+	// fmt.Println("kena")
 	return helper_handler.Render(c, view_layout.Layout(view_layout.ParamLayout{
 		Title:    news.Title,
 		Contents: view_news.NewsContent(news, categories, categories[0].Name),

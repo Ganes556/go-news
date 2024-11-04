@@ -76,3 +76,7 @@ func SaveInLocal(file *multipart.FileHeader) (string, error) {
 
 	return fileName, nil
 }
+
+func DeleteMultiFileInLocal(fileName string) error {
+	return os.Remove("./public/img/" + fileName)
+}

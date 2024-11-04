@@ -3,6 +3,7 @@ package uc_news
 import (
 	"context"
 	"mime/multipart"
+	"os"
 	"sync"
 
 	"github.com/gosimple/slug"
@@ -68,11 +69,16 @@ type ParamCreate struct {
 }
 
 func (u *ucNews) Create(param ParamCreate) (err error) {
-	url, err := u.Gc.Upload2Storage(param.Ctx, "cover", []*multipart.FileHeader{param.Req.Cover})
-
-	if err != nil {
-		helper.LogsError(err)
-		return err
+	var urlCover string
+	if( os.Getenv("GC_SECRET") != "") {
+		url, _ := u.Gc.Upload2Storage(param.Ctx, "cover", []*multipart.FileHeader{param.Req.Cover})
+		urlCover = url[0]
+	}else {
+		fileName, err := helper.SaveInLocal(param.Req.Cover)
+		if err != nil {
+			return err
+		}
+		urlCover = fileName
 	}
 
 	err = u.db.WithContext(param.Ctx).Create(&entity.News{
@@ -80,7 +86,7 @@ func (u *ucNews) Create(param ParamCreate) (err error) {
 		CategoriesID: param.Req.CategoryID,
 		Slug:         slug.Make(param.Req.Title),
 		Title:        param.Req.Title,
-		Cover:        url[0],
+		Cover:        urlCover,
 		Content:      param.Req.Contents,
 	}).Error
 
