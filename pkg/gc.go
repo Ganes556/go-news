@@ -15,7 +15,7 @@ import (
 	"time"
 
 	storage "cloud.google.com/go/storage"
-	"github.com/news/helper"
+	"math/rand"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -59,23 +59,31 @@ func NewGcloud(duration *time.Duration, bucketName string) Gcloud {
 
 	privateKey, err := base64.StdEncoding.DecodeString(gPrivateKey)
 	if err != nil {
-		helper.LogsError(err)
 		panic(err)
 	}
 
 	client, err := storage.NewClient(ctx, option.WithCredentialsJSON(privateKey))
 	if err != nil {
-		helper.LogsError(err)
 		panic(err)
 	}
 	b := client.Bucket(bucketName)
 	return &gcloud{client, b}
 }
 
+func RandomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
 func GenerateUniqueObjectName(baseName, fileName string) string {
 	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
 	// Use a combination of base name, timestamp, and a random string to ensure uniqueness
-	randomString := helper.RandomString(6) // Change the length of the random string as needed
+	randomString := RandomString(6) // Change the length of the random string as needed
 	return fmt.Sprintf("%s/%s_%d_%s", baseName, fileName, time.Now().UnixNano(), randomString)
 }
 
@@ -125,13 +133,11 @@ func (g *gcloud) Upload2StorageWithouCompress(ctx context.Context, folderName, f
 	w := obj.NewWriter(ctx)
 
 	if _, err := io.Copy(w, file); err != nil {
-		helper.LogsError(err)
-		return "", err
+		panic(err)
 	}
 
 	if err := w.Close(); err != nil {
-		helper.LogsError(err)
-		return "", err
+		panic(err)
 	}
 
 	if err := obj.ACL().Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
@@ -172,8 +178,7 @@ func (g *gcloud) Update2Storage(ctx context.Context, folderName string, newFileH
 	gr.Go(func() error {
 		err := g.DeleteInStorage(ctx, oldObjNames)
 		if err != nil {
-			helper.LogsError(err)
-			return err
+			panic(err)
 		}
 		return nil
 	})
@@ -182,8 +187,7 @@ func (g *gcloud) Update2Storage(ctx context.Context, folderName string, newFileH
 		var err error
 		newObjNames, err = g.Upload2Storage(ctx, folderName, newFileH)
 		if err != nil {
-			helper.LogsError(err)
-			return err
+			panic(err)
 		}
 		return nil
 	})
