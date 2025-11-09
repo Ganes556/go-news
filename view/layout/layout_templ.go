@@ -47,7 +47,7 @@ func Layout(param ParamLayout) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if os.Getenv("ENVIRONMENT") == "PRODUCTION" {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"module\" src=\"/main.js\"></script>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"module\" src=\"/static/main.js\"></script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -6,7 +6,7 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "templ generate && go build -o ./tmp/main.exe ."
+  cmd = "go tool templ generate; if ($?) { go build -o ./tmp/main.exe . }"
   delay = 1000
   exclude_dir = ["frontend-bundle", "static", "db"]
   exclude_file = []

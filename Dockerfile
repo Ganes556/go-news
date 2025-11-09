@@ -17,11 +17,15 @@ COPY . .
 RUN npm run build
 
 # Stage 1: Build Go application
-FROM golang:1.22.3 as backend-stage
+FROM golang:1.25.3 as backend-stage
 
 WORKDIR /app
 
 COPY . .
+
+COPY --from=frontend-stage ./app/static ./static
+
+RUN go tool templ generate
 
 ARG DB_CONNECTION=mysql
 
@@ -75,7 +79,6 @@ RUN apk --no-cache add libpng libjpeg-turbo giflib tiff && \
 WORKDIR /root/
 
 COPY --from=backend-stage ./app/main .
-COPY --from=frontend-stage ./app/static ./static
 
 EXPOSE 8000
 

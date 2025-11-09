@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/redirect"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -28,9 +30,11 @@ import (
 	uc_news "github.com/news/internal/usecase/news"
 	uc_user "github.com/news/internal/usecase/user"
 	"github.com/news/pkg"
+	"github.com/news/static"
 )
 
 func main() {
+	
 	db_param := conf_internal.ParamNewGorm{
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
@@ -65,7 +69,10 @@ func main() {
 		Storage:        fStorage,
 	})
 
-	app.Static("/", "./static")
+	app.Use("/static", filesystem.New(filesystem.Config{
+		Root: http.FS(static.EmbedDirStatic),
+		Browse: true,
+	}))
 
 	app.Use(csrf.New(csrf.Config{
 		CookieHTTPOnly:    true,
