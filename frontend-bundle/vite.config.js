@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url);
 
 /** @type {import('vite').UserConfig} */
 export default defineConfig({
+  base: "/static/",
   plugins: [
     inject({
       htmx: 'htmx.org', // htmx does use eval, based on this issue: https://github.com/bigskysoftware/htmx/issues/1944

@@ -52,7 +52,7 @@ func Layout(param ParamLayout) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"module\" src=\"http://localhost:5173/@vite/client\"></script> <script type=\"module\" src=\"http://localhost:5173/main.js\"></script>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"module\" src=\"http://localhost:5173/@vite/client\"></script> <script type=\"module\" src=\"http://localhost:5173/static/main.js\"></script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
